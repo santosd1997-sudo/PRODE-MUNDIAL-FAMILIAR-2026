@@ -2,23 +2,20 @@
 // PRODE MUNDIAL 2026 - Service Worker
 // ============================================
 
-const CACHE_NAME = 'prode-mundial-2026-v2';
-const STATIC_CACHE = 'prode-static-v2';
-const DYNAMIC_CACHE = 'prode-dynamic-v2';
-const API_CACHE = 'prode-api-v2';
+const CACHE_NAME = 'prode-mundial-2026-v3';
+const STATIC_CACHE = 'prode-static-v3';
+const DYNAMIC_CACHE = 'prode-dynamic-v3';
+const API_CACHE = 'prode-api-v3';
 
 // Static assets to cache on install (app shell)
 const APP_SHELL = [
   '/',
   '/index.html',
   '/css/app.css',
-  '/js/app.js',
-  '/js/views.js',
-  '/js/api.js',
-  '/js/utils.js',
-  '/js/notifications.js',
   '/manifest.json',
-  '/icons/icon-512.png'
+  '/icons/icon-512.png',
+  '/icons/icon-192.png',
+  '/icons/icon-72.png'
 ];
 
 // Install event - cache app shell
