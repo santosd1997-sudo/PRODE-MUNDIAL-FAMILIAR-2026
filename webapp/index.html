@@ -76,7 +76,7 @@
     .bracket-round-title { text-align:center; font-family:'Outfit',sans-serif; font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; white-space:nowrap; }
     .bracket-match { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:6px 8px; cursor:pointer; transition:all .2s; margin-bottom:4px; }
     .bracket-match:hover,.bracket-match:active { border-color:var(--gold); transform:scale(1.02); }
-    .bracket-team { display:flex; align-items:center; gap:6px; padding:4px 0; font-size:11px; color:var(--text-secondary); transition:all .2s; }
+    .bracket-team { display:flex; align-items:center; gap:6px; padding:4px 0; font-size:11px; color:var(--text-muted); transition:all .2s; }
     .bracket-team.winner { color:var(--gold); font-weight:700; }
     .bracket-team img { width:18px; height:13px; border-radius:2px; object-fit:cover; }
     .bracket-vs { text-align:center; font-size:9px; color:var(--text-muted); padding:1px 0; }
@@ -104,9 +104,9 @@
     .family-card-rank { font-family:'Outfit',sans-serif; font-weight:800; font-size:20px; color:var(--gold); }
     .family-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
     .family-stat { text-align:center; }
-    .family-stat-value { font-weight:700; font-size:15px; color:var(--text-primary); }
+    .family-stat-value { font-weight:700; font-size:15px; color:var(--text); }
     .family-stat-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; }
-    .family-card-best { margin-top:10px; font-size:12px; color:var(--text-secondary); }
+    .family-card-best { margin-top:10px; font-size:12px; color:var(--text-muted); }
     .family-podium { display:flex; justify-content:center; align-items:flex-end; gap:12px; margin:16px 0; }
     .family-podium-item { text-align:center; flex:1; max-width:120px; }
     .family-podium-name { font-size:12px; font-weight:700; margin-bottom:4px; word-break:break-word; }
@@ -120,7 +120,7 @@
 
     /* === RANKING TABS v2 === */
     .ranking-tabs-v2 { display:flex; gap:0; background:var(--bg-card); border-radius:12px; padding:4px; margin-bottom:16px; border:1px solid var(--border); }
-    .ranking-tab-v2 { flex:1; padding:10px 8px; border:none; background:transparent; color:var(--text-secondary); font-size:12px; font-weight:600; border-radius:8px; cursor:pointer; transition:all .2s; text-align:center; line-height:1.3; }
+    .ranking-tab-v2 { flex:1; padding:10px 8px; border:none; background:transparent; color:var(--text-muted); font-size:12px; font-weight:600; border-radius:8px; cursor:pointer; transition:all .2s; text-align:center; line-height:1.3; }
     .ranking-tab-v2.active { background:var(--gold); color:#1a1a2e; }
 
     /* === PROFILE CARD ENHANCED === */
@@ -129,7 +129,7 @@
     .profile-card-v2 .profile-fullname { font-family:'Outfit',sans-serif; font-size:20px; font-weight:700; }
     .profile-card-v2 .profile-apodo { font-size:16px; color:var(--gold); font-weight:700; margin:4px 0 8px; }
     .profile-card-v2 .profile-links { display:flex; flex-direction:column; gap:8px; margin-top:16px; text-align:left; }
-    .profile-card-v2 .profile-link { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg-elevated); border-radius:8px; color:var(--text-secondary); text-decoration:none; font-size:13px; transition:background .2s; }
+    .profile-card-v2 .profile-link { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg-elevated); border-radius:8px; color:var(--text-muted); text-decoration:none; font-size:13px; transition:background .2s; }
     .profile-card-v2 .profile-link:hover { background:rgba(197,165,90,0.1); }
     .profile-card-v2 .profile-link-icon { font-size:18px; width:24px; text-align:center; }
     .profile-card-v2 .profile-stats-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
@@ -154,7 +154,7 @@
     .admin-link:hover { opacity:1; color:var(--gold); }
     .admin-pin-area { display:none; margin-top:12px; text-align:center; animation:fadeIn .3s ease; }
     .admin-pin-area.visible { display:block; }
-    .admin-pin-input { background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-primary); font-size:16px; padding:12px; border-radius:8px; width:100%; max-width:280px; text-align:center; letter-spacing:2px; }
+    .admin-pin-input { background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); font-size:16px; padding:12px; border-radius:8px; width:100%; max-width:280px; text-align:center; letter-spacing:2px; }
     .admin-pin-input:focus { border-color:var(--gold); outline:none; }
     .admin-pin-btn { margin-top:8px; background:var(--gold); color:#1a1a2e; border:none; padding:10px 24px; border-radius:8px; font-weight:700; cursor:pointer; font-size:14px; }
 
@@ -169,7 +169,7 @@
     .admin-stat-value.red { color:#ef4444; }
 
     .admin-tabs { display:flex; gap:0; background:var(--bg-card); border-radius:10px; padding:3px; margin-bottom:16px; border:1px solid var(--border); overflow-x:auto; }
-    .admin-tab { flex:1; padding:10px 12px; border:none; background:transparent; color:var(--text-secondary); font-size:12px; font-weight:600; border-radius:7px; cursor:pointer; transition:all .2s; text-align:center; white-space:nowrap; min-width:fit-content; }
+    .admin-tab { flex:1; padding:10px 12px; border:none; background:transparent; color:var(--text-muted); font-size:12px; font-weight:600; border-radius:7px; cursor:pointer; transition:all .2s; text-align:center; white-space:nowrap; min-width:fit-content; }
     .admin-tab.active { background:var(--gold); color:#1a1a2e; }
 
     .admin-user-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; transition:all .2s; }
@@ -180,7 +180,7 @@
     .admin-user-name { font-family:'Outfit',sans-serif; font-weight:700; font-size:16px; }
     .admin-user-apodo { color:var(--gold); font-size:13px; font-weight:600; }
     .admin-user-id { color:var(--text-muted); font-size:10px; font-family:monospace; margin-top:2px; }
-    .admin-user-details { display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px; color:var(--text-secondary); margin-bottom:12px; }
+    .admin-user-details { display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px; color:var(--text-muted); margin-bottom:12px; }
     .admin-user-detail { display:flex; align-items:center; gap:6px; }
     .admin-user-actions { display:flex; gap:8px; }
     .admin-btn { flex:1; padding:12px; border:none; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; }
@@ -188,7 +188,7 @@
     .admin-btn-approve { background:#22c55e; color:#fff; }
     .admin-btn-reject { background:#ef4444; color:#fff; }
     .admin-btn-revoke { background:#f59e0b; color:#1a1a2e; }
-    .admin-btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-secondary); }
+    .admin-btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-muted); }
     .admin-btn-outline:hover { border-color:var(--gold); color:var(--gold); }
     .admin-btn-sm { padding:8px 14px; font-size:12px; flex:none; }
     .admin-btn-gold { background:var(--gold); color:#1a1a2e; }
@@ -198,7 +198,7 @@
     .status-badge.aprobado { background:rgba(34,197,94,0.15); color:#22c55e; }
     .status-badge.rechazado { background:rgba(239,68,68,0.15); color:#ef4444; }
 
-    .admin-search { width:100%; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-primary); padding:12px 14px; border-radius:8px; font-size:14px; margin-bottom:12px; }
+    .admin-search { width:100%; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text); padding:12px 14px; border-radius:8px; font-size:14px; margin-bottom:12px; }
     .admin-search:focus { border-color:var(--gold); outline:none; }
     .admin-search::placeholder { color:var(--text-muted); }
 
@@ -206,7 +206,7 @@
     .admin-shortcut-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; cursor:pointer; transition:all .2s; }
     .admin-shortcut-card:hover { border-color:var(--gold); background:rgba(197,165,90,0.05); }
     .admin-shortcut-icon { font-size:24px; margin-bottom:6px; }
-    .admin-shortcut-label { font-size:12px; font-weight:600; color:var(--text-secondary); }
+    .admin-shortcut-label { font-size:12px; font-weight:600; color:var(--text-muted); }
 
     .admin-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); }
     .admin-toggle-info { }
@@ -220,17 +220,17 @@
     .emailjs-config .form-input { font-size:14px; min-height:42px; padding:10px 12px; }
 
     /* Pending Screen */
-    .pending-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:var(--bg-primary); padding:20px; }
+    .pending-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:var(--bg-dark); padding:20px; }
     .pending-content { text-align:center; max-width:380px; }
     .pending-icon { font-size:80px; margin-bottom:20px; animation:float 3s ease-in-out infinite; }
     @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
     .pending-title { font-family:'Outfit',sans-serif; font-size:24px; font-weight:800; color:var(--gold); margin-bottom:8px; }
-    .pending-desc { font-size:14px; color:var(--text-secondary); margin-bottom:20px; line-height:1.6; }
+    .pending-desc { font-size:14px; color:var(--text-muted); margin-bottom:20px; line-height:1.6; }
     .pending-data { background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:left; margin-bottom:20px; }
     .pending-data-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); }
     .pending-data-row:last-child { border-bottom:none; }
     .pending-data-label { color:var(--text-muted); }
-    .pending-data-value { color:var(--text-primary); font-weight:600; }
+    .pending-data-value { color:var(--text); font-weight:600; }
 
     /* Team Detail Modal */
     .team-detail-modal { max-width:480px; }
@@ -247,14 +247,14 @@
     .team-detail-section-title { font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
     .team-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .team-detail-stat { background:var(--bg-elevated); border-radius:8px; padding:12px; text-align:center; }
-    .team-detail-stat-value { font-family:'Outfit',sans-serif; font-weight:700; font-size:18px; color:var(--text-primary); }
+    .team-detail-stat-value { font-family:'Outfit',sans-serif; font-weight:700; font-size:18px; color:var(--text); }
     .team-detail-stat-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; margin-top:2px; }
 
     .team-detail-titles { display:flex; gap:4px; justify-content:center; flex-wrap:wrap; margin:8px 0; }
     .team-detail-coach { background:var(--bg-elevated); border-radius:8px; padding:12px; display:flex; align-items:center; gap:10px; margin-top:8px; }
     .team-detail-coach-icon { font-size:24px; }
     .team-detail-coach-info { font-size:13px; }
-    .team-detail-coach-name { font-weight:700; color:var(--text-primary); }
+    .team-detail-coach-name { font-weight:700; color:var(--text); }
     .team-detail-coach-role { color:var(--text-muted); font-size:11px; }
 
     .team-form-dots { display:flex; gap:6px; justify-content:center; margin:10px 0; }
@@ -271,7 +271,7 @@
     .team-recent-result.L { background:rgba(239,68,68,0.15); color:#ef4444; }
     .team-recent-opponent { display:flex; align-items:center; gap:6px; flex:1; }
     .team-recent-opponent img { width:18px; height:13px; border-radius:2px; }
-    .team-recent-score { font-weight:700; color:var(--text-primary); min-width:35px; text-align:center; }
+    .team-recent-score { font-weight:700; color:var(--text); min-width:35px; text-align:center; }
 
     /* Tappable teams */
     .team-tappable { cursor:pointer; transition:all .15s ease; }
@@ -319,7 +319,7 @@
     .trivia-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
     .trivia-badge { background:rgba(197,165,90,0.15); color:var(--gold); padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
     .trivia-emoji { font-size:36px; float:left; margin-right:12px; margin-bottom:4px; }
-    .trivia-text { font-size:14px; line-height:1.6; color:var(--text-secondary); }
+    .trivia-text { font-size:14px; line-height:1.6; color:var(--text-muted); }
     .trivia-next-btn { background:none; border:1px solid rgba(197,165,90,0.3); color:var(--gold); padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; margin-top:12px; transition:all .2s; }
     .trivia-next-btn:hover { background:rgba(197,165,90,0.1); }
 
@@ -1416,8 +1416,6 @@
     function initApp() {
       const user = getUser();
       if (!user) { showRegistration(); }
-      else if (user.status === 'pendiente' && !isAdmin()) { showPendingScreen(user); }
-      else if (user.status === 'rechazado' && !isAdmin()) { showPendingScreen(user, true); }
       else if (!isOnboarded()) { showOnboarding(); }
       else { startMainApp(); }
     }
@@ -1545,13 +1543,11 @@
       saveAllUsers(allUsers);
 
       document.getElementById('register-screen').style.display = 'none';
+      showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
       if (status === 'pendiente') {
-        showToast('¡Registro enviado! Esperá la aprobación del admin.', 'info');
-        showPendingScreen(user);
-      } else {
-        showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
-        showOnboarding();
+        showToast('Tu cuenta está pendiente de aprobación. Podés ver la app pero no aparecés en el ranking.', 'info', 5000);
       }
+      showOnboarding();
     });
 
     // ============================================
@@ -1636,11 +1632,11 @@
         <div style="text-align:right;clear:both;"><button class="trivia-next-btn" onclick="nextTrivia()">Otro dato →</button></div>
       </div>`;
     }
-    function nextTrivia() {
+    window.nextTrivia = function() {
       currentTriviaIdx = (currentTriviaIdx + 1) % SABIAS_QUE.length;
       const card = document.querySelector('.trivia-card');
       if (card) { card.outerHTML = renderTriviaCard(); }
-    }
+    };
 
     function getTodayMatches() {
       const today = new Date().toISOString().split('T')[0];
@@ -1658,7 +1654,7 @@
           </div>
           ${todayMatches.map(m => {
             const pred = preds[m.id];
-            const predText = pred ? `Tu pronóstico: ${pred.homeGoals}-${pred.awayGoals}` : '⚠️ ¡Cargá tu pronóstico!';
+            const predText = pred ? `Tu pronóstico: ${pred.home}-${pred.away}` : '⚠️ ¡Cargá tu pronóstico!';
             const predClass = pred ? 'color:var(--gold)' : 'color:#ef4444;font-weight:700';
             return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
               <span style="font-weight:800;font-size:14px;min-width:40px;">${m.time}</span>
