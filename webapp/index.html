@@ -1296,36 +1296,58 @@
     // DEMO PARTICIPANTS (30 across 12 real families)
     // ============================================
     const DEMO_PARTICIPANTS = [
-      {nombre:'Juan',apellido:'Dewey',apodo:'Juanchi',avatar:'🐐',grupo:'Deweys - Mac',points:175,exactos:11,accuracy:78},
-      {nombre:'Sofía',apellido:'Dewey',apodo:'Sofi',avatar:'🌟',grupo:'Deweys - Mac',points:118,exactos:6,accuracy:60},
-      {nombre:'Marta',apellido:'Mac',apodo:'Tía Marta',avatar:'💎',grupo:'Deweys - Mac',points:88,exactos:4,accuracy:52},
-      {nombre:'Nicolás',apellido:'Aramburu',apodo:'Nico',avatar:'🦁',grupo:'Aramburu - Mac',points:160,exactos:10,accuracy:75},
-      {nombre:'Florencia',apellido:'Aramburu',apodo:'Flor',avatar:'🎯',grupo:'Aramburu - Mac',points:130,exactos:7,accuracy:63},
-      {nombre:'Antonio',apellido:'Mac',apodo:'El Tano',avatar:'🏆',grupo:'Aramburu - Mac',points:95,exactos:5,accuracy:55},
-      {nombre:'Gonzalo',apellido:'McCormick',apodo:'Gonza',avatar:'🎪',grupo:'Mc Cormick - Mac',points:148,exactos:9,accuracy:72},
-      {nombre:'Milagros',apellido:'McCormick',apodo:'Mili',avatar:'🔮',grupo:'Mc Cormick - Mac',points:105,exactos:5,accuracy:56},
-      {nombre:'Ignacio',apellido:'Zubizarreta',apodo:'El Vasco',avatar:'💪',grupo:'Zubizarreta - Mac',points:142,exactos:8,accuracy:68},
-      {nombre:'Nora',apellido:'Zubizarreta',apodo:'Tía Nora',avatar:'⭐',grupo:'Zubizarreta - Mac',points:72,exactos:3,accuracy:42},
-      {nombre:'Martín',apellido:'Zubizarreta',apodo:'Primo Martín',avatar:'🔥',grupo:'Zubizarreta - Mac',points:98,exactos:5,accuracy:50},
-      {nombre:'Patricio',apellido:'Mac Donnel',apodo:'Pato',avatar:'🦅',grupo:'Mac Donnels',points:155,exactos:9,accuracy:73},
-      {nombre:'Laura',apellido:'Mac Donnel',apodo:'La Negra',avatar:'🎩',grupo:'Mac Donnels',points:120,exactos:6,accuracy:62},
-      {nombre:'Carlos',apellido:'Montes',apodo:'Don Carlos',avatar:'👑',grupo:'Montes',points:65,exactos:2,accuracy:40},
-      {nombre:'Rosa',apellido:'Montes',apodo:'Doña Rosa',avatar:'🥅',grupo:'Montes',points:78,exactos:3,accuracy:45},
-      {nombre:'Eduardo',apellido:'Montes',apodo:'El Gordo',avatar:'🏅',grupo:'Montes',points:110,exactos:6,accuracy:58},
-      {nombre:'Iván',apellido:'Caratini',apodo:'Ruso',avatar:'🃏',grupo:'Caratini',points:138,exactos:8,accuracy:67},
-      {nombre:'Adam',apellido:'Caratini',apodo:'El Polaco',avatar:'🎖️',grupo:'Caratini',points:92,exactos:4,accuracy:50},
-      {nombre:'Guillermo',apellido:'Wust',apodo:'Willy',avatar:'⚽',grupo:'Caratini - Wust',points:125,exactos:7,accuracy:64},
-      {nombre:'Ana',apellido:'Caratini',apodo:'Ana',avatar:'🌟',grupo:'Caratini - Wust',points:85,exactos:4,accuracy:48},
-      {nombre:'Nicolás',apellido:'Montes',apodo:'El Colo',avatar:'🔥',grupo:'Montes - Mac Donough',points:145,exactos:9,accuracy:70},
-      {nombre:'María',apellido:'Mac Donough',apodo:'Marita',avatar:'💎',grupo:'Montes - Mac Donough',points:102,exactos:5,accuracy:54},
-      {nombre:'Martín',apellido:'Montes',apodo:'Tincho',avatar:'🐐',grupo:'Montes - Mac Donough',points:88,exactos:4,accuracy:47},
-      {nombre:'Ricardo',apellido:'Richards',apodo:'Richie',avatar:'🏆',grupo:'Montes - Richards',points:132,exactos:7,accuracy:65},
-      {nombre:'Teresa',apellido:'Montes',apodo:'La Tata',avatar:'🎯',grupo:'Montes - Richards',points:68,exactos:3,accuracy:38},
-      {nombre:'Francisco',apellido:'Bieule',apodo:'Fran',avatar:'💪',grupo:'Bieule',points:158,exactos:10,accuracy:74},
-      {nombre:'Gabriela',apellido:'Bieule',apodo:'Gabi',avatar:'⭐',grupo:'Bieule',points:112,exactos:6,accuracy:57},
-      {nombre:'Felipe',apellido:'Bieule',apodo:'El Pipe',avatar:'🦁',grupo:'Bieule',points:95,exactos:5,accuracy:51},
-      {nombre:'Emiliano',apellido:'Turk',apodo:'El Turco',avatar:'🎪',grupo:'Otros',points:140,exactos:8,accuracy:66},
-      {nombre:'Diego',apellido:'Gómez',apodo:'Dieguito',avatar:'🔮',grupo:'Otros',points:108,exactos:6,accuracy:55}
+      // Deweys - Mac (4)
+      {nombre:'Juan',apellido:'Dewey',apodo:'Juan',avatar:'🐐',grupo:'Deweys - Mac',points:175,exactos:11,accuracy:78},
+      {nombre:'Maki',apellido:'Dewey',apodo:'Maki',avatar:'🌟',grupo:'Deweys - Mac',points:148,exactos:8,accuracy:68},
+      {nombre:'Max',apellido:'Dewey',apodo:'Max',avatar:'🦁',grupo:'Deweys - Mac',points:132,exactos:7,accuracy:62},
+      {nombre:'Cata',apellido:'Dewey',apodo:'Cata',avatar:'💎',grupo:'Deweys - Mac',points:118,exactos:6,accuracy:58},
+      // Aramburu - Mac (5)
+      {nombre:'Bato',apellido:'Aramburu',apodo:'Bato',avatar:'🏆',grupo:'Aramburu - Mac',points:160,exactos:10,accuracy:75},
+      {nombre:'Marcos',apellido:'Aramburu',apodo:'Marcos',avatar:'💪',grupo:'Aramburu - Mac',points:145,exactos:9,accuracy:70},
+      {nombre:'Pachu',apellido:'Aramburu',apodo:'Pachu',avatar:'🔥',grupo:'Aramburu - Mac',points:130,exactos:7,accuracy:63},
+      {nombre:'Tata',apellido:'Aramburu',apodo:'Tata',avatar:'⭐',grupo:'Aramburu - Mac',points:95,exactos:5,accuracy:50},
+      {nombre:'Sofi',apellido:'Aramburu',apodo:'Sofi',avatar:'🎯',grupo:'Aramburu - Mac',points:88,exactos:4,accuracy:47},
+      // Mc Cormick - Mac (5 + Cristina)
+      {nombre:'Viki',apellido:'Mac',apodo:'Viki MAC',avatar:'👑',grupo:'Mc Cormick - Mac',points:155,exactos:9,accuracy:73},
+      {nombre:'Alfonso',apellido:'McCormick',apodo:'Alfonso',avatar:'🦅',grupo:'Mc Cormick - Mac',points:140,exactos:8,accuracy:67},
+      {nombre:'Mori',apellido:'McCormick',apodo:'Mori',avatar:'🎪',grupo:'Mc Cormick - Mac',points:128,exactos:7,accuracy:62},
+      {nombre:'Tochi',apellido:'Mccormick',apodo:'Tochi',avatar:'🃏',grupo:'Mc Cormick - Mac',points:112,exactos:6,accuracy:56},
+      {nombre:'Sean',apellido:'Mc Cormick',apodo:'Sean',avatar:'🏅',grupo:'Mc Cormick - Mac',points:98,exactos:5,accuracy:52},
+      {nombre:'Cristina',apellido:'Aduriz',apodo:'Cristina',avatar:'🌺',grupo:'Mc Cormick - Mac',points:85,exactos:4,accuracy:45},
+      // Zubizarreta - Mac (3)
+      {nombre:'Angie',apellido:'Zubizarreta',apodo:'Angie',avatar:'🎖️',grupo:'Zubizarreta - Mac',points:142,exactos:8,accuracy:68},
+      {nombre:'Guadi',apellido:'Zubizarreta',apodo:'Guadi',avatar:'🔮',grupo:'Zubizarreta - Mac',points:108,exactos:6,accuracy:55},
+      {nombre:'Trini',apellido:'Zubizarreta',apodo:'Trini',avatar:'🌈',grupo:'Zubizarreta - Mac',points:92,exactos:5,accuracy:48},
+      // Mac Donnels (2)
+      {nombre:'Johny',apellido:'Mac Donnell',apodo:'Johny',avatar:'🐺',grupo:'Mac Donnels',points:158,exactos:10,accuracy:74},
+      {nombre:'Flor',apellido:'Mac Donnell',apodo:'Flor',avatar:'🌸',grupo:'Mac Donnels',points:135,exactos:7,accuracy:65},
+      // Montes (4)
+      {nombre:'Santiago',apellido:'Montes',apodo:'Santi',avatar:'⚡',grupo:'Montes',points:168,exactos:11,accuracy:77},
+      {nombre:'Magda',apellido:'Montes',apodo:'Magda',avatar:'💐',grupo:'Montes',points:125,exactos:7,accuracy:61},
+      {nombre:'Bebe',apellido:'Montes',apodo:'Bebe',avatar:'🎀',grupo:'Montes',points:110,exactos:6,accuracy:55},
+      {nombre:'Fede',apellido:'Montes',apodo:'Fede',avatar:'🎩',grupo:'Montes',points:138,exactos:8,accuracy:66},
+      // Caratini (3)
+      {nombre:'Any',apellido:'Caratini',apodo:'Any',avatar:'🌻',grupo:'Caratini',points:120,exactos:6,accuracy:58},
+      {nombre:'Pia',apellido:'Caratini',apodo:'Pia',avatar:'🦋',grupo:'Caratini',points:105,exactos:5,accuracy:53},
+      {nombre:'Rafita',apellido:'Caratini',apodo:'Rafita',avatar:'🐯',grupo:'Caratini',points:88,exactos:4,accuracy:46},
+      // Caratini - Wust (2)
+      {nombre:'Benja',apellido:'Wust',apodo:'Benja',avatar:'🎸',grupo:'Caratini - Wust',points:148,exactos:9,accuracy:70},
+      {nombre:'Segun',apellido:'Wust',apodo:'Segun',avatar:'🐻',grupo:'Caratini - Wust',points:102,exactos:5,accuracy:52},
+      // Montes - Mac Donough (1)
+      {nombre:'Meri',apellido:'Mac Donough',apodo:'Meri',avatar:'🌷',grupo:'Montes - Mac Donough',points:115,exactos:6,accuracy:57},
+      // Galli (2)
+      {nombre:'Cris',apellido:'Galli',apodo:'Cris',avatar:'🎭',grupo:'Bieule',points:122,exactos:6,accuracy:59},
+      {nombre:'Wences',apellido:'Galli',apodo:'Wences',avatar:'🐙',grupo:'Bieule',points:98,exactos:5,accuracy:50},
+      // Bieule (1)
+      {nombre:'Agus',apellido:'Bieule',apodo:'Agus B',avatar:'🎿',grupo:'Bieule',points:152,exactos:9,accuracy:72},
+      // Otros — amigos, parejas, etc.
+      {nombre:'Agus',apellido:'Sarlenga',apodo:'Agus S',avatar:'🏄',grupo:'Otros',points:145,exactos:8,accuracy:69},
+      {nombre:'Anita',apellido:'',apodo:'Anita',avatar:'☀️',grupo:'Otros',points:108,exactos:6,accuracy:54},
+      {nombre:'Agus',apellido:'Dominguez',apodo:'Agus D',avatar:'🎯',grupo:'Otros',points:95,exactos:5,accuracy:49},
+      {nombre:'Belu',apellido:'',apodo:'Belu',avatar:'🌙',grupo:'Otros',points:82,exactos:4,accuracy:43},
+      {nombre:'Caroline',apellido:'',apodo:'Caro',avatar:'🎵',grupo:'Otros',points:130,exactos:7,accuracy:63},
+      {nombre:'Diego',apellido:'Vitaliti',apodo:'Diego',avatar:'🐎',grupo:'Otros',points:138,exactos:8,accuracy:66},
+      {nombre:'Guillo',apellido:'Gust',apodo:'Guillo',avatar:'🏀',grupo:'Otros',points:115,exactos:6,accuracy:57}
     ];
 
     // ============================================
@@ -2131,7 +2153,16 @@
               ${favIso ? `<img src="https://flagcdn.com/48x36/${favIso}.png" style="height:20px;border-radius:3px;" alt="${user.equipoFavorito}">` : ''}
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px;text-align:center;">
+          <div class="countdown" id="home-countdown" style="margin:0 0 8px 0;">
+            <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
+          </div>
+          <div style="text-align:center;margin-bottom:10px;">
+            <span style="font-size:12px;color:var(--text-muted);">⏱️ Próximo: <strong style="color:var(--gold);">${nextMatch.home} vs ${nextMatch.away}</strong> • ${formatMatchDate(nextMatch.date, nextMatch.time)}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px;text-align:center;">
             <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
               <div style="font-size:20px;font-weight:900;color:var(--gold);">${savedCount > 0 ? '35' : '0'}</div>
               <div style="font-size:11px;color:var(--text-muted);">Puntos</div>
@@ -2149,16 +2180,7 @@
               <div style="font-size:11px;color:var(--text-muted);">Racha</div>
             </div>
           </div>
-          <div class="countdown" id="home-countdown" style="margin:0;">
-            <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
-            <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
-            <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
-            <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
-          </div>
-          <div style="text-align:center;margin-top:8px;">
-            <span style="font-size:12px;color:var(--text-muted);">⏱️ Próximo: <strong style="color:var(--gold);">${nextMatch.home} vs ${nextMatch.away}</strong> • ${formatMatchDate(nextMatch.date, nextMatch.time)}</span>
-          </div>
-          <div style="text-align:center;margin-top:6px;">
+          <div style="text-align:center;">
             <span style="font-size:13px;color:${pendingCount > 0 ? '#f59e0b' : '#22c55e'};font-weight:700;">${pendingCount > 0 ? '⚽ ' + pendingCount + '/' + totalMatches + ' pendientes' : '✅ Prode completo'}</span>
           </div>
         </div>
