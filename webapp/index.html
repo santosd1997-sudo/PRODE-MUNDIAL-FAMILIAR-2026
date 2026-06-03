@@ -41,6 +41,111 @@
   
   <!-- Styles -->
   <link rel="stylesheet" href="css/app.css">
+  <style>
+    /* === UX ACCESSIBILITY — Ages 7 to 80 === */
+    body { font-size: 16px; }
+    .form-input, .form-select { font-size: 18px; min-height: 52px; padding: 12px 14px; }
+    .btn, .register-btn, .cta-btn, .match-save-btn { min-height: 52px; font-size: 17px; }
+    .nav-item { min-height: 56px; }
+    .nav-icon { font-size: 24px; }
+    .nav-label { font-size: 12px; }
+    .input-score { font-size: 32px !important; width: 64px !important; height: 64px !important; text-align: center; border-radius: 12px; }
+    .match-card { padding: 16px; }
+    .ranking-item { font-size: 15px; padding: 12px 8px; }
+    .standings-table td { font-size: 14px; padding: 10px 6px; }
+    .standings-table th { font-size: 12px; }
+    .section-title h3 { font-size: 20px; }
+    .filter-tab, .status-filter, .ranking-tab-v2 { min-height: 44px; font-size: 14px; }
+    .avatar-option { min-width: 48px; min-height: 48px; font-size: 24px; }
+    .toast { font-size: 15px; padding: 14px 20px; }
+    .welcome-name { font-size: 22px; }
+    .team-name { font-size: 14px; }
+    .match-divider { font-size: 28px; }
+    .podium-name { font-size: 14px; }
+    .podium-points { font-size: 13px; }
+    .badge, .group-badge { font-size: 12px; padding: 4px 10px; }
+  </style>
+  <style>
+    /* === BRACKET STYLES === */
+    .bracket-container { overflow-x:auto; padding:16px 0; -webkit-overflow-scrolling:touch; }
+    .bracket-round { display:inline-flex; flex-direction:column; justify-content:center; gap:8px; vertical-align:top; min-width:160px; padding:0 6px; }
+    .bracket-wrapper { display:inline-flex; align-items:stretch; min-width:max-content; }
+    .bracket-round-title { text-align:center; font-family:'Outfit',sans-serif; font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; white-space:nowrap; }
+    .bracket-match { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:6px 8px; cursor:pointer; transition:all .2s; margin-bottom:4px; }
+    .bracket-match:hover,.bracket-match:active { border-color:var(--gold); transform:scale(1.02); }
+    .bracket-team { display:flex; align-items:center; gap:6px; padding:4px 0; font-size:11px; color:var(--text-secondary); transition:all .2s; }
+    .bracket-team.winner { color:var(--gold); font-weight:700; }
+    .bracket-team img { width:18px; height:13px; border-radius:2px; object-fit:cover; }
+    .bracket-vs { text-align:center; font-size:9px; color:var(--text-muted); padding:1px 0; }
+    .bracket-match.decided { border-color: rgba(197,165,90,0.3); }
+    .bracket-team.selectable { cursor:pointer; border-radius:4px; padding:4px 6px; margin:-4px -6px; }
+    .bracket-team.selectable:hover { background:rgba(197,165,90,0.1); }
+
+    /* === GROUP STANDINGS === */
+    .standings-group { margin-bottom:20px; }
+    .standings-group-title { font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:8px; }
+    .standings-table { width:100%; border-collapse:collapse; font-size:11px; }
+    .standings-table th { text-align:center; padding:6px 4px; color:var(--text-muted); font-weight:600; border-bottom:1px solid var(--border); font-size:10px; text-transform:uppercase; }
+    .standings-table th:nth-child(2) { text-align:left; }
+    .standings-table td { text-align:center; padding:7px 4px; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .standings-table td:nth-child(2) { text-align:left; }
+    .standings-table tr.qualified { background:rgba(34,197,94,0.08); }
+    .standings-table tr.possible { background:rgba(234,179,8,0.06); }
+    .standings-table .team-cell { display:flex; align-items:center; gap:6px; }
+    .standings-table .team-cell img { width:20px; height:14px; border-radius:2px; object-fit:cover; }
+
+    /* === FAMILY RANKING === */
+    .family-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; }
+    .family-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .family-card-name { font-family:'Outfit',sans-serif; font-weight:700; font-size:16px; }
+    .family-card-rank { font-family:'Outfit',sans-serif; font-weight:800; font-size:20px; color:var(--gold); }
+    .family-card-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .family-stat { text-align:center; }
+    .family-stat-value { font-weight:700; font-size:15px; color:var(--text-primary); }
+    .family-stat-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; }
+    .family-card-best { margin-top:10px; font-size:12px; color:var(--text-secondary); }
+    .family-podium { display:flex; justify-content:center; align-items:flex-end; gap:12px; margin:16px 0; }
+    .family-podium-item { text-align:center; flex:1; max-width:120px; }
+    .family-podium-name { font-size:12px; font-weight:700; margin-bottom:4px; word-break:break-word; }
+    .family-podium-avg { font-size:11px; color:var(--gold); margin-bottom:4px; }
+    .family-podium-bar { display:flex; align-items:center; justify-content:center; font-weight:800; font-family:'Outfit',sans-serif; color:#1a1a2e; border-radius:8px 8px 0 0; }
+    .family-podium-bar.p1 { background:linear-gradient(180deg,#FFD700,#C5A55A); height:90px; font-size:22px; }
+    .family-podium-bar.p2 { background:linear-gradient(180deg,#C0C0C0,#8a8a8a); height:65px; font-size:18px; }
+    .family-podium-bar.p3 { background:linear-gradient(180deg,#CD7F32,#8B5E3C); height:50px; font-size:16px; }
+    .invite-msg { text-align:center; padding:24px; color:var(--text-muted); }
+    .invite-msg .emoji { font-size:40px; margin-bottom:12px; }
+
+    /* === RANKING TABS v2 === */
+    .ranking-tabs-v2 { display:flex; gap:0; background:var(--bg-card); border-radius:12px; padding:4px; margin-bottom:16px; border:1px solid var(--border); }
+    .ranking-tab-v2 { flex:1; padding:10px 8px; border:none; background:transparent; color:var(--text-secondary); font-size:12px; font-weight:600; border-radius:8px; cursor:pointer; transition:all .2s; text-align:center; line-height:1.3; }
+    .ranking-tab-v2.active { background:var(--gold); color:#1a1a2e; }
+
+    /* === PROFILE CARD ENHANCED === */
+    .profile-card-v2 { text-align:center; padding:24px 16px; }
+    .profile-card-v2 .profile-avatar-lg { font-size:64px; margin-bottom:12px; display:block; }
+    .profile-card-v2 .profile-fullname { font-family:'Outfit',sans-serif; font-size:20px; font-weight:700; }
+    .profile-card-v2 .profile-apodo { font-size:16px; color:var(--gold); font-weight:700; margin:4px 0 8px; }
+    .profile-card-v2 .profile-links { display:flex; flex-direction:column; gap:8px; margin-top:16px; text-align:left; }
+    .profile-card-v2 .profile-link { display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--bg-elevated); border-radius:8px; color:var(--text-secondary); text-decoration:none; font-size:13px; transition:background .2s; }
+    .profile-card-v2 .profile-link:hover { background:rgba(197,165,90,0.1); }
+    .profile-card-v2 .profile-link-icon { font-size:18px; width:24px; text-align:center; }
+    .profile-card-v2 .profile-stats-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+    .profile-card-v2 .profile-stat-item { background:var(--bg-elevated); border-radius:8px; padding:12px; text-align:center; }
+    .profile-card-v2 .profile-stat-val { font-weight:700; font-size:18px; color:var(--gold); }
+    .profile-card-v2 .profile-stat-lbl { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+    /* === KNOCKOUT SECTION TOGGLE === */
+    .section-toggle { display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:12px 0; }
+    .section-toggle-arrow { transition:transform .3s; font-size:14px; }
+    .section-toggle-arrow.open { transform:rotate(180deg); }
+    .bracket-section { overflow:hidden; transition:max-height .4s ease; }
+    .bracket-section.collapsed { max-height:0 !important; }
+
+    @media(min-width:768px) {
+      .bracket-wrapper { justify-content:center; }
+      .bracket-round { min-width:180px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -70,9 +175,14 @@
       </div>
       <form id="register-form" class="register-form" novalidate>
         <div class="form-group">
-          <label class="form-label">Nombre completo <span class="required">*</span></label>
-          <input type="text" class="form-input" id="reg-nombre" placeholder="Ej: Juan Pérez" required autocomplete="name">
-          <div class="form-error" id="err-nombre">Ingresá tu nombre completo</div>
+          <label class="form-label">Nombre <span class="required">*</span></label>
+          <input type="text" class="form-input" id="reg-nombre" placeholder="Ej: Juan" required autocomplete="given-name">
+          <div class="form-error" id="err-nombre">Ingresá tu nombre</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido <span class="required">*</span></label>
+          <input type="text" class="form-input" id="reg-apellido" placeholder="Ej: Pérez" required autocomplete="family-name">
+          <div class="form-error" id="err-apellido">Ingresá tu apellido</div>
         </div>
         <div class="form-group">
           <label class="form-label">Apodo / Nickname <span class="required">*</span></label>
@@ -80,13 +190,26 @@
           <div class="form-error" id="err-apodo">El apodo debe tener al menos 3 caracteres</div>
         </div>
         <div class="form-group">
+          <label class="form-label">Teléfono <span class="required">*</span></label>
+          <input type="tel" class="form-input" id="reg-telefono" placeholder="+54 11 1234-5678" required autocomplete="tel">
+          <div class="form-error" id="err-telefono">Ingresá tu teléfono</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email <span class="required">*</span></label>
+          <input type="email" class="form-input" id="reg-email" placeholder="juan@ejemplo.com" required autocomplete="email">
+          <div class="form-error" id="err-email">Ingresá un email válido</div>
+        </div>
+        <div class="form-group">
           <label class="form-label">Grupo familiar <span class="required">*</span></label>
           <select class="form-input form-select" id="reg-grupo" required>
             <option value="">Seleccioná tu grupo...</option>
             <option value="Familia Santos">👨‍👩‍👧‍👦 Familia Santos</option>
             <option value="Familia García">👨‍👩‍👦‍👦 Familia García</option>
-            <option value="Amigos">🤝 Amigos</option>
-            <option value="Trabajo">💼 Trabajo</option>
+            <option value="Familia López">👨‍👧‍👦 Familia López</option>
+            <option value="Familia Martínez">👪 Familia Martínez</option>
+            <option value="Familia Rodríguez">👨‍👩‍👧 Familia Rodríguez</option>
+            <option value="Amigos del Trabajo">💼 Amigos del Trabajo</option>
+            <option value="Amigos del Club">⚽ Amigos del Club</option>
             <option value="General">🌍 General</option>
           </select>
           <div class="form-error" id="err-grupo">Seleccioná un grupo</div>
@@ -107,7 +230,7 @@
         <button type="submit" class="register-btn">⚽ ¡Entrar al PRODE!</button>
       </form>
       <div class="register-footer">
-        Versión 1.0 — Hecho con ❤️ para la familia
+        Versión 2.0 — Hecho con ❤️ para la familia
       </div>
     </div>
   </div>
@@ -323,7 +446,7 @@
       { name: 'Denmark', iso: 'dk', emoji: '🇩🇰' },
       { name: 'Ecuador', iso: 'ec', emoji: '🇪🇨' },
       { name: 'Egypt', iso: 'eg', emoji: '🇪🇬' },
-      { name: 'England', iso: 'gb-eng', emoji: '🏴\u200D' },
+      { name: 'England', iso: 'gb-eng', emoji: '🏴' },
       { name: 'France', iso: 'fr', emoji: '🇫🇷' },
       { name: 'Germany', iso: 'de', emoji: '🇩🇪' },
       { name: 'Ghana', iso: 'gh', emoji: '🇬🇭' },
@@ -355,26 +478,169 @@
       { name: 'Uruguay', iso: 'uy', emoji: '🇺🇾' },
       { name: 'USA', iso: 'us', emoji: '🇺🇸' },
       { name: 'Venezuela', iso: 've', emoji: '🇻🇪' },
-      { name: 'Wales', iso: 'gb-wls', emoji: '🏴\u200D' },
+      { name: 'Wales', iso: 'gb-wls', emoji: '🏴' },
       { name: 'Algeria', iso: 'dz', emoji: '🇩🇿' }
     ];
 
     // ============================================
-    // MATCH FIXTURE DATA (12 confirmed matches)
+    // COMPLETE 72-MATCH GROUP STAGE FIXTURE
     // ============================================
     const MATCHES = [
-      { id: 1, home: 'Mexico', homeIso: 'mx', away: 'Italy', awayIso: 'it', date: '2026-06-11', time: '18:00', venue: 'Estadio Azteca, Mexico City', group: 'Grupo A', phase: 'groups' },
-      { id: 2, home: 'USA', homeIso: 'us', away: 'Bolivia', awayIso: 'bo', date: '2026-06-11', time: '21:00', venue: 'MetLife Stadium, New Jersey', group: 'Grupo A', phase: 'groups' },
-      { id: 3, home: 'Argentina', homeIso: 'ar', away: 'Norway', awayIso: 'no', date: '2026-06-12', time: '15:00', venue: 'Hard Rock Stadium, Miami', group: 'Grupo B', phase: 'groups' },
-      { id: 4, home: 'Brazil', homeIso: 'br', away: 'Tunisia', awayIso: 'tn', date: '2026-06-12', time: '18:00', venue: 'AT&T Stadium, Dallas', group: 'Grupo C', phase: 'groups' },
-      { id: 5, home: 'France', homeIso: 'fr', away: 'Colombia', awayIso: 'co', date: '2026-06-12', time: '21:00', venue: 'BC Place, Vancouver', group: 'Grupo D', phase: 'groups' },
-      { id: 6, home: 'Spain', homeIso: 'es', away: 'Paraguay', awayIso: 'py', date: '2026-06-13', time: '15:00', venue: 'BMO Field, Toronto', group: 'Grupo E', phase: 'groups' },
-      { id: 7, home: 'England', homeIso: 'gb-eng', away: 'Japan', awayIso: 'jp', date: '2026-06-13', time: '18:00', venue: 'Lincoln Financial, Philadelphia', group: 'Grupo F', phase: 'groups' },
-      { id: 8, home: 'Germany', homeIso: 'de', away: 'South Korea', awayIso: 'kr', date: '2026-06-13', time: '21:00', venue: 'NRG Stadium, Houston', group: 'Grupo G', phase: 'groups' },
-      { id: 9, home: 'Portugal', homeIso: 'pt', away: 'Ecuador', awayIso: 'ec', date: '2026-06-14', time: '15:00', venue: 'Lumen Field, Seattle', group: 'Grupo H', phase: 'groups' },
-      { id: 10, home: 'Netherlands', homeIso: 'nl', away: 'Senegal', awayIso: 'sn', date: '2026-06-14', time: '18:00', venue: 'Gillette Stadium, Boston', group: 'Grupo I', phase: 'groups' },
-      { id: 11, home: 'Uruguay', homeIso: 'uy', away: 'Cameroon', awayIso: 'cm', date: '2026-06-14', time: '21:00', venue: "Levi's Stadium, San Francisco", group: 'Grupo J', phase: 'groups' },
-      { id: 12, home: 'Croatia', homeIso: 'hr', away: 'Chile', awayIso: 'cl', date: '2026-06-15', time: '15:00', venue: 'SoFi Stadium, Los Angeles', group: 'Grupo K', phase: 'groups' }
+      // GRUPO A: Mexico, Italy, USA, Bolivia
+      { id:1, home:'Mexico', homeIso:'mx', away:'Italy', awayIso:'it', date:'2026-06-11', time:'18:00', venue:'Estadio Azteca, Mexico City', group:'Grupo A', phase:'groups' },
+      { id:2, home:'USA', homeIso:'us', away:'Bolivia', awayIso:'bo', date:'2026-06-11', time:'21:00', venue:'MetLife Stadium, New Jersey', group:'Grupo A', phase:'groups' },
+      { id:3, home:'Mexico', homeIso:'mx', away:'USA', awayIso:'us', date:'2026-06-16', time:'18:00', venue:'Estadio Azteca, Mexico City', group:'Grupo A', phase:'groups' },
+      { id:4, home:'Italy', homeIso:'it', away:'Bolivia', awayIso:'bo', date:'2026-06-16', time:'21:00', venue:'MetLife Stadium, New Jersey', group:'Grupo A', phase:'groups' },
+      { id:5, home:'Mexico', homeIso:'mx', away:'Bolivia', awayIso:'bo', date:'2026-06-21', time:'18:00', venue:'Rose Bowl, Los Angeles', group:'Grupo A', phase:'groups' },
+      { id:6, home:'Italy', homeIso:'it', away:'USA', awayIso:'us', date:'2026-06-21', time:'21:00', venue:'MetLife Stadium, New Jersey', group:'Grupo A', phase:'groups' },
+
+      // GRUPO B: Argentina, Norway, Denmark, Egypt
+      { id:7, home:'Argentina', homeIso:'ar', away:'Norway', awayIso:'no', date:'2026-06-12', time:'15:00', venue:'Hard Rock Stadium, Miami', group:'Grupo B', phase:'groups' },
+      { id:8, home:'Denmark', homeIso:'dk', away:'Egypt', awayIso:'eg', date:'2026-06-12', time:'18:00', venue:'BBVA Stadium, Monterrey', group:'Grupo B', phase:'groups' },
+      { id:9, home:'Argentina', homeIso:'ar', away:'Denmark', awayIso:'dk', date:'2026-06-17', time:'15:00', venue:'Hard Rock Stadium, Miami', group:'Grupo B', phase:'groups' },
+      { id:10, home:'Norway', homeIso:'no', away:'Egypt', awayIso:'eg', date:'2026-06-17', time:'18:00', venue:'BBVA Stadium, Monterrey', group:'Grupo B', phase:'groups' },
+      { id:11, home:'Argentina', homeIso:'ar', away:'Egypt', awayIso:'eg', date:'2026-06-22', time:'15:00', venue:'AT&T Stadium, Dallas', group:'Grupo B', phase:'groups' },
+      { id:12, home:'Norway', homeIso:'no', away:'Denmark', awayIso:'dk', date:'2026-06-22', time:'18:00', venue:'Hard Rock Stadium, Miami', group:'Grupo B', phase:'groups' },
+
+      // GRUPO C: Brazil, Tunisia, Nigeria, New Zealand
+      { id:13, home:'Brazil', homeIso:'br', away:'Tunisia', awayIso:'tn', date:'2026-06-12', time:'18:00', venue:'AT&T Stadium, Dallas', group:'Grupo C', phase:'groups' },
+      { id:14, home:'Nigeria', homeIso:'ng', away:'New Zealand', awayIso:'nz', date:'2026-06-12', time:'21:00', venue:'Estadio Akron, Guadalajara', group:'Grupo C', phase:'groups' },
+      { id:15, home:'Brazil', homeIso:'br', away:'Nigeria', awayIso:'ng', date:'2026-06-17', time:'18:00', venue:'AT&T Stadium, Dallas', group:'Grupo C', phase:'groups' },
+      { id:16, home:'Tunisia', homeIso:'tn', away:'New Zealand', awayIso:'nz', date:'2026-06-17', time:'21:00', venue:'Estadio Akron, Guadalajara', group:'Grupo C', phase:'groups' },
+      { id:17, home:'Brazil', homeIso:'br', away:'New Zealand', awayIso:'nz', date:'2026-06-22', time:'18:00', venue:'Rose Bowl, Los Angeles', group:'Grupo C', phase:'groups' },
+      { id:18, home:'Tunisia', homeIso:'tn', away:'Nigeria', awayIso:'ng', date:'2026-06-22', time:'21:00', venue:'AT&T Stadium, Dallas', group:'Grupo C', phase:'groups' },
+
+      // GRUPO D: France, Colombia, Costa Rica, Saudi Arabia
+      { id:19, home:'France', homeIso:'fr', away:'Colombia', awayIso:'co', date:'2026-06-12', time:'21:00', venue:'BC Place, Vancouver', group:'Grupo D', phase:'groups' },
+      { id:20, home:'Costa Rica', homeIso:'cr', away:'Saudi Arabia', awayIso:'sa', date:'2026-06-12', time:'15:00', venue:'Lumen Field, Seattle', group:'Grupo D', phase:'groups' },
+      { id:21, home:'France', homeIso:'fr', away:'Costa Rica', awayIso:'cr', date:'2026-06-17', time:'21:00', venue:'BC Place, Vancouver', group:'Grupo D', phase:'groups' },
+      { id:22, home:'Colombia', homeIso:'co', away:'Saudi Arabia', awayIso:'sa', date:'2026-06-17', time:'15:00', venue:'Lumen Field, Seattle', group:'Grupo D', phase:'groups' },
+      { id:23, home:'France', homeIso:'fr', away:'Saudi Arabia', awayIso:'sa', date:'2026-06-22', time:'21:00', venue:'BC Place, Vancouver', group:'Grupo D', phase:'groups' },
+      { id:24, home:'Colombia', homeIso:'co', away:'Costa Rica', awayIso:'cr', date:'2026-06-22', time:'15:00', venue:'Lumen Field, Seattle', group:'Grupo D', phase:'groups' },
+
+      // GRUPO E: Spain, Paraguay, Australia, Canada
+      { id:25, home:'Spain', homeIso:'es', away:'Paraguay', awayIso:'py', date:'2026-06-13', time:'15:00', venue:'BMO Field, Toronto', group:'Grupo E', phase:'groups' },
+      { id:26, home:'Australia', homeIso:'au', away:'Canada', awayIso:'ca', date:'2026-06-13', time:'18:00', venue:'BC Place, Vancouver', group:'Grupo E', phase:'groups' },
+      { id:27, home:'Spain', homeIso:'es', away:'Australia', awayIso:'au', date:'2026-06-18', time:'15:00', venue:'BMO Field, Toronto', group:'Grupo E', phase:'groups' },
+      { id:28, home:'Paraguay', homeIso:'py', away:'Canada', awayIso:'ca', date:'2026-06-18', time:'18:00', venue:'BC Place, Vancouver', group:'Grupo E', phase:'groups' },
+      { id:29, home:'Spain', homeIso:'es', away:'Canada', awayIso:'ca', date:'2026-06-23', time:'15:00', venue:'BMO Field, Toronto', group:'Grupo E', phase:'groups' },
+      { id:30, home:'Paraguay', homeIso:'py', away:'Australia', awayIso:'au', date:'2026-06-23', time:'18:00', venue:'BC Place, Vancouver', group:'Grupo E', phase:'groups' },
+
+      // GRUPO F: England, Japan, Serbia, Jamaica
+      { id:31, home:'England', homeIso:'gb-eng', away:'Japan', awayIso:'jp', date:'2026-06-13', time:'18:00', venue:'Lincoln Financial, Philadelphia', group:'Grupo F', phase:'groups' },
+      { id:32, home:'Serbia', homeIso:'rs', away:'Jamaica', awayIso:'jm', date:'2026-06-13', time:'21:00', venue:'BMO Field, Toronto', group:'Grupo F', phase:'groups' },
+      { id:33, home:'England', homeIso:'gb-eng', away:'Serbia', awayIso:'rs', date:'2026-06-18', time:'18:00', venue:'Lincoln Financial, Philadelphia', group:'Grupo F', phase:'groups' },
+      { id:34, home:'Japan', homeIso:'jp', away:'Jamaica', awayIso:'jm', date:'2026-06-18', time:'21:00', venue:'BMO Field, Toronto', group:'Grupo F', phase:'groups' },
+      { id:35, home:'England', homeIso:'gb-eng', away:'Jamaica', awayIso:'jm', date:'2026-06-23', time:'18:00', venue:'Lincoln Financial, Philadelphia', group:'Grupo F', phase:'groups' },
+      { id:36, home:'Japan', homeIso:'jp', away:'Serbia', awayIso:'rs', date:'2026-06-23', time:'21:00', venue:'BMO Field, Toronto', group:'Grupo F', phase:'groups' },
+
+      // GRUPO G: Germany, South Korea, Ghana, Peru
+      { id:37, home:'Germany', homeIso:'de', away:'South Korea', awayIso:'kr', date:'2026-06-13', time:'21:00', venue:'NRG Stadium, Houston', group:'Grupo G', phase:'groups' },
+      { id:38, home:'Ghana', homeIso:'gh', away:'Peru', awayIso:'pe', date:'2026-06-13', time:'15:00', venue:'Estadio Akron, Guadalajara', group:'Grupo G', phase:'groups' },
+      { id:39, home:'Germany', homeIso:'de', away:'Ghana', awayIso:'gh', date:'2026-06-18', time:'21:00', venue:'NRG Stadium, Houston', group:'Grupo G', phase:'groups' },
+      { id:40, home:'South Korea', homeIso:'kr', away:'Peru', awayIso:'pe', date:'2026-06-18', time:'15:00', venue:'Estadio Akron, Guadalajara', group:'Grupo G', phase:'groups' },
+      { id:41, home:'Germany', homeIso:'de', away:'Peru', awayIso:'pe', date:'2026-06-23', time:'21:00', venue:'NRG Stadium, Houston', group:'Grupo G', phase:'groups' },
+      { id:42, home:'South Korea', homeIso:'kr', away:'Ghana', awayIso:'gh', date:'2026-06-23', time:'15:00', venue:'Estadio Akron, Guadalajara', group:'Grupo G', phase:'groups' },
+
+      // GRUPO H: Portugal, Ecuador, Poland, Morocco
+      { id:43, home:'Portugal', homeIso:'pt', away:'Ecuador', awayIso:'ec', date:'2026-06-14', time:'15:00', venue:'Lumen Field, Seattle', group:'Grupo H', phase:'groups' },
+      { id:44, home:'Poland', homeIso:'pl', away:'Morocco', awayIso:'ma', date:'2026-06-14', time:'18:00', venue:'Gillette Stadium, Boston', group:'Grupo H', phase:'groups' },
+      { id:45, home:'Portugal', homeIso:'pt', away:'Poland', awayIso:'pl', date:'2026-06-19', time:'15:00', venue:'Lumen Field, Seattle', group:'Grupo H', phase:'groups' },
+      { id:46, home:'Ecuador', homeIso:'ec', away:'Morocco', awayIso:'ma', date:'2026-06-19', time:'18:00', venue:'Gillette Stadium, Boston', group:'Grupo H', phase:'groups' },
+      { id:47, home:'Portugal', homeIso:'pt', away:'Morocco', awayIso:'ma', date:'2026-06-24', time:'15:00', venue:'Lumen Field, Seattle', group:'Grupo H', phase:'groups' },
+      { id:48, home:'Ecuador', homeIso:'ec', away:'Poland', awayIso:'pl', date:'2026-06-24', time:'18:00', venue:'Gillette Stadium, Boston', group:'Grupo H', phase:'groups' },
+
+      // GRUPO I: Netherlands, Senegal, Iran, Panama
+      { id:49, home:'Netherlands', homeIso:'nl', away:'Senegal', awayIso:'sn', date:'2026-06-14', time:'18:00', venue:'Gillette Stadium, Boston', group:'Grupo I', phase:'groups' },
+      { id:50, home:'Iran', homeIso:'ir', away:'Panama', awayIso:'pa', date:'2026-06-14', time:'21:00', venue:'NRG Stadium, Houston', group:'Grupo I', phase:'groups' },
+      { id:51, home:'Netherlands', homeIso:'nl', away:'Iran', awayIso:'ir', date:'2026-06-19', time:'18:00', venue:'Gillette Stadium, Boston', group:'Grupo I', phase:'groups' },
+      { id:52, home:'Senegal', homeIso:'sn', away:'Panama', awayIso:'pa', date:'2026-06-19', time:'21:00', venue:'NRG Stadium, Houston', group:'Grupo I', phase:'groups' },
+      { id:53, home:'Netherlands', homeIso:'nl', away:'Panama', awayIso:'pa', date:'2026-06-24', time:'18:00', venue:'Gillette Stadium, Boston', group:'Grupo I', phase:'groups' },
+      { id:54, home:'Senegal', homeIso:'sn', away:'Iran', awayIso:'ir', date:'2026-06-24', time:'21:00', venue:'NRG Stadium, Houston', group:'Grupo I', phase:'groups' },
+
+      // GRUPO J: Uruguay, Cameroon, Qatar, Belgium
+      { id:55, home:'Uruguay', homeIso:'uy', away:'Cameroon', awayIso:'cm', date:'2026-06-14', time:'21:00', venue:"Levi's Stadium, San Francisco", group:'Grupo J', phase:'groups' },
+      { id:56, home:'Qatar', homeIso:'qa', away:'Belgium', awayIso:'be', date:'2026-06-14', time:'15:00', venue:'Lincoln Financial, Philadelphia', group:'Grupo J', phase:'groups' },
+      { id:57, home:'Uruguay', homeIso:'uy', away:'Qatar', awayIso:'qa', date:'2026-06-19', time:'21:00', venue:"Levi's Stadium, San Francisco", group:'Grupo J', phase:'groups' },
+      { id:58, home:'Cameroon', homeIso:'cm', away:'Belgium', awayIso:'be', date:'2026-06-19', time:'15:00', venue:'Lincoln Financial, Philadelphia', group:'Grupo J', phase:'groups' },
+      { id:59, home:'Uruguay', homeIso:'uy', away:'Belgium', awayIso:'be', date:'2026-06-24', time:'21:00', venue:"Levi's Stadium, San Francisco", group:'Grupo J', phase:'groups' },
+      { id:60, home:'Cameroon', homeIso:'cm', away:'Qatar', awayIso:'qa', date:'2026-06-24', time:'15:00', venue:'Lincoln Financial, Philadelphia', group:'Grupo J', phase:'groups' },
+
+      // GRUPO K: Croatia, Chile, Switzerland, Turkey
+      { id:61, home:'Croatia', homeIso:'hr', away:'Chile', awayIso:'cl', date:'2026-06-15', time:'15:00', venue:'SoFi Stadium, Los Angeles', group:'Grupo K', phase:'groups' },
+      { id:62, home:'Switzerland', homeIso:'ch', away:'Turkey', awayIso:'tr', date:'2026-06-15', time:'18:00', venue:'Lumen Field, Seattle', group:'Grupo K', phase:'groups' },
+      { id:63, home:'Croatia', homeIso:'hr', away:'Switzerland', awayIso:'ch', date:'2026-06-20', time:'15:00', venue:'SoFi Stadium, Los Angeles', group:'Grupo K', phase:'groups' },
+      { id:64, home:'Chile', homeIso:'cl', away:'Turkey', awayIso:'tr', date:'2026-06-20', time:'18:00', venue:'Lumen Field, Seattle', group:'Grupo K', phase:'groups' },
+      { id:65, home:'Croatia', homeIso:'hr', away:'Turkey', awayIso:'tr', date:'2026-06-25', time:'15:00', venue:'SoFi Stadium, Los Angeles', group:'Grupo K', phase:'groups' },
+      { id:66, home:'Chile', homeIso:'cl', away:'Switzerland', awayIso:'ch', date:'2026-06-25', time:'18:00', venue:'Lumen Field, Seattle', group:'Grupo K', phase:'groups' },
+
+      // GRUPO L: Ukraine, Venezuela, Wales, Algeria
+      { id:67, home:'Ukraine', homeIso:'ua', away:'Venezuela', awayIso:'ve', date:'2026-06-15', time:'18:00', venue:'NRG Stadium, Houston', group:'Grupo L', phase:'groups' },
+      { id:68, home:'Wales', homeIso:'gb-wls', away:'Algeria', awayIso:'dz', date:'2026-06-15', time:'21:00', venue:'AT&T Stadium, Dallas', group:'Grupo L', phase:'groups' },
+      { id:69, home:'Ukraine', homeIso:'ua', away:'Wales', awayIso:'gb-wls', date:'2026-06-20', time:'18:00', venue:'NRG Stadium, Houston', group:'Grupo L', phase:'groups' },
+      { id:70, home:'Venezuela', homeIso:'ve', away:'Algeria', awayIso:'dz', date:'2026-06-20', time:'21:00', venue:'AT&T Stadium, Dallas', group:'Grupo L', phase:'groups' },
+      { id:71, home:'Ukraine', homeIso:'ua', away:'Algeria', awayIso:'dz', date:'2026-06-25', time:'18:00', venue:'NRG Stadium, Houston', group:'Grupo L', phase:'groups' },
+      { id:72, home:'Venezuela', homeIso:'ve', away:'Wales', awayIso:'gb-wls', date:'2026-06-25', time:'21:00', venue:'AT&T Stadium, Dallas', group:'Grupo L', phase:'groups' }
+    ];
+
+    // ============================================
+    // GROUP DEFINITIONS for standings
+    // ============================================
+    const GROUPS_DEF = {
+      'Grupo A': [{name:'Mexico',iso:'mx'},{name:'Italy',iso:'it'},{name:'USA',iso:'us'},{name:'Bolivia',iso:'bo'}],
+      'Grupo B': [{name:'Argentina',iso:'ar'},{name:'Norway',iso:'no'},{name:'Denmark',iso:'dk'},{name:'Egypt',iso:'eg'}],
+      'Grupo C': [{name:'Brazil',iso:'br'},{name:'Tunisia',iso:'tn'},{name:'Nigeria',iso:'ng'},{name:'New Zealand',iso:'nz'}],
+      'Grupo D': [{name:'France',iso:'fr'},{name:'Colombia',iso:'co'},{name:'Costa Rica',iso:'cr'},{name:'Saudi Arabia',iso:'sa'}],
+      'Grupo E': [{name:'Spain',iso:'es'},{name:'Paraguay',iso:'py'},{name:'Australia',iso:'au'},{name:'Canada',iso:'ca'}],
+      'Grupo F': [{name:'England',iso:'gb-eng'},{name:'Japan',iso:'jp'},{name:'Serbia',iso:'rs'},{name:'Jamaica',iso:'jm'}],
+      'Grupo G': [{name:'Germany',iso:'de'},{name:'South Korea',iso:'kr'},{name:'Ghana',iso:'gh'},{name:'Peru',iso:'pe'}],
+      'Grupo H': [{name:'Portugal',iso:'pt'},{name:'Ecuador',iso:'ec'},{name:'Poland',iso:'pl'},{name:'Morocco',iso:'ma'}],
+      'Grupo I': [{name:'Netherlands',iso:'nl'},{name:'Senegal',iso:'sn'},{name:'Iran',iso:'ir'},{name:'Panama',iso:'pa'}],
+      'Grupo J': [{name:'Uruguay',iso:'uy'},{name:'Cameroon',iso:'cm'},{name:'Qatar',iso:'qa'},{name:'Belgium',iso:'be'}],
+      'Grupo K': [{name:'Croatia',iso:'hr'},{name:'Chile',iso:'cl'},{name:'Switzerland',iso:'ch'},{name:'Turkey',iso:'tr'}],
+      'Grupo L': [{name:'Ukraine',iso:'ua'},{name:'Venezuela',iso:'ve'},{name:'Wales',iso:'gb-wls'},{name:'Algeria',iso:'dz'}]
+    };
+
+    // ============================================
+    // KNOCKOUT BRACKET STRUCTURE
+    // ============================================
+    const BRACKET_MATCHES = [
+      // Round of 32 (16 matches)
+      { id:'R32-1', round:'R32', label:'1A vs 2D', home:'1A', away:'2D' },
+      { id:'R32-2', round:'R32', label:'1B vs 2C', home:'1B', away:'2C' },
+      { id:'R32-3', round:'R32', label:'1C vs 2B', home:'1C', away:'2B' },
+      { id:'R32-4', round:'R32', label:'1D vs 2A', home:'1D', away:'2A' },
+      { id:'R32-5', round:'R32', label:'1E vs 2H', home:'1E', away:'2H' },
+      { id:'R32-6', round:'R32', label:'1F vs 2G', home:'1F', away:'2G' },
+      { id:'R32-7', round:'R32', label:'1G vs 2F', home:'1G', away:'2F' },
+      { id:'R32-8', round:'R32', label:'1H vs 2E', home:'1H', away:'2E' },
+      { id:'R32-9', round:'R32', label:'1I vs 2L', home:'1I', away:'2L' },
+      { id:'R32-10', round:'R32', label:'1J vs 2K', home:'1J', away:'2K' },
+      { id:'R32-11', round:'R32', label:'1K vs 2J', home:'1K', away:'2J' },
+      { id:'R32-12', round:'R32', label:'1L vs 2I', home:'1L', away:'2I' },
+      { id:'R32-13', round:'R32', label:'3ABC vs 1/2', home:'3ABC', away:'Best3-1' },
+      { id:'R32-14', round:'R32', label:'3DEF vs 1/2', home:'3DEF', away:'Best3-2' },
+      { id:'R32-15', round:'R32', label:'3GHI vs 1/2', home:'3GHI', away:'Best3-3' },
+      { id:'R32-16', round:'R32', label:'3JKL vs 1/2', home:'3JKL', away:'Best3-4' },
+      // Round of 16 (8 matches)
+      { id:'R16-1', round:'R16', label:'W(R32-1) vs W(R32-2)', from:['R32-1','R32-2'] },
+      { id:'R16-2', round:'R16', label:'W(R32-3) vs W(R32-4)', from:['R32-3','R32-4'] },
+      { id:'R16-3', round:'R16', label:'W(R32-5) vs W(R32-6)', from:['R32-5','R32-6'] },
+      { id:'R16-4', round:'R16', label:'W(R32-7) vs W(R32-8)', from:['R32-7','R32-8'] },
+      { id:'R16-5', round:'R16', label:'W(R32-9) vs W(R32-10)', from:['R32-9','R32-10'] },
+      { id:'R16-6', round:'R16', label:'W(R32-11) vs W(R32-12)', from:['R32-11','R32-12'] },
+      { id:'R16-7', round:'R16', label:'W(R32-13) vs W(R32-14)', from:['R32-13','R32-14'] },
+      { id:'R16-8', round:'R16', label:'W(R32-15) vs W(R32-16)', from:['R32-15','R32-16'] },
+      // Quarter-finals (4 matches)
+      { id:'QF-1', round:'QF', label:'W(R16-1) vs W(R16-2)', from:['R16-1','R16-2'] },
+      { id:'QF-2', round:'QF', label:'W(R16-3) vs W(R16-4)', from:['R16-3','R16-4'] },
+      { id:'QF-3', round:'QF', label:'W(R16-5) vs W(R16-6)', from:['R16-5','R16-6'] },
+      { id:'QF-4', round:'QF', label:'W(R16-7) vs W(R16-8)', from:['R16-7','R16-8'] },
+      // Semi-finals (2 matches)
+      { id:'SF-1', round:'SF', label:'W(QF-1) vs W(QF-2)', from:['QF-1','QF-2'] },
+      { id:'SF-2', round:'SF', label:'W(QF-3) vs W(QF-4)', from:['QF-3','QF-4'] },
+      // Final
+      { id:'F-1', round:'F', label:'W(SF-1) vs W(SF-2)', from:['SF-1','SF-2'] }
     ];
 
     // ============================================
@@ -383,19 +649,34 @@
     const AVATARS = ['⚽','🏆','🥅','🎯','🔥','👑','🦁','🐐','🎪','🌟','💎','🏅','🎖️','⭐','🔮','🧠','💪','🎩','🃏','🦅'];
 
     // ============================================
-    // DEMO RANKING PARTICIPANTS
+    // DEMO RANKING PARTICIPANTS (20 across families)
     // ============================================
     const DEMO_PARTICIPANTS = [
-      { apodo: 'ElDiez10', avatar: '🐐', grupo: 'Familia Santos', points: 87, exactos: 6, accuracy: 72 },
-      { apodo: 'GolDeOro', avatar: '👑', grupo: 'Familia García', points: 82, exactos: 5, accuracy: 68 },
-      { apodo: 'LaScaloneta', avatar: '🦁', grupo: 'Amigos', points: 78, exactos: 5, accuracy: 65 },
-      { apodo: 'Mundialista', avatar: '🏆', grupo: 'Trabajo', points: 74, exactos: 4, accuracy: 62 },
-      { apodo: 'Cracks2026', avatar: '🔥', grupo: 'General', points: 70, exactos: 4, accuracy: 60 },
-      { apodo: 'ProdeKing', avatar: '💎', grupo: 'Familia Santos', points: 65, exactos: 3, accuracy: 56 },
-      { apodo: 'FútbolTotal', avatar: '⚽', grupo: 'Amigos', points: 61, exactos: 3, accuracy: 53 },
-      { apodo: 'MesaTáctica', avatar: '🧠', grupo: 'Trabajo', points: 58, exactos: 2, accuracy: 50 },
-      { apodo: 'GoalMachine', avatar: '🎯', grupo: 'General', points: 52, exactos: 2, accuracy: 45 },
-      { apodo: 'ElArquero', avatar: '🥅', grupo: 'Familia García', points: 48, exactos: 1, accuracy: 42 }
+      // Familia Santos (5)
+      { nombre:'Juan', apellido:'Santos', apodo:'Juanchi', avatar:'🐐', grupo:'Familia Santos', points:175, exactos:11, accuracy:78 },
+      { nombre:'Matías', apellido:'Santos', apodo:'Mati', avatar:'🔥', grupo:'Familia Santos', points:142, exactos:8, accuracy:68 },
+      { nombre:'Sofía', apellido:'Santos', apodo:'Sofi', avatar:'🌟', grupo:'Familia Santos', points:118, exactos:6, accuracy:60 },
+      { nombre:'Marta', apellido:'Santos', apodo:'Tía Marta', avatar:'💎', grupo:'Familia Santos', points:88, exactos:4, accuracy:52 },
+      { nombre:'Carlos', apellido:'Santos', apodo:'Abuelo Carlos', avatar:'👑', grupo:'Familia Santos', points:65, exactos:2, accuracy:40 },
+      // Familia García (4)
+      { nombre:'Nicolás', apellido:'García', apodo:'Nico', avatar:'🦁', grupo:'Familia García', points:160, exactos:10, accuracy:75 },
+      { nombre:'Florencia', apellido:'García', apodo:'Flor', avatar:'🎯', grupo:'Familia García', points:130, exactos:7, accuracy:63 },
+      { nombre:'Pedro', apellido:'García', apodo:'Tío Pepe', avatar:'🏆', grupo:'Familia García', points:95, exactos:5, accuracy:55 },
+      { nombre:'Lucía', apellido:'García', apodo:'Prima Luli', avatar:'⭐', grupo:'Familia García', points:72, exactos:3, accuracy:42 },
+      // Familia López (3)
+      { nombre:'Gonzalo', apellido:'López', apodo:'Gonza', avatar:'🎪', grupo:'Familia López', points:148, exactos:9, accuracy:72 },
+      { nombre:'Milagros', apellido:'López', apodo:'Mili', avatar:'🔮', grupo:'Familia López', points:105, exactos:5, accuracy:56 },
+      { nombre:'Roberto', apellido:'López', apodo:'Papá López', avatar:'🧠', grupo:'Familia López', points:78, exactos:3, accuracy:45 },
+      // Amigos del Trabajo (4)
+      { nombre:'Emiliano', apellido:'Turk', apodo:'El Turco', avatar:'💪', grupo:'Amigos del Trabajo', points:155, exactos:9, accuracy:73 },
+      { nombre:'Iván', apellido:'Petrov', apodo:'Ruso', avatar:'🎩', grupo:'Amigos del Trabajo', points:120, exactos:6, accuracy:62 },
+      { nombre:'Adam', apellido:'Kowalski', apodo:'Polaco', avatar:'🃏', grupo:'Amigos del Trabajo', points:92, exactos:4, accuracy:50 },
+      { nombre:'Kenji', apellido:'Tanaka', apodo:'Japonés', avatar:'🦅', grupo:'Amigos del Trabajo', points:68, exactos:2, accuracy:38 },
+      // General (4)
+      { nombre:'Diego', apellido:'Gómez', apodo:'Dieguito', avatar:'⚽', grupo:'General', points:138, exactos:8, accuracy:67 },
+      { nombre:'Javier', apellido:'Mascherano', apodo:'Masche', avatar:'🥅', grupo:'General', points:110, exactos:6, accuracy:58 },
+      { nombre:'Lucas', apellido:'Alario', apodo:'Pipa', avatar:'🏅', grupo:'General', points:85, exactos:4, accuracy:48 },
+      { nombre:'Nicolás', apellido:'Colorado', apodo:'El Colo', avatar:'🎖️', grupo:'General', points:55, exactos:1, accuracy:35 }
     ];
 
     // ============================================
@@ -406,6 +687,7 @@
     let currentPredFilter = 'Todos';
     let currentStatusFilter = 'todos';
     let currentRankingTab = 'general';
+    let bracketExpanded = false;
 
     // ============================================
     // HELPER: localStorage
@@ -422,6 +704,10 @@
       try { return JSON.parse(localStorage.getItem('prode-group-predictions')) || {}; } catch(e) { return {}; }
     }
     function saveGroupPredictions(p) { localStorage.setItem('prode-group-predictions', JSON.stringify(p)); }
+    function getBracketPredictions() {
+      try { return JSON.parse(localStorage.getItem('prode-bracket')) || {}; } catch(e) { return {}; }
+    }
+    function saveBracketPredictions(p) { localStorage.setItem('prode-bracket', JSON.stringify(p)); }
     function isOnboarded() { return localStorage.getItem('prode-onboarding-done') === 'true'; }
     function isExpertMode() { return localStorage.getItem('prode-expert-mode') === 'true'; }
 
@@ -448,6 +734,11 @@
       const map = {
         'Familia Santos': 'familia-santos',
         'Familia García': 'familia-garcia',
+        'Familia López': 'familia-lopez',
+        'Familia Martínez': 'familia-martinez',
+        'Familia Rodríguez': 'familia-rodriguez',
+        'Amigos del Trabajo': 'amigos-trabajo',
+        'Amigos del Club': 'amigos-club',
         'Amigos': 'amigos',
         'Trabajo': 'trabajo',
         'General': 'general'
@@ -610,12 +901,15 @@
       let valid = true;
 
       const nombre = document.getElementById('reg-nombre').value.trim();
+      const apellido = document.getElementById('reg-apellido').value.trim();
       const apodo = document.getElementById('reg-apodo').value.trim();
+      const telefono = document.getElementById('reg-telefono').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
       const grupo = document.getElementById('reg-grupo').value;
       const equipo = document.getElementById('reg-equipo').value;
       const avatar = document.getElementById('reg-avatar').value;
 
-      // Validate
+      // Validate nombre
       if (!nombre) {
         document.getElementById('err-nombre').classList.add('visible');
         document.getElementById('reg-nombre').classList.add('error');
@@ -624,6 +918,16 @@
         document.getElementById('err-nombre').classList.remove('visible');
         document.getElementById('reg-nombre').classList.remove('error');
       }
+      // Validate apellido
+      if (!apellido) {
+        document.getElementById('err-apellido').classList.add('visible');
+        document.getElementById('reg-apellido').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-apellido').classList.remove('visible');
+        document.getElementById('reg-apellido').classList.remove('error');
+      }
+      // Validate apodo
       if (!apodo || apodo.length < 3) {
         document.getElementById('err-apodo').classList.add('visible');
         document.getElementById('reg-apodo').classList.add('error');
@@ -632,6 +936,25 @@
         document.getElementById('err-apodo').classList.remove('visible');
         document.getElementById('reg-apodo').classList.remove('error');
       }
+      // Validate telefono
+      if (!telefono) {
+        document.getElementById('err-telefono').classList.add('visible');
+        document.getElementById('reg-telefono').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-telefono').classList.remove('visible');
+        document.getElementById('reg-telefono').classList.remove('error');
+      }
+      // Validate email
+      if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        document.getElementById('err-email').classList.add('visible');
+        document.getElementById('reg-email').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-email').classList.remove('visible');
+        document.getElementById('reg-email').classList.remove('error');
+      }
+      // Validate grupo
       if (!grupo) {
         document.getElementById('err-grupo').classList.add('visible');
         document.getElementById('reg-grupo').classList.add('error');
@@ -640,6 +963,7 @@
         document.getElementById('err-grupo').classList.remove('visible');
         document.getElementById('reg-grupo').classList.remove('error');
       }
+      // Validate equipo
       if (!equipo) {
         document.getElementById('err-equipo').classList.add('visible');
         document.getElementById('reg-equipo').classList.add('error');
@@ -648,6 +972,7 @@
         document.getElementById('err-equipo').classList.remove('visible');
         document.getElementById('reg-equipo').classList.remove('error');
       }
+      // Validate avatar
       if (!avatar) {
         document.getElementById('err-avatar').classList.add('visible');
         valid = false;
@@ -660,7 +985,11 @@
         return;
       }
 
-      const user = { nombre, apodo, grupo, equipoFavorito: equipo, avatar, fechaRegistro: new Date().toISOString() };
+      const user = {
+        nombre, apellido, apodo, telefono, email,
+        grupo, equipoFavorito: equipo, avatar,
+        fechaRegistro: new Date().toISOString()
+      };
       saveUser(user);
       showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
       document.getElementById('register-screen').style.display = 'none';
@@ -968,6 +1297,9 @@
         filtered = filtered.filter(m => !preds[m.id]);
       }
 
+      const bracketPreds = getBracketPredictions();
+      const bracketCount = Object.keys(bracketPreds).length;
+
       const html = `
         <!-- Completion Pill -->
         <div class="completion-pill">
@@ -1038,10 +1370,107 @@
         </div>` : ''}
 
         <p class="text-muted text-center" style="margin-top:20px;font-size:12px;">Los pronósticos se bloquean 1 hora antes del partido ⏰</p>
+
+        <!-- KNOCKOUT BRACKET SECTION -->
+        <div class="section-title mt-3" style="cursor:pointer;" onclick="toggleBracketSection()">
+          <h3>🏆 Cuadro Eliminatorio</h3>
+          <span class="section-toggle-arrow ${bracketExpanded ? 'open' : ''}" id="bracket-arrow">▼</span>
+        </div>
+        <div class="bracket-section ${bracketExpanded ? '' : 'collapsed'}" id="bracket-section" style="max-height:${bracketExpanded ? '2000px' : '0'}">
+          <p class="text-muted" style="font-size:12px;margin-bottom:12px;">Tocá cada partido para elegir al ganador. ${bracketCount > 0 ? bracketCount + ' predicciones guardadas.' : 'Sin predicciones aún.'}</p>
+          <div class="bracket-container">
+            <div class="bracket-wrapper" id="bracket-wrapper">
+              ${renderBracketHTML(bracketPreds)}
+            </div>
+          </div>
+        </div>
       `;
 
       document.getElementById('predictions-content').innerHTML = html;
     }
+
+    // ============================================
+    // BRACKET RENDERING
+    // ============================================
+    function renderBracketHTML(preds) {
+      const rounds = [
+        { key: 'R32', name: '32avos', count: 16 },
+        { key: 'R16', name: 'Octavos', count: 8 },
+        { key: 'QF', name: 'Cuartos', count: 4 },
+        { key: 'SF', name: 'Semis', count: 2 },
+        { key: 'F', name: 'Final', count: 1 }
+      ];
+
+      let html = '';
+      rounds.forEach(round => {
+        const matches = BRACKET_MATCHES.filter(m => m.round === round.key);
+        html += `<div class="bracket-round">
+          <div class="bracket-round-title">${round.name}</div>`;
+        matches.forEach(m => {
+          const pred = preds[m.id];
+          const homeLabel = pred && pred.homeTeam ? pred.homeTeam : m.home;
+          const awayLabel = pred && pred.awayTeam ? pred.awayTeam : m.away;
+          const winner = pred ? pred.winner : null;
+          const homeWon = winner === 'home';
+          const awayWon = winner === 'away';
+          html += `<div class="bracket-match ${winner ? 'decided' : ''}" onclick="openBracketPick('${m.id}')">
+            <div class="bracket-team ${homeWon ? 'winner' : ''}">${homeLabel}</div>
+            <div class="bracket-vs">vs</div>
+            <div class="bracket-team ${awayWon ? 'winner' : ''}">${awayLabel}</div>
+          </div>`;
+        });
+        html += `</div>`;
+      });
+      return html;
+    }
+
+    window.toggleBracketSection = function() {
+      bracketExpanded = !bracketExpanded;
+      const section = document.getElementById('bracket-section');
+      const arrow = document.getElementById('bracket-arrow');
+      if (bracketExpanded) {
+        section.classList.remove('collapsed');
+        section.style.maxHeight = '2000px';
+        arrow.classList.add('open');
+      } else {
+        section.classList.add('collapsed');
+        section.style.maxHeight = '0';
+        arrow.classList.remove('open');
+      }
+    };
+
+    window.openBracketPick = function(matchId) {
+      const m = BRACKET_MATCHES.find(x => x.id === matchId);
+      if (!m) return;
+      const preds = getBracketPredictions();
+      const pred = preds[matchId] || {};
+      const homeLabel = pred.homeTeam || m.home;
+      const awayLabel = pred.awayTeam || m.away;
+
+      openModal('Elegí al ganador', `
+        <p style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:16px;">${m.label}</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn btn-block ${pred.winner==='home'?'btn-gold':'btn-outline'}" onclick="saveBracketPick('${matchId}','home')">${homeLabel}</button>
+          <button class="btn btn-block ${pred.winner==='away'?'btn-gold':'btn-outline'}" onclick="saveBracketPick('${matchId}','away')">${awayLabel}</button>
+        </div>
+      `);
+    };
+
+    window.saveBracketPick = function(matchId, pick) {
+      const m = BRACKET_MATCHES.find(x => x.id === matchId);
+      const preds = getBracketPredictions();
+      const pred = preds[matchId] || {};
+      preds[matchId] = {
+        homeTeam: pred.homeTeam || m.home,
+        awayTeam: pred.awayTeam || m.away,
+        winner: pick,
+        savedAt: new Date().toISOString()
+      };
+      saveBracketPredictions(preds);
+      closeModal();
+      showToast('Predicción guardada ✅', 'success');
+      renderPredictions();
+    };
 
     // Expose filter functions globally
     window.setPredFilter = function(f) { currentPredFilter = f; renderPredictions(); };
@@ -1098,16 +1527,18 @@
     };
 
     // ============================================
-    // RANKING VIEW
+    // RANKING VIEW — TRIPLE SYSTEM
     // ============================================
     function renderRanking() {
       const user = getUser();
       if (!user) return;
 
       // Build ranking with demo + current user
-      let ranking = [...DEMO_PARTICIPANTS];
+      let ranking = DEMO_PARTICIPANTS.map(p => ({...p}));
       const preds = getPredictions();
       const userEntry = {
+        nombre: user.nombre || '',
+        apellido: user.apellido || '',
         apodo: user.apodo,
         avatar: user.avatar,
         grupo: user.grupo,
@@ -1119,25 +1550,34 @@
       ranking.push(userEntry);
       ranking.sort((a, b) => b.points - a.points);
 
-      // Filter by tab
-      let filtered = ranking;
-      if (currentRankingTab === 'grupo') {
-        filtered = ranking.filter(p => p.grupo === user.grupo);
+      let contentHtml = '';
+
+      // TABS
+      contentHtml += `
+        <div class="ranking-tabs-v2">
+          <button class="ranking-tab-v2 ${currentRankingTab === 'general' ? 'active' : ''}" onclick="setRankingTab('general')">🏆 General</button>
+          <button class="ranking-tab-v2 ${currentRankingTab === 'familia' ? 'active' : ''}" onclick="setRankingTab('familia')">👨‍👩‍👧‍👦 Mi Familia</button>
+          <button class="ranking-tab-v2 ${currentRankingTab === 'familias' ? 'active' : ''}" onclick="setRankingTab('familias')">⚔️ Familias vs Familias</button>
+        </div>
+      `;
+
+      if (currentRankingTab === 'general') {
+        contentHtml += renderGeneralRanking(ranking);
+      } else if (currentRankingTab === 'familia') {
+        contentHtml += renderFamilyRanking(ranking, user);
+      } else if (currentRankingTab === 'familias') {
+        contentHtml += renderFamiliesVsFamilies(ranking);
       }
 
-      const top3 = filtered.slice(0, 3);
-      const rest = filtered;
+      document.getElementById('ranking-content').innerHTML = contentHtml;
+    }
 
-      const html = `
-        <!-- Ranking Tabs -->
-        <div class="ranking-tabs">
-          <button class="ranking-tab ${currentRankingTab === 'general' ? 'active' : ''}" onclick="setRankingTab('general')">General</button>
-          <button class="ranking-tab ${currentRankingTab === 'grupo' ? 'active' : ''}" onclick="setRankingTab('grupo')">Mi Grupo</button>
-          <button class="ranking-tab ${currentRankingTab === 'semanal' ? 'active' : ''}" onclick="setRankingTab('semanal')">Semanal</button>
-        </div>
+    function renderGeneralRanking(ranking) {
+      const top3 = ranking.slice(0, 3);
+      let html = '';
 
-        <!-- Podium -->
-        <div class="section-title"><h3>🏆 Podio</h3></div>
+      // Podium
+      html += `<div class="section-title"><h3>🏆 Podio</h3></div>
         <div class="podium">
           ${top3.length >= 2 ? `
           <div class="podium-place podium-second">
@@ -1160,12 +1600,77 @@
             <span class="podium-points">${top3[2].points} pts</span>
             <div class="podium-bar">3°</div>
           </div>` : ''}
-        </div>
+        </div>`;
 
-        <!-- Full Ranking -->
-        <div class="section-title"><h3>📋 Tabla Completa</h3></div>
+      // Full table
+      html += `<div class="section-title"><h3>📋 Tabla Completa</h3></div>
         <div class="card" style="padding:0;overflow:hidden;">
-          ${rest.map((p, i) => {
+          ${ranking.map((p, i) => {
+            const pos = i + 1;
+            const posClass = pos === 1 ? 'gold' : pos === 2 ? 'silver' : pos === 3 ? 'bronze' : '';
+            return `
+            <div class="ranking-item ${p.isMe ? 'is-me' : ''}" ${pos <= 3 ? `style="background:linear-gradient(90deg,${pos===1?'rgba(197,165,90,0.12)':pos===2?'rgba(192,192,192,0.08)':'rgba(205,127,50,0.08)'} 0%,transparent 100%)"` : ''}>
+              <span class="ranking-position ${posClass}">${pos}</span>
+              <div class="ranking-avatar">${p.avatar}</div>
+              <div class="ranking-info">
+                <div class="ranking-name">${p.apodo} ${p.isMe ? '(vos)' : ''}${p.apellido ? ' · ' + p.apellido : ''}</div>
+                <span class="group-badge ${groupClass(p.grupo)} ranking-group">${p.grupo}</span>
+              </div>
+              <div class="ranking-stats">
+                <span class="ranking-points ${pos <= 3 ? 'text-gold' : ''}">${p.points} pts</span>
+                <span class="ranking-extra">🎯 ${p.exactos} · ${p.accuracy}%</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      return html;
+    }
+
+    function renderFamilyRanking(ranking, user) {
+      const filtered = ranking.filter(p => p.grupo === user.grupo);
+      filtered.sort((a, b) => b.points - a.points);
+
+      if (filtered.length <= 1) {
+        return `
+          <div class="invite-msg">
+            <div class="emoji">👨‍👩‍👧‍👦</div>
+            <h3 style="margin-bottom:8px;">Invitá a más familiares</h3>
+            <p style="font-size:13px;color:var(--text-muted);">Compartí el link del PRODE para que se sumen a <strong>${user.grupo}</strong> y compitan entre ustedes.</p>
+            <button class="btn btn-gold mt-2" onclick="shareApp()">📤 Compartir</button>
+          </div>`;
+      }
+
+      const top3 = filtered.slice(0, 3);
+      let html = `<div class="section-title"><h3>👨‍👩‍👧‍👦 ${user.grupo}</h3></div>`;
+
+      // Podium
+      html += `<div class="podium">
+          ${top3.length >= 2 ? `
+          <div class="podium-place podium-second">
+            <div class="podium-avatar">${top3[1].avatar}</div>
+            <span class="podium-name">${top3[1].apodo}</span>
+            <span class="podium-points">${top3[1].points} pts</span>
+            <div class="podium-bar">2°</div>
+          </div>` : ''}
+          ${top3.length >= 1 ? `
+          <div class="podium-place podium-first">
+            <div class="podium-avatar">${top3[0].avatar}</div>
+            <span class="podium-name">${top3[0].apodo}</span>
+            <span class="podium-points">${top3[0].points} pts</span>
+            <div class="podium-bar">1°</div>
+          </div>` : ''}
+          ${top3.length >= 3 ? `
+          <div class="podium-place podium-third">
+            <div class="podium-avatar">${top3[2].avatar}</div>
+            <span class="podium-name">${top3[2].apodo}</span>
+            <span class="podium-points">${top3[2].points} pts</span>
+            <div class="podium-bar">3°</div>
+          </div>` : ''}
+        </div>`;
+
+      // List
+      html += `<div class="card" style="padding:0;overflow:hidden;">
+          ${filtered.map((p, i) => {
             const pos = i + 1;
             const posClass = pos === 1 ? 'gold' : pos === 2 ? 'silver' : pos === 3 ? 'bronze' : '';
             return `
@@ -1182,10 +1687,82 @@
               </div>
             </div>`;
           }).join('')}
-        </div>
-      `;
+        </div>`;
+      return html;
+    }
 
-      document.getElementById('ranking-content').innerHTML = html;
+    function renderFamiliesVsFamilies(ranking) {
+      // Aggregate by family
+      const familyMap = {};
+      ranking.forEach(p => {
+        if (!familyMap[p.grupo]) {
+          familyMap[p.grupo] = { name: p.grupo, members: [], totalPoints: 0, totalExactos: 0 };
+        }
+        familyMap[p.grupo].members.push(p);
+        familyMap[p.grupo].totalPoints += p.points;
+        familyMap[p.grupo].totalExactos += p.exactos;
+      });
+
+      const families = Object.values(familyMap).map(f => {
+        f.avgPoints = f.members.length > 0 ? (f.totalPoints / f.members.length) : 0;
+        f.bestMember = f.members.sort((a,b) => b.points - a.points)[0];
+        return f;
+      });
+      families.sort((a, b) => b.avgPoints - a.avgPoints);
+
+      const top3 = families.slice(0, 3);
+
+      let html = `<div class="section-title"><h3>⚔️ Familias vs Familias</h3></div>
+        <p class="text-muted" style="font-size:12px;margin-bottom:12px;">Ranking por promedio de puntos por miembro (comparación justa)</p>`;
+
+      // Family Podium
+      if (top3.length >= 3) {
+        html += `<div class="family-podium">
+          <div class="family-podium-item">
+            <div class="family-podium-name">${top3[1].name}</div>
+            <div class="family-podium-avg">${top3[1].avgPoints.toFixed(1)} prom</div>
+            <div class="family-podium-bar p2">2°</div>
+          </div>
+          <div class="family-podium-item">
+            <div class="family-podium-name">${top3[0].name}</div>
+            <div class="family-podium-avg">${top3[0].avgPoints.toFixed(1)} prom</div>
+            <div class="family-podium-bar p1">1°</div>
+          </div>
+          <div class="family-podium-item">
+            <div class="family-podium-name">${top3[2].name}</div>
+            <div class="family-podium-avg">${top3[2].avgPoints.toFixed(1)} prom</div>
+            <div class="family-podium-bar p3">3°</div>
+          </div>
+        </div>`;
+      }
+
+      // Family cards
+      families.forEach((f, idx) => {
+        html += `
+        <div class="family-card">
+          <div class="family-card-header">
+            <div class="family-card-name"><span class="group-badge ${groupClass(f.name)}">${f.name}</span></div>
+            <div class="family-card-rank">#${idx + 1}</div>
+          </div>
+          <div class="family-card-stats">
+            <div class="family-stat">
+              <div class="family-stat-value">${f.members.length}</div>
+              <div class="family-stat-label">Miembros</div>
+            </div>
+            <div class="family-stat">
+              <div class="family-stat-value" style="color:var(--gold)">${f.avgPoints.toFixed(1)}</div>
+              <div class="family-stat-label">Promedio</div>
+            </div>
+            <div class="family-stat">
+              <div class="family-stat-value">${f.totalPoints}</div>
+              <div class="family-stat-label">Total</div>
+            </div>
+          </div>
+          <div class="family-card-best">⭐ Mejor: <strong>${f.bestMember.apodo}</strong> (${f.bestMember.points} pts)</div>
+        </div>`;
+      });
+
+      return html;
     }
 
     window.setRankingTab = function(tab) {
@@ -1194,7 +1771,7 @@
     };
 
     // ============================================
-    // STATS VIEW
+    // STATS VIEW — with Group Standings
     // ============================================
     function renderStats() {
       const user = getUser();
@@ -1237,6 +1814,29 @@
           </div>`}
         </div>
       `;
+
+      // GROUP STANDINGS TABLES
+      html += `<div class="section-title mt-3"><h3>🏟️ Tablas de Posiciones — Fase de Grupos</h3></div>`;
+
+      Object.keys(GROUPS_DEF).forEach(groupName => {
+        const teams = GROUPS_DEF[groupName];
+        html += `<div class="standings-group card">
+          <div class="standings-group-title">${groupName}</div>
+          <table class="standings-table">
+            <thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead>
+            <tbody>
+              ${teams.map((t, idx) => {
+                const rowClass = idx < 2 ? 'qualified' : idx === 2 ? 'possible' : '';
+                return `<tr class="${rowClass}">
+                  <td>${idx + 1}</td>
+                  <td><div class="team-cell"><img src="${flagUrl(t.iso)}" alt="${t.name}" onerror="this.style.display='none'"><span>${t.name}</span></div></td>
+                  <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+      });
 
       if (!expert) {
         html += `
@@ -1288,7 +1888,7 @@
     }
 
     // ============================================
-    // MORE (MÁS) VIEW
+    // MORE (MÁS) VIEW — Enhanced Profile
     // ============================================
     function renderMas() {
       const user = getUser();
@@ -1298,21 +1898,56 @@
       const notifOn = localStorage.getItem('prode-notifs') !== 'false';
       const soundsOn = localStorage.getItem('prode-sounds') === 'true';
       const favTeam = ALL_TEAMS.find(t => t.name === user.equipoFavorito);
+      const preds = getPredictions();
+      const savedCount = Object.keys(preds).length;
+      const totalMatches = MATCHES.length;
+      const accuracy = totalMatches > 0 ? Math.round((savedCount / totalMatches) * 100) : 0;
+
+      // Format phone for WhatsApp
+      const phoneClean = (user.telefono || '').replace(/[\s\-\(\)]/g, '').replace(/^\+/, '');
+      const registrationDate = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString('es-AR', { year:'numeric', month:'long', day:'numeric' }) : 'N/A';
 
       const html = `
-        <!-- Profile Card -->
+        <!-- Profile Card Enhanced -->
         <div class="section-title"><h3>👤 Mi Perfil</h3></div>
-        <div class="card profile-card">
-          <span class="profile-avatar">${user.avatar}</span>
-          <div class="profile-info">
-            <div class="profile-name">${user.apodo}</div>
-            <div class="profile-details">${user.nombre}</div>
-            <div style="margin-top:4px;">
-              <span class="group-badge ${groupClass(user.grupo)}">${user.grupo}</span>
-              ${favTeam ? `<span style="margin-left:6px;font-size:12px;">${favTeam.emoji} ${favTeam.name}</span>` : ''}
+        <div class="card profile-card-v2">
+          <span class="profile-avatar-lg">${user.avatar}</span>
+          <div class="profile-fullname">${user.nombre || ''} ${user.apellido || ''}</div>
+          <div class="profile-apodo">@${user.apodo}</div>
+          <span class="group-badge ${groupClass(user.grupo)}">${user.grupo}</span>
+
+          <div class="profile-links">
+            ${user.telefono ? `<a href="https://wa.me/${phoneClean}" target="_blank" rel="noopener" class="profile-link">
+              <span class="profile-link-icon">📱</span>
+              <span>${user.telefono}</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--gold);">WhatsApp →</span>
+            </a>` : ''}
+            ${user.email ? `<a href="mailto:${user.email}" class="profile-link">
+              <span class="profile-link-icon">✉️</span>
+              <span>${user.email}</span>
+            </a>` : ''}
+            ${favTeam ? `<div class="profile-link">
+              <span class="profile-link-icon"><img src="${flagUrl(favTeam.iso)}" style="width:22px;height:15px;border-radius:2px;" alt="${favTeam.name}"></span>
+              <span>Equipo favorito: <strong>${favTeam.name}</strong></span>
+            </div>` : ''}
+            <div class="profile-link">
+              <span class="profile-link-icon">📅</span>
+              <span>Miembro desde: ${registrationDate}</span>
             </div>
           </div>
-          <button class="profile-edit-btn" onclick="openEditProfile()">Editar</button>
+
+          <div class="profile-stats-row">
+            <div class="profile-stat-item">
+              <div class="profile-stat-val">${savedCount}</div>
+              <div class="profile-stat-lbl">Pronósticos</div>
+            </div>
+            <div class="profile-stat-item">
+              <div class="profile-stat-val">${accuracy}%</div>
+              <div class="profile-stat-lbl">Completado</div>
+            </div>
+          </div>
+
+          <button class="btn btn-outline btn-block mt-2" onclick="openEditProfile()">✏️ Editar Perfil</button>
         </div>
 
         <!-- Group Predictions -->
@@ -1391,7 +2026,7 @@
           <p style="font-size:13px;color:var(--text-muted);line-height:1.8;">
             <strong>PRODE Familiar</strong><br>
             Mundial de Fútbol 2026<br>
-            Versión 1.0.0<br>
+            Versión 2.0.0<br>
             Hecho con ❤️ para la familia
           </p>
         </div>
@@ -1472,6 +2107,7 @@
         localStorage.removeItem('prode-user');
         localStorage.removeItem('prode-predictions');
         localStorage.removeItem('prode-group-predictions');
+        localStorage.removeItem('prode-bracket');
         localStorage.removeItem('prode-onboarding-done');
         localStorage.removeItem('prode-expert-mode');
         localStorage.removeItem('prode-api-url');
@@ -1483,23 +2119,35 @@
 
     window.openEditProfile = function() {
       const user = getUser();
+      const grupoOptions = [
+        'Familia Santos','Familia García','Familia López','Familia Martínez',
+        'Familia Rodríguez','Amigos del Trabajo','Amigos del Club','General'
+      ];
       openModal('Editar Perfil', `
         <div class="form-group">
-          <label class="form-label">Nombre completo</label>
-          <input type="text" class="form-input" id="edit-nombre" value="${user.nombre}">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-input" id="edit-nombre" value="${user.nombre || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido</label>
+          <input type="text" class="form-input" id="edit-apellido" value="${user.apellido || ''}">
         </div>
         <div class="form-group">
           <label class="form-label">Apodo</label>
           <input type="text" class="form-input" id="edit-apodo" value="${user.apodo}">
         </div>
         <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-input" id="edit-telefono" value="${user.telefono || ''}" placeholder="+54 11 1234-5678">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" id="edit-email" value="${user.email || ''}" placeholder="juan@ejemplo.com">
+        </div>
+        <div class="form-group">
           <label class="form-label">Grupo familiar</label>
           <select class="form-input form-select" id="edit-grupo">
-            <option value="Familia Santos" ${user.grupo==='Familia Santos'?'selected':''}>Familia Santos</option>
-            <option value="Familia García" ${user.grupo==='Familia García'?'selected':''}>Familia García</option>
-            <option value="Amigos" ${user.grupo==='Amigos'?'selected':''}>Amigos</option>
-            <option value="Trabajo" ${user.grupo==='Trabajo'?'selected':''}>Trabajo</option>
-            <option value="General" ${user.grupo==='General'?'selected':''}>General</option>
+            ${grupoOptions.map(g => `<option value="${g}" ${user.grupo===g?'selected':''}>${g}</option>`).join('')}
           </select>
         </div>
         <div class="form-group">
@@ -1533,7 +2181,10 @@
         return;
       }
       user.nombre = document.getElementById('edit-nombre').value.trim() || user.nombre;
+      user.apellido = document.getElementById('edit-apellido').value.trim() || user.apellido || '';
       user.apodo = apodo;
+      user.telefono = document.getElementById('edit-telefono').value.trim() || user.telefono || '';
+      user.email = document.getElementById('edit-email').value.trim() || user.email || '';
       user.grupo = document.getElementById('edit-grupo').value;
       user.equipoFavorito = document.getElementById('edit-equipo').value;
       user.avatar = document.getElementById('edit-avatar').value;
