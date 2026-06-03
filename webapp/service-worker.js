@@ -2,10 +2,10 @@
 // PRODE MUNDIAL 2026 - Service Worker
 // ============================================
 
-const CACHE_NAME = 'prode-mundial-2026-v3';
-const STATIC_CACHE = 'prode-static-v3';
-const DYNAMIC_CACHE = 'prode-dynamic-v3';
-const API_CACHE = 'prode-api-v3';
+const CACHE_NAME = 'prode-mundial-2026-v4';
+const STATIC_CACHE = 'prode-static-v4';
+const DYNAMIC_CACHE = 'prode-dynamic-v4';
+const API_CACHE = 'prode-api-v4';
 
 // Static assets to cache on install (app shell)
 const APP_SHELL = [
