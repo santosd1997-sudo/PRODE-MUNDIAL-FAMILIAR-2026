@@ -43,16 +43,129 @@
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
+
   <!-- ============================================ -->
   <!-- SPLASH SCREEN -->
   <!-- ============================================ -->
   <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
-      <img src="icons/icon-512.png" alt="PRODE Mundial 2026" class="splash-logo" id="splash-logo">
+      <img src="icons/icon-512.png" alt="PRODE Mundial 2026" class="splash-logo">
       <h1 class="splash-title">PRODE MUNDIAL</h1>
       <p class="splash-subtitle">2026</p>
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- REGISTRATION SCREEN (hidden if registered) -->
+  <!-- ============================================ -->
+  <div id="register-screen" class="register-screen" style="display:none;">
+    <div class="register-container">
+      <div class="register-header">
+        <img src="icons/icon-192.png" alt="PRODE" class="register-logo">
+        <h1 class="register-title">¡Bienvenido al PRODE Familiar!</h1>
+        <p class="register-subtitle">Registrate para competir con tu familia y amigos durante el Mundial 2026 🏆</p>
+      </div>
+      <form id="register-form" class="register-form" novalidate>
+        <div class="form-group">
+          <label class="form-label">Nombre completo <span class="required">*</span></label>
+          <input type="text" class="form-input" id="reg-nombre" placeholder="Ej: Juan Pérez" required autocomplete="name">
+          <div class="form-error" id="err-nombre">Ingresá tu nombre completo</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apodo / Nickname <span class="required">*</span></label>
+          <input type="text" class="form-input" id="reg-apodo" placeholder="Ej: Juanchi" required minlength="3" autocomplete="off">
+          <div class="form-error" id="err-apodo">El apodo debe tener al menos 3 caracteres</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Grupo familiar <span class="required">*</span></label>
+          <select class="form-input form-select" id="reg-grupo" required>
+            <option value="">Seleccioná tu grupo...</option>
+            <option value="Familia Santos">👨‍👩‍👧‍👦 Familia Santos</option>
+            <option value="Familia García">👨‍👩‍👦‍👦 Familia García</option>
+            <option value="Amigos">🤝 Amigos</option>
+            <option value="Trabajo">💼 Trabajo</option>
+            <option value="General">🌍 General</option>
+          </select>
+          <div class="form-error" id="err-grupo">Seleccioná un grupo</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Equipo favorito <span class="required">*</span></label>
+          <select class="form-input form-select" id="reg-equipo" required>
+            <option value="">Elegí tu equipo...</option>
+          </select>
+          <div class="form-error" id="err-equipo">Elegí tu equipo favorito</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Elegí tu avatar <span class="required">*</span></label>
+          <div class="avatar-grid" id="avatar-grid"></div>
+          <input type="hidden" id="reg-avatar" required>
+          <div class="form-error" id="err-avatar">Elegí un avatar</div>
+        </div>
+        <button type="submit" class="register-btn">⚽ ¡Entrar al PRODE!</button>
+      </form>
+      <div class="register-footer">
+        Versión 1.0 — Hecho con ❤️ para la familia
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ONBOARDING SCREEN -->
+  <!-- ============================================ -->
+  <div id="onboarding-screen" class="onboarding-screen" style="display:none;">
+    <div class="onboarding-slides" id="onboarding-slides">
+      <!-- Slide 1 -->
+      <div class="onboarding-slide active" data-slide="0">
+        <div class="onboarding-emoji">📱</div>
+        <h2 class="onboarding-title">Instalá la App</h2>
+        <p class="onboarding-desc">Para la mejor experiencia, instalá el PRODE como app en tu celular.</p>
+        <div class="onboarding-highlight" id="install-instructions">
+          <!-- Filled by JS based on user agent -->
+        </div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="onboarding-slide" data-slide="1">
+        <div class="onboarding-emoji">⚽</div>
+        <h2 class="onboarding-title">Cargá tus Pronósticos</h2>
+        <p class="onboarding-desc">Elegí el resultado de cada partido antes de que empiece. Podés cambiarlos hasta 1 hora antes del kickoff.</p>
+        <div class="onboarding-highlight">
+          <p>Ingresá los goles para cada equipo y tocá <strong>"Guardar"</strong>. ¡Así de fácil!</p>
+        </div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="onboarding-slide" data-slide="2">
+        <div class="onboarding-emoji">🏆</div>
+        <h2 class="onboarding-title">Competí en el Ranking</h2>
+        <p class="onboarding-desc">Sumá puntos por cada acierto y escalá en la tabla de posiciones.</p>
+        <div class="onboarding-highlight">
+          <p>🎯 <strong>Resultado exacto</strong> = 10 pts<br>
+          📊 <strong>Diferencia correcta</strong> = 7 pts<br>
+          ✅ <strong>Ganador correcto</strong> = 5 pts</p>
+        </div>
+      </div>
+      <!-- Slide 4 -->
+      <div class="onboarding-slide" data-slide="3">
+        <div class="onboarding-emoji">🧠</div>
+        <h2 class="onboarding-title">Modo Experto</h2>
+        <p class="onboarding-desc">Activá el modo PRO para ver estadísticas avanzadas: posesión, xG, H2H y más.</p>
+        <div class="onboarding-highlight">
+          <p>Tocá el botón <strong>🧠 PRO</strong> en el header para activar las estadísticas avanzadas.</p>
+        </div>
+      </div>
+    </div>
+    <div class="onboarding-footer">
+      <div class="onboarding-dots" id="onboarding-dots">
+        <div class="onboarding-dot active"></div>
+        <div class="onboarding-dot"></div>
+        <div class="onboarding-dot"></div>
+        <div class="onboarding-dot"></div>
+      </div>
+      <div class="onboarding-actions">
+        <button class="onboarding-skip" id="onboarding-skip">Saltar</button>
+        <button class="onboarding-next" id="onboarding-next">Siguiente →</button>
       </div>
     </div>
   </div>
@@ -63,10 +176,10 @@
   <header id="app-header" class="header">
     <div class="header-content">
       <div class="header-left">
-        <img src="icons/icon-192.png" alt="Logo" class="header-logo" id="header-logo">
+        <img src="icons/icon-72.png" alt="Logo" class="header-logo" onerror="this.src='icons/icon-192.png'">
         <div class="header-title-group">
-          <h1 class="header-title" id="header-title">PRODE MUNDIAL</h1>
-          <span class="header-subtitle" id="header-subtitle">2026</span>
+          <h1 class="header-title">PRODE MUNDIAL</h1>
+          <span class="header-subtitle">2026</span>
         </div>
       </div>
       <div class="header-right">
@@ -79,8 +192,9 @@
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
-          <span class="badge-count" id="notification-count" style="display: none;">0</span>
+          <span class="badge-count" id="notification-count" style="display:none;">0</span>
         </button>
+        <span class="header-avatar" id="header-avatar">⚽</span>
       </div>
     </div>
   </header>
@@ -89,60 +203,74 @@
   <!-- MAIN CONTENT AREA -->
   <!-- ============================================ -->
   <main id="app-content" class="app-content">
-    <div id="view-container" class="view-container">
-      <!-- Views are dynamically loaded here -->
-      <div id="loading-skeleton" class="skeleton-container">
-        <div class="skeleton skeleton-card"></div>
-        <div class="skeleton skeleton-card"></div>
-        <div class="skeleton skeleton-card"></div>
-      </div>
-    </div>
+    
+    <!-- HOME VIEW -->
+    <section id="view-inicio" class="view-section">
+      <div id="home-content"></div>
+    </section>
+
+    <!-- PREDICTIONS VIEW -->
+    <section id="view-pronosticos" class="view-section">
+      <div id="predictions-content"></div>
+    </section>
+
+    <!-- RANKING VIEW -->
+    <section id="view-ranking" class="view-section">
+      <div id="ranking-content"></div>
+    </section>
+
+    <!-- STATS VIEW -->
+    <section id="view-stats" class="view-section">
+      <div id="stats-content"></div>
+    </section>
+
+    <!-- MORE VIEW -->
+    <section id="view-mas" class="view-section">
+      <div id="mas-content"></div>
+    </section>
   </main>
 
   <!-- ============================================ -->
   <!-- BOTTOM NAVIGATION -->
   <!-- ============================================ -->
   <nav id="bottom-nav" class="bottom-nav" aria-label="Navegación principal">
-    <button class="nav-item active" data-view="inicio" id="nav-inicio" aria-label="Inicio">
+    <button class="nav-item active" data-view="inicio" aria-label="Inicio">
       <span class="nav-icon">🏠</span>
       <span class="nav-label">Inicio</span>
       <span class="nav-indicator"></span>
     </button>
-    <button class="nav-item" data-view="pronosticos" id="nav-pronosticos" aria-label="Pronósticos">
+    <button class="nav-item" data-view="pronosticos" aria-label="Pronósticos">
       <span class="nav-icon">⚽</span>
       <span class="nav-label">Pronósticos</span>
       <span class="nav-indicator"></span>
     </button>
-    <button class="nav-item" data-view="ranking" id="nav-ranking" aria-label="Ranking">
+    <button class="nav-item" data-view="ranking" aria-label="Ranking">
       <span class="nav-icon">🏆</span>
       <span class="nav-label">Ranking</span>
       <span class="nav-indicator"></span>
     </button>
-    <button class="nav-item" data-view="estadisticas" id="nav-estadisticas" aria-label="Estadísticas">
+    <button class="nav-item" data-view="stats" aria-label="Stats">
       <span class="nav-icon">📊</span>
       <span class="nav-label">Stats</span>
       <span class="nav-indicator"></span>
     </button>
-    <button class="nav-item" data-view="config" id="nav-config" aria-label="Configuración">
+    <button class="nav-item" data-view="mas" aria-label="Más">
       <span class="nav-icon">⚙️</span>
-      <span class="nav-label">Config</span>
+      <span class="nav-label">Más</span>
       <span class="nav-indicator"></span>
     </button>
   </nav>
 
-  <!-- ============================================ -->
   <!-- TOAST CONTAINER -->
-  <!-- ============================================ -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- ============================================ -->
-  <!-- PWA INSTALL PROMPT -->
-  <!-- ============================================ -->
-  <div id="install-prompt" class="install-banner" style="display: none;">
+  <!-- FAB (Save All) -->
+  <button id="fab-save-all" class="fab" onclick="saveAllPredictions()">💾 Guardar Todo</button>
+
+  <!-- PWA INSTALL PROMPT BANNER -->
+  <div id="install-prompt" class="install-banner" style="display:none;">
     <div class="install-banner-content">
-      <div class="install-banner-icon">
-        <img src="icons/icon-192.png" alt="PRODE" class="install-banner-logo">
-      </div>
+      <img src="icons/icon-192.png" alt="PRODE" class="install-banner-logo">
       <div class="install-banner-text">
         <strong>Instalar PRODE 2026</strong>
         <p>Acceso rápido desde tu pantalla de inicio</p>
@@ -154,10 +282,8 @@
     </div>
   </div>
 
-  <!-- ============================================ -->
-  <!-- MODAL CONTAINER -->
-  <!-- ============================================ -->
-  <div id="modal-overlay" class="modal-overlay" style="display: none;">
+  <!-- MODAL -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none;">
     <div class="modal-content" id="modal-content">
       <div class="modal-header">
         <h2 class="modal-title" id="modal-title"></h2>
@@ -167,614 +293,170 @@
     </div>
   </div>
 
-  <!-- ============================================ -->
   <!-- OFFLINE INDICATOR -->
-  <!-- ============================================ -->
-  <div id="offline-indicator" class="offline-indicator" style="display: none;">
+  <div id="offline-indicator" class="offline-indicator" style="display:none;">
     <span>📡</span> Sin conexión - Modo offline
   </div>
 
   <!-- ============================================ -->
-  <!-- SCRIPTS -->
+  <!-- APPLICATION JAVASCRIPT -->
   <!-- ============================================ -->
   <script>
-    // ============================================
-    // Service Worker Registration
-    // ============================================
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/service-worker.js');
-          console.log('[App] SW registered:', registration.scope);
+  (function() {
+    'use strict';
 
-          // Listen for updates
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showToast('Nueva versión disponible. Recargá para actualizar.', 'info');
-              }
-            });
-          });
-        } catch (err) {
-          console.error('[App] SW registration failed:', err);
-        }
-      });
+    // ============================================
+    // ALL 48 WORLD CUP TEAMS
+    // ============================================
+    const ALL_TEAMS = [
+      { name: 'Argentina', iso: 'ar', emoji: '🇦🇷' },
+      { name: 'Australia', iso: 'au', emoji: '🇦🇺' },
+      { name: 'Belgium', iso: 'be', emoji: '🇧🇪' },
+      { name: 'Bolivia', iso: 'bo', emoji: '🇧🇴' },
+      { name: 'Brazil', iso: 'br', emoji: '🇧🇷' },
+      { name: 'Cameroon', iso: 'cm', emoji: '🇨🇲' },
+      { name: 'Canada', iso: 'ca', emoji: '🇨🇦' },
+      { name: 'Chile', iso: 'cl', emoji: '🇨🇱' },
+      { name: 'Colombia', iso: 'co', emoji: '🇨🇴' },
+      { name: 'Costa Rica', iso: 'cr', emoji: '🇨🇷' },
+      { name: 'Croatia', iso: 'hr', emoji: '🇭🇷' },
+      { name: 'Denmark', iso: 'dk', emoji: '🇩🇰' },
+      { name: 'Ecuador', iso: 'ec', emoji: '🇪🇨' },
+      { name: 'Egypt', iso: 'eg', emoji: '🇪🇬' },
+      { name: 'England', iso: 'gb-eng', emoji: '🏴\u200D' },
+      { name: 'France', iso: 'fr', emoji: '🇫🇷' },
+      { name: 'Germany', iso: 'de', emoji: '🇩🇪' },
+      { name: 'Ghana', iso: 'gh', emoji: '🇬🇭' },
+      { name: 'Iran', iso: 'ir', emoji: '🇮🇷' },
+      { name: 'Italy', iso: 'it', emoji: '🇮🇹' },
+      { name: 'Jamaica', iso: 'jm', emoji: '🇯🇲' },
+      { name: 'Japan', iso: 'jp', emoji: '🇯🇵' },
+      { name: 'Mexico', iso: 'mx', emoji: '🇲🇽' },
+      { name: 'Morocco', iso: 'ma', emoji: '🇲🇦' },
+      { name: 'Netherlands', iso: 'nl', emoji: '🇳🇱' },
+      { name: 'New Zealand', iso: 'nz', emoji: '🇳🇿' },
+      { name: 'Nigeria', iso: 'ng', emoji: '🇳🇬' },
+      { name: 'Norway', iso: 'no', emoji: '🇳🇴' },
+      { name: 'Panama', iso: 'pa', emoji: '🇵🇦' },
+      { name: 'Paraguay', iso: 'py', emoji: '🇵🇾' },
+      { name: 'Peru', iso: 'pe', emoji: '🇵🇪' },
+      { name: 'Poland', iso: 'pl', emoji: '🇵🇱' },
+      { name: 'Portugal', iso: 'pt', emoji: '🇵🇹' },
+      { name: 'Qatar', iso: 'qa', emoji: '🇶🇦' },
+      { name: 'Saudi Arabia', iso: 'sa', emoji: '🇸🇦' },
+      { name: 'Senegal', iso: 'sn', emoji: '🇸🇳' },
+      { name: 'Serbia', iso: 'rs', emoji: '🇷🇸' },
+      { name: 'South Korea', iso: 'kr', emoji: '🇰🇷' },
+      { name: 'Spain', iso: 'es', emoji: '🇪🇸' },
+      { name: 'Switzerland', iso: 'ch', emoji: '🇨🇭' },
+      { name: 'Tunisia', iso: 'tn', emoji: '🇹🇳' },
+      { name: 'Turkey', iso: 'tr', emoji: '🇹🇷' },
+      { name: 'Ukraine', iso: 'ua', emoji: '🇺🇦' },
+      { name: 'Uruguay', iso: 'uy', emoji: '🇺🇾' },
+      { name: 'USA', iso: 'us', emoji: '🇺🇸' },
+      { name: 'Venezuela', iso: 've', emoji: '🇻🇪' },
+      { name: 'Wales', iso: 'gb-wls', emoji: '🏴\u200D' },
+      { name: 'Algeria', iso: 'dz', emoji: '🇩🇿' }
+    ];
+
+    // ============================================
+    // MATCH FIXTURE DATA (12 confirmed matches)
+    // ============================================
+    const MATCHES = [
+      { id: 1, home: 'Mexico', homeIso: 'mx', away: 'Italy', awayIso: 'it', date: '2026-06-11', time: '18:00', venue: 'Estadio Azteca, Mexico City', group: 'Grupo A', phase: 'groups' },
+      { id: 2, home: 'USA', homeIso: 'us', away: 'Bolivia', awayIso: 'bo', date: '2026-06-11', time: '21:00', venue: 'MetLife Stadium, New Jersey', group: 'Grupo A', phase: 'groups' },
+      { id: 3, home: 'Argentina', homeIso: 'ar', away: 'Norway', awayIso: 'no', date: '2026-06-12', time: '15:00', venue: 'Hard Rock Stadium, Miami', group: 'Grupo B', phase: 'groups' },
+      { id: 4, home: 'Brazil', homeIso: 'br', away: 'Tunisia', awayIso: 'tn', date: '2026-06-12', time: '18:00', venue: 'AT&T Stadium, Dallas', group: 'Grupo C', phase: 'groups' },
+      { id: 5, home: 'France', homeIso: 'fr', away: 'Colombia', awayIso: 'co', date: '2026-06-12', time: '21:00', venue: 'BC Place, Vancouver', group: 'Grupo D', phase: 'groups' },
+      { id: 6, home: 'Spain', homeIso: 'es', away: 'Paraguay', awayIso: 'py', date: '2026-06-13', time: '15:00', venue: 'BMO Field, Toronto', group: 'Grupo E', phase: 'groups' },
+      { id: 7, home: 'England', homeIso: 'gb-eng', away: 'Japan', awayIso: 'jp', date: '2026-06-13', time: '18:00', venue: 'Lincoln Financial, Philadelphia', group: 'Grupo F', phase: 'groups' },
+      { id: 8, home: 'Germany', homeIso: 'de', away: 'South Korea', awayIso: 'kr', date: '2026-06-13', time: '21:00', venue: 'NRG Stadium, Houston', group: 'Grupo G', phase: 'groups' },
+      { id: 9, home: 'Portugal', homeIso: 'pt', away: 'Ecuador', awayIso: 'ec', date: '2026-06-14', time: '15:00', venue: 'Lumen Field, Seattle', group: 'Grupo H', phase: 'groups' },
+      { id: 10, home: 'Netherlands', homeIso: 'nl', away: 'Senegal', awayIso: 'sn', date: '2026-06-14', time: '18:00', venue: 'Gillette Stadium, Boston', group: 'Grupo I', phase: 'groups' },
+      { id: 11, home: 'Uruguay', homeIso: 'uy', away: 'Cameroon', awayIso: 'cm', date: '2026-06-14', time: '21:00', venue: "Levi's Stadium, San Francisco", group: 'Grupo J', phase: 'groups' },
+      { id: 12, home: 'Croatia', homeIso: 'hr', away: 'Chile', awayIso: 'cl', date: '2026-06-15', time: '15:00', venue: 'SoFi Stadium, Los Angeles', group: 'Grupo K', phase: 'groups' }
+    ];
+
+    // ============================================
+    // AVATAR EMOJIS
+    // ============================================
+    const AVATARS = ['⚽','🏆','🥅','🎯','🔥','👑','🦁','🐐','🎪','🌟','💎','🏅','🎖️','⭐','🔮','🧠','💪','🎩','🃏','🦅'];
+
+    // ============================================
+    // DEMO RANKING PARTICIPANTS
+    // ============================================
+    const DEMO_PARTICIPANTS = [
+      { apodo: 'ElDiez10', avatar: '🐐', grupo: 'Familia Santos', points: 87, exactos: 6, accuracy: 72 },
+      { apodo: 'GolDeOro', avatar: '👑', grupo: 'Familia García', points: 82, exactos: 5, accuracy: 68 },
+      { apodo: 'LaScaloneta', avatar: '🦁', grupo: 'Amigos', points: 78, exactos: 5, accuracy: 65 },
+      { apodo: 'Mundialista', avatar: '🏆', grupo: 'Trabajo', points: 74, exactos: 4, accuracy: 62 },
+      { apodo: 'Cracks2026', avatar: '🔥', grupo: 'General', points: 70, exactos: 4, accuracy: 60 },
+      { apodo: 'ProdeKing', avatar: '💎', grupo: 'Familia Santos', points: 65, exactos: 3, accuracy: 56 },
+      { apodo: 'FútbolTotal', avatar: '⚽', grupo: 'Amigos', points: 61, exactos: 3, accuracy: 53 },
+      { apodo: 'MesaTáctica', avatar: '🧠', grupo: 'Trabajo', points: 58, exactos: 2, accuracy: 50 },
+      { apodo: 'GoalMachine', avatar: '🎯', grupo: 'General', points: 52, exactos: 2, accuracy: 45 },
+      { apodo: 'ElArquero', avatar: '🥅', grupo: 'Familia García', points: 48, exactos: 1, accuracy: 42 }
+    ];
+
+    // ============================================
+    // STATE
+    // ============================================
+    let currentView = 'inicio';
+    let countdownInterval = null;
+    let currentPredFilter = 'Todos';
+    let currentStatusFilter = 'todos';
+    let currentRankingTab = 'general';
+
+    // ============================================
+    // HELPER: localStorage
+    // ============================================
+    function getUser() {
+      try { return JSON.parse(localStorage.getItem('prode-user')); } catch(e) { return null; }
+    }
+    function saveUser(u) { localStorage.setItem('prode-user', JSON.stringify(u)); }
+    function getPredictions() {
+      try { return JSON.parse(localStorage.getItem('prode-predictions')) || {}; } catch(e) { return {}; }
+    }
+    function savePredictions(p) { localStorage.setItem('prode-predictions', JSON.stringify(p)); }
+    function getGroupPredictions() {
+      try { return JSON.parse(localStorage.getItem('prode-group-predictions')) || {}; } catch(e) { return {}; }
+    }
+    function saveGroupPredictions(p) { localStorage.setItem('prode-group-predictions', JSON.stringify(p)); }
+    function isOnboarded() { return localStorage.getItem('prode-onboarding-done') === 'true'; }
+    function isExpertMode() { return localStorage.getItem('prode-expert-mode') === 'true'; }
+
+    // ============================================
+    // HELPER: Flag URL
+    // ============================================
+    function flagUrl(iso) {
+      return `https://flagcdn.com/w80/${iso}.png`;
     }
 
     // ============================================
-    // PWA Install Prompt
+    // HELPER: Format date for display
     // ============================================
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      // Show install banner after a delay
-      setTimeout(() => {
-        const banner = document.getElementById('install-prompt');
-        if (banner) {
-          banner.style.display = 'block';
-          banner.classList.add('animate-slideUp');
-        }
-      }, 5000);
-    });
-
-    document.getElementById('install-accept')?.addEventListener('click', async () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log('[App] Install prompt outcome:', outcome);
-        deferredPrompt = null;
-        document.getElementById('install-prompt').style.display = 'none';
-      }
-    });
-
-    document.getElementById('install-dismiss')?.addEventListener('click', () => {
-      document.getElementById('install-prompt').style.display = 'none';
-    });
-
-    // ============================================
-    // Splash Screen
-    // ============================================
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-          splash.classList.add('hidden');
-          setTimeout(() => splash.remove(), 500);
-        }
-      }, 2000);
-    });
-
-    // ============================================
-    // Simple Hash Router
-    // ============================================
-    const views = ['inicio', 'pronosticos', 'ranking', 'estadisticas', 'config'];
-    const viewContainer = document.getElementById('view-container');
-    const navItems = document.querySelectorAll('.nav-item');
-
-    function navigateTo(viewName) {
-      if (!views.includes(viewName)) viewName = 'inicio';
-      
-      // Update URL hash
-      window.location.hash = viewName === 'inicio' ? '' : viewName;
-
-      // Update active nav
-      navItems.forEach(item => {
-        item.classList.toggle('active', item.dataset.view === viewName);
-      });
-
-      // Animate view transition
-      viewContainer.classList.add('view-exit');
-      setTimeout(() => {
-        renderView(viewName);
-        viewContainer.classList.remove('view-exit');
-        viewContainer.classList.add('view-enter');
-        setTimeout(() => viewContainer.classList.remove('view-enter'), 300);
-      }, 150);
-    }
-
-    function renderView(viewName) {
-      const content = getViewContent(viewName);
-      viewContainer.innerHTML = content;
-    }
-
-    function getViewContent(viewName) {
-      switch (viewName) {
-        case 'inicio':
-          return `
-            <div class="view-home">
-              <div class="welcome-card card">
-                <h2 class="text-gold" style="font-family: 'Outfit', sans-serif; font-size: 1.5rem;">¡Bienvenido al PRODE!</h2>
-                <p class="text-muted" style="margin-top: 8px;">Mundial de Fútbol 2026 🏆</p>
-              </div>
-
-              <div class="section-title">
-                <h3>⏱️ Próximo Partido</h3>
-              </div>
-              <div class="match-card card">
-                <div class="match-card-header">
-                  <span class="badge badge-live">Fase de Grupos</span>
-                  <span class="text-muted" style="font-size: 12px;">11 Jun 2026 - 13:00</span>
-                </div>
-                <div class="match-card-body">
-                  <div class="match-team">
-                    <div class="team-flag-placeholder">🇲🇽</div>
-                    <span class="team-name">México</span>
-                  </div>
-                  <div class="match-score-area">
-                    <span class="match-vs">VS</span>
-                  </div>
-                  <div class="match-team">
-                    <div class="team-flag-placeholder">🇦🇷</div>
-                    <span class="team-name">Argentina</span>
-                  </div>
-                </div>
-                <div class="match-card-footer">
-                  <div class="countdown" id="next-match-countdown">
-                    <div class="countdown-unit">
-                      <span class="countdown-value" id="cd-days">09</span>
-                      <span class="countdown-label">Días</span>
-                    </div>
-                    <div class="countdown-unit">
-                      <span class="countdown-value" id="cd-hours">15</span>
-                      <span class="countdown-label">Horas</span>
-                    </div>
-                    <div class="countdown-unit">
-                      <span class="countdown-value" id="cd-mins">32</span>
-                      <span class="countdown-label">Min</span>
-                    </div>
-                    <div class="countdown-unit">
-                      <span class="countdown-value" id="cd-secs">47</span>
-                      <span class="countdown-label">Seg</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="section-title">
-                <h3>📊 Tu Resumen</h3>
-              </div>
-              <div class="stats-grid">
-                <div class="stat-card card">
-                  <span class="stat-label">Puntos</span>
-                  <span class="stat-value text-gold">0</span>
-                </div>
-                <div class="stat-card card">
-                  <span class="stat-label">Posición</span>
-                  <span class="stat-value">-</span>
-                </div>
-                <div class="stat-card card">
-                  <span class="stat-label">Aciertos</span>
-                  <span class="stat-value text-success">0%</span>
-                </div>
-                <div class="stat-card card">
-                  <span class="stat-label">Racha</span>
-                  <span class="stat-value">0 🔥</span>
-                </div>
-              </div>
-
-              <div class="section-title">
-                <h3>🏆 Top 3 Ranking</h3>
-              </div>
-              <div class="card">
-                <div class="ranking-item" style="background: linear-gradient(90deg, rgba(197,165,90,0.15) 0%, transparent 100%);">
-                  <span class="ranking-position gold">1</span>
-                  <span class="ranking-name">Esperando participantes...</span>
-                  <span class="ranking-points text-gold">-</span>
-                </div>
-              </div>
-            </div>
-          `;
-
-        case 'pronosticos':
-          return `
-            <div class="view-predictions">
-              <div class="tab-bar">
-                <button class="tab-item active">Todos</button>
-                <button class="tab-item">Fase de Grupos</button>
-                <button class="tab-item">Octavos</button>
-                <button class="tab-item">Cuartos</button>
-                <button class="tab-item">Semifinal</button>
-                <button class="tab-item">Final</button>
-              </div>
-
-              <div class="section-title" style="margin-top: 16px;">
-                <h3>⚽ Próximos Partidos</h3>
-              </div>
-
-              <div class="match-card card">
-                <div class="match-card-header">
-                  <span class="badge">Grupo A</span>
-                  <span class="text-muted" style="font-size: 12px;">11 Jun - 13:00</span>
-                </div>
-                <div class="match-card-body">
-                  <div class="match-team">
-                    <div class="team-flag-placeholder">🇲🇽</div>
-                    <span class="team-name">México</span>
-                  </div>
-                  <div class="match-score-area">
-                    <input type="number" class="input-score" min="0" max="20" placeholder="-" aria-label="Goles México">
-                    <span class="match-divider">:</span>
-                    <input type="number" class="input-score" min="0" max="20" placeholder="-" aria-label="Goles Argentina">
-                  </div>
-                  <div class="match-team">
-                    <div class="team-flag-placeholder">🇦🇷</div>
-                    <span class="team-name">Argentina</span>
-                  </div>
-                </div>
-                <div class="match-card-footer">
-                  <button class="btn btn-gold btn-block btn-sm">Guardar Pronóstico</button>
-                </div>
-              </div>
-
-              <div class="match-card card">
-                <div class="match-card-header">
-                  <span class="badge">Grupo B</span>
-                  <span class="text-muted" style="font-size: 12px;">11 Jun - 16:00</span>
-                </div>
-                <div class="match-card-body">
-                  <div class="match-team">
-                    <div class="team-flag-placeholder">🇧🇷</div>
-                    <span class="team-name">Brasil</span>
-                  </div>
-                  <div class="match-score-area">
-                    <input type="number" class="input-score" min="0" max="20" placeholder="-" aria-label="Goles Brasil">
-                    <span class="match-divider">:</span>
-                    <input type="number" class="input-score" min="0" max="20" placeholder="-" aria-label="Goles España">
-                  </div>
-                  <div class="match-team">
-                    <div class="team-flag-placeholder">🇪🇸</div>
-                    <span class="team-name">España</span>
-                  </div>
-                </div>
-                <div class="match-card-footer">
-                  <button class="btn btn-gold btn-block btn-sm">Guardar Pronóstico</button>
-                </div>
-              </div>
-
-              <p class="text-muted text-center" style="margin-top: 24px; font-size: 13px;">Los pronósticos se bloquean 1 hora antes del partido</p>
-            </div>
-          `;
-
-        case 'ranking':
-          return `
-            <div class="view-ranking">
-              <div class="section-title">
-                <h3>🏆 Podio</h3>
-              </div>
-              <div class="podium">
-                <div class="podium-place podium-second">
-                  <div class="podium-avatar">🥈</div>
-                  <span class="podium-name">-</span>
-                  <span class="podium-points">0 pts</span>
-                  <div class="podium-bar"></div>
-                </div>
-                <div class="podium-place podium-first">
-                  <div class="podium-avatar">🥇</div>
-                  <span class="podium-name">-</span>
-                  <span class="podium-points">0 pts</span>
-                  <div class="podium-bar"></div>
-                </div>
-                <div class="podium-place podium-third">
-                  <div class="podium-avatar">🥉</div>
-                  <span class="podium-name">-</span>
-                  <span class="podium-points">0 pts</span>
-                  <div class="podium-bar"></div>
-                </div>
-              </div>
-
-              <div class="section-title" style="margin-top: 24px;">
-                <h3>📋 Tabla Completa</h3>
-              </div>
-              <div class="card" style="padding: 0; overflow: hidden;">
-                <div class="ranking-item" style="background: linear-gradient(90deg, rgba(197,165,90,0.12) 0%, transparent 100%);">
-                  <span class="ranking-position gold">1</span>
-                  <span class="ranking-name">Esperando...</span>
-                  <span class="ranking-points text-gold">-</span>
-                </div>
-                <div class="ranking-item">
-                  <span class="ranking-position silver">2</span>
-                  <span class="ranking-name">Esperando...</span>
-                  <span class="ranking-points">-</span>
-                </div>
-                <div class="ranking-item">
-                  <span class="ranking-position bronze">3</span>
-                  <span class="ranking-name">Esperando...</span>
-                  <span class="ranking-points">-</span>
-                </div>
-              </div>
-            </div>
-          `;
-
-        case 'estadisticas':
-          // Expert mode: show full advanced stats
-          if (document.body.classList.contains('expert-mode')) {
-            return `
-              <div class="view-stats">
-                <div class="section-title">
-                  <h3>📊 Estadísticas Avanzadas</h3>
-                  <span class="badge badge-gold" style="margin-left: 8px;">🧠 PRO</span>
-                </div>
-                <div class="stats-grid">
-                  <div class="stat-card card">
-                    <span class="stat-label">Partidos Jugados</span>
-                    <span class="stat-value">0</span>
-                  </div>
-                  <div class="stat-card card">
-                    <span class="stat-label">Goles Totales</span>
-                    <span class="stat-value text-gold">0</span>
-                  </div>
-                  <div class="stat-card card">
-                    <span class="stat-label">Promedio Goles</span>
-                    <span class="stat-value">0.0</span>
-                  </div>
-                  <div class="stat-card card">
-                    <span class="stat-label">Participantes</span>
-                    <span class="stat-value">0</span>
-                  </div>
-                </div>
-
-                <div class="section-title" style="margin-top: 24px;">
-                  <h3>🎯 Tu Rendimiento</h3>
-                </div>
-                <div class="card">
-                  <div class="performance-bar">
-                    <div class="performance-label">Resultados exactos</div>
-                    <div class="performance-track">
-                      <div class="performance-fill" style="width: 0%;"></div>
-                    </div>
-                    <span class="performance-value">0%</span>
-                  </div>
-                  <div class="performance-bar">
-                    <div class="performance-label">Ganador correcto</div>
-                    <div class="performance-track">
-                      <div class="performance-fill" style="width: 0%;"></div>
-                    </div>
-                    <span class="performance-value">0%</span>
-                  </div>
-                  <div class="performance-bar">
-                    <div class="performance-label">Diferencia de gol</div>
-                    <div class="performance-track">
-                      <div class="performance-fill" style="width: 0%;"></div>
-                    </div>
-                    <span class="performance-value">0%</span>
-                  </div>
-                </div>
-
-                <div class="section-title" style="margin-top: 24px;">
-                  <h3>⚽ Estadísticas de Partidos</h3>
-                </div>
-                <div class="card">
-                  <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
-                    <div class="stat-card">
-                      <span class="stat-label">Posesión Prom.</span>
-                      <span class="stat-value" style="font-size: 1.4rem;">-</span>
-                    </div>
-                    <div class="stat-card">
-                      <span class="stat-label">Tiros al Arco</span>
-                      <span class="stat-value" style="font-size: 1.4rem;">-</span>
-                    </div>
-                    <div class="stat-card">
-                      <span class="stat-label">xG Promedio</span>
-                      <span class="stat-value" style="font-size: 1.4rem;">-</span>
-                    </div>
-                    <div class="stat-card">
-                      <span class="stat-label">Córners</span>
-                      <span class="stat-value" style="font-size: 1.4rem;">-</span>
-                    </div>
-                    <div class="stat-card">
-                      <span class="stat-label">Faltas</span>
-                      <span class="stat-value" style="font-size: 1.4rem;">-</span>
-                    </div>
-                    <div class="stat-card">
-                      <span class="stat-label">Tarjetas</span>
-                      <span class="stat-value" style="font-size: 1.4rem;">-</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="section-title" style="margin-top: 24px;">
-                  <h3>📈 H2H & Rankings FIFA</h3>
-                </div>
-                <div class="card">
-                  <p class="text-muted text-center" style="padding: 24px 0; font-size: 13px;">Los datos de H2H y rankings FIFA se cargarán cuando comience el mundial</p>
-                </div>
-
-                <div class="section-title" style="margin-top: 24px;">
-                  <h3>👟 Forma de Equipos</h3>
-                </div>
-                <div class="card">
-                  <p class="text-muted text-center" style="padding: 24px 0; font-size: 13px;">La forma de los equipos se actualizará con los resultados del mundial</p>
-                </div>
-
-                <div class="section-title" style="margin-top: 24px;">
-                  <h3>🏅 Insignias</h3>
-                </div>
-                <div class="badges-grid">
-                  <div class="badge-card card">
-                    <span class="badge-icon">🔮</span>
-                    <span class="badge-name">Vidente</span>
-                    <span class="badge-desc text-muted">3 exactos seguidos</span>
-                    <span class="badge badge-locked">Bloqueada</span>
-                  </div>
-                  <div class="badge-card card">
-                    <span class="badge-icon">🔥</span>
-                    <span class="badge-name">En Racha</span>
-                    <span class="badge-desc text-muted">5 aciertos seguidos</span>
-                    <span class="badge badge-locked">Bloqueada</span>
-                  </div>
-                  <div class="badge-card card">
-                    <span class="badge-icon">👑</span>
-                    <span class="badge-name">Rey del Prode</span>
-                    <span class="badge-desc text-muted">1ro en el ranking</span>
-                    <span class="badge badge-locked">Bloqueada</span>
-                  </div>
-                </div>
-              </div>
-            `;
-          }
-
-          // Simple mode: show simplified stats
-          return `
-            <div class="view-stats">
-              <div class="section-title">
-                <h3>📊 Estadísticas</h3>
-              </div>
-              <div class="stats-grid">
-                <div class="stat-card card">
-                  <span class="stat-label">Partidos Jugados</span>
-                  <span class="stat-value">0</span>
-                </div>
-                <div class="stat-card card">
-                  <span class="stat-label">Goles Totales</span>
-                  <span class="stat-value text-gold">0</span>
-                </div>
-                <div class="stat-card card">
-                  <span class="stat-label">Promedio Goles</span>
-                  <span class="stat-value">0.0</span>
-                </div>
-                <div class="stat-card card">
-                  <span class="stat-label">Participantes</span>
-                  <span class="stat-value">0</span>
-                </div>
-              </div>
-
-              <div class="card" style="margin-top: 16px; text-align: center; padding: 24px;">
-                <span style="font-size: 32px;">🧠</span>
-                <p class="text-muted" style="margin-top: 8px; font-size: 13px;">Activá el <strong class="text-gold">Modo Experto</strong> para ver estadísticas avanzadas: posesión, xG, H2H, rankings FIFA y más.</p>
-                <button class="btn btn-outline btn-sm" style="margin-top: 12px;" onclick="toggleExpertMode()">Activar Modo PRO</button>
-              </div>
-
-              <div class="section-title" style="margin-top: 24px;">
-                <h3>🏅 Insignias</h3>
-              </div>
-              <div class="badges-grid">
-                <div class="badge-card card">
-                  <span class="badge-icon">🔮</span>
-                  <span class="badge-name">Vidente</span>
-                  <span class="badge-desc text-muted">3 exactos seguidos</span>
-                  <span class="badge badge-locked">Bloqueada</span>
-                </div>
-                <div class="badge-card card">
-                  <span class="badge-icon">🔥</span>
-                  <span class="badge-name">En Racha</span>
-                  <span class="badge-desc text-muted">5 aciertos seguidos</span>
-                  <span class="badge badge-locked">Bloqueada</span>
-                </div>
-                <div class="badge-card card">
-                  <span class="badge-icon">👑</span>
-                  <span class="badge-name">Rey del Prode</span>
-                  <span class="badge-desc text-muted">1ro en el ranking</span>
-                  <span class="badge badge-locked">Bloqueada</span>
-                </div>
-              </div>
-            </div>
-          `;
-
-        case 'config':
-          return `
-            <div class="view-settings">
-              <div class="section-title">
-                <h3>⚙️ Configuración</h3>
-              </div>
-
-              <div class="card">
-                <div class="settings-item">
-                  <div class="settings-info">
-                    <span class="settings-label">Notificaciones</span>
-                    <span class="settings-desc text-muted">Recordatorios de partidos</span>
-                  </div>
-                  <label class="toggle">
-                    <input type="checkbox" id="setting-notifications" checked>
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-                <div class="settings-item">
-                  <div class="settings-info">
-                    <span class="settings-label">Sonidos</span>
-                    <span class="settings-desc text-muted">Efectos de sonido</span>
-                  </div>
-                  <label class="toggle">
-                    <input type="checkbox" id="setting-sounds">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-                <div class="settings-item">
-                  <div class="settings-info">
-                    <span class="settings-label">Modo Experto</span>
-                    <span class="settings-desc text-muted">Estadísticas avanzadas</span>
-                  </div>
-                  <label class="toggle">
-                    <input type="checkbox" id="setting-expert">
-                    <span class="toggle-slider"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div class="section-title" style="margin-top: 24px;">
-                <h3>👤 Mi Perfil</h3>
-              </div>
-              <div class="card">
-                <div class="form-group">
-                  <label class="form-label" for="profile-name">Nombre</label>
-                  <input type="text" class="form-input" id="profile-name" placeholder="Tu nombre">
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="profile-team">Equipo Favorito</label>
-                  <select class="form-input form-select" id="profile-team">
-                    <option value="">Seleccionar...</option>
-                    <option value="ARG">🇦🇷 Argentina</option>
-                    <option value="BRA">🇧🇷 Brasil</option>
-                    <option value="MEX">🇲🇽 México</option>
-                    <option value="USA">🇺🇸 Estados Unidos</option>
-                    <option value="ESP">🇪🇸 España</option>
-                    <option value="GER">🇩🇪 Alemania</option>
-                    <option value="FRA">🇫🇷 Francia</option>
-                    <option value="ENG">🏴 Inglaterra</option>
-                  </select>
-                </div>
-                <button class="btn btn-gold btn-block" style="margin-top: 12px;">Guardar Perfil</button>
-              </div>
-
-              <div class="section-title" style="margin-top: 24px;">
-                <h3>ℹ️ Acerca de</h3>
-              </div>
-              <div class="card">
-                <p class="text-muted" style="font-size: 13px; line-height: 1.6;">PRODE Familiar - Mundial de Fútbol 2026<br>Versión 1.0.0</p>
-                <p class="text-muted" style="font-size: 12px; margin-top: 8px;">Hecho con ❤️ para la familia</p>
-              </div>
-            </div>
-          `;
-
-        default:
-          return '<div class="card"><p class="text-muted">Vista no encontrada</p></div>';
-      }
+    function formatMatchDate(dateStr, timeStr) {
+      const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const d = new Date(dateStr + 'T' + timeStr + ':00');
+      return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} — ${timeStr}hs`;
     }
 
     // ============================================
-    // Navigation handlers
+    // HELPER: Group badge CSS class
     // ============================================
-    navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        navigateTo(item.dataset.view);
-      });
-    });
-
-    // Handle hash changes (back/forward)
-    window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.replace('#', '') || 'inicio';
-      navigateTo(hash);
-    });
-
-    // Initial route
-    window.addEventListener('load', () => {
-      const hash = window.location.hash.replace('#', '') || 'inicio';
-      setTimeout(() => navigateTo(hash), 2100); // After splash
-    });
+    function groupClass(g) {
+      const map = {
+        'Familia Santos': 'familia-santos',
+        'Familia García': 'familia-garcia',
+        'Amigos': 'amigos',
+        'Trabajo': 'trabajo',
+        'General': 'general'
+      };
+      return map[g] || 'general';
+    }
 
     // ============================================
-    // Toast Notifications
+    // TOAST
     // ============================================
     function showToast(message, type = 'info', duration = 3000) {
       const container = document.getElementById('toast-container');
@@ -782,7 +464,6 @@
       toast.className = `toast toast-${type}`;
       toast.textContent = message;
       container.appendChild(toast);
-
       setTimeout(() => {
         toast.classList.add('toast-exit');
         setTimeout(() => toast.remove(), 300);
@@ -790,150 +471,1121 @@
     }
 
     // ============================================
-    // Online/Offline detection
+    // MODAL
     // ============================================
-    const offlineIndicator = document.getElementById('offline-indicator');
-
-    window.addEventListener('online', () => {
-      offlineIndicator.style.display = 'none';
-      showToast('¡Conexión restaurada!', 'success');
-    });
-
-    window.addEventListener('offline', () => {
-      offlineIndicator.style.display = 'flex';
-      showToast('Sin conexión - Modo offline', 'warning');
-    });
-
-    // ============================================
-    // Pull to Refresh
-    // ============================================
-    let touchStartY = 0;
-    let touchEndY = 0;
-    const appContent = document.getElementById('app-content');
-
-    appContent.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    appContent.addEventListener('touchmove', (e) => {
-      touchEndY = e.touches[0].clientY;
-    }, { passive: true });
-
-    appContent.addEventListener('touchend', () => {
-      const diff = touchEndY - touchStartY;
-      if (diff > 100 && appContent.scrollTop === 0) {
-        showToast('Actualizando...', 'info', 1500);
-        const currentView = window.location.hash.replace('#', '') || 'inicio';
-        setTimeout(() => navigateTo(currentView), 800);
-      }
-    });
-
-    // ============================================
-    // Notification Bell
-    // ============================================
-    document.getElementById('notification-bell')?.addEventListener('click', () => {
-      showToast('No hay notificaciones nuevas', 'info');
-    });
-
-    // ============================================
-    // Modal helpers
-    // ============================================
-    function openModal(title, content) {
+    function openModal(title, html) {
       document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-body').innerHTML = content;
+      document.getElementById('modal-body').innerHTML = html;
       document.getElementById('modal-overlay').style.display = 'flex';
     }
-
     function closeModal() {
       document.getElementById('modal-overlay').style.display = 'none';
     }
-
-    document.getElementById('modal-close')?.addEventListener('click', closeModal);
-    document.getElementById('modal-overlay')?.addEventListener('click', (e) => {
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('modal-overlay').addEventListener('click', (e) => {
       if (e.target === document.getElementById('modal-overlay')) closeModal();
     });
 
     // ============================================
-    // Countdown Timer (demo)
+    // SERVICE WORKER
     // ============================================
-    function updateCountdown() {
-      const target = new Date('2026-06-11T16:00:00Z');
-      const now = new Date();
-      const diff = target - now;
-
-      if (diff <= 0) return;
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-      const daysEl = document.getElementById('cd-days');
-      const hoursEl = document.getElementById('cd-hours');
-      const minsEl = document.getElementById('cd-mins');
-      const secsEl = document.getElementById('cd-secs');
-
-      if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
-      if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
-      if (minsEl) minsEl.textContent = String(mins).padStart(2, '0');
-      if (secsEl) secsEl.textContent = String(secs).padStart(2, '0');
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const reg = await navigator.serviceWorker.register('service-worker.js');
+          reg.addEventListener('updatefound', () => {
+            const nw = reg.installing;
+            nw.addEventListener('statechange', () => {
+              if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+                showToast('Nueva versión disponible. Recargá para actualizar.', 'info');
+              }
+            });
+          });
+        } catch(e) { /* SW not available */ }
+      });
     }
 
-    setInterval(updateCountdown, 1000);
+    // ============================================
+    // PWA INSTALL PROMPT
+    // ============================================
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      setTimeout(() => {
+        const banner = document.getElementById('install-prompt');
+        if (banner && getUser()) banner.style.display = 'block';
+      }, 8000);
+    });
+    document.getElementById('install-accept').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        document.getElementById('install-prompt').style.display = 'none';
+      }
+    });
+    document.getElementById('install-dismiss').addEventListener('click', () => {
+      document.getElementById('install-prompt').style.display = 'none';
+    });
 
     // ============================================
-    // Expert Mode Toggle
+    // ONLINE/OFFLINE
+    // ============================================
+    const offlineEl = document.getElementById('offline-indicator');
+    window.addEventListener('online', () => {
+      offlineEl.style.display = 'none';
+      showToast('¡Conexión restaurada!', 'success');
+    });
+    window.addEventListener('offline', () => {
+      offlineEl.style.display = 'flex';
+      showToast('Sin conexión - Modo offline', 'warning');
+    });
+
+    // ============================================
+    // SPLASH SCREEN
+    // ============================================
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        splash.classList.add('hidden');
+        setTimeout(() => {
+          splash.remove();
+          initApp();
+        }, 600);
+      }, 2000);
+    });
+
+    // ============================================
+    // INIT APP FLOW
+    // ============================================
+    function initApp() {
+      const user = getUser();
+      if (!user) {
+        showRegistration();
+      } else if (!isOnboarded()) {
+        showOnboarding();
+      } else {
+        startMainApp();
+      }
+    }
+
+    // ============================================
+    // REGISTRATION
+    // ============================================
+    function showRegistration() {
+      document.getElementById('register-screen').style.display = 'flex';
+      populateTeamDropdown();
+      populateAvatarGrid();
+    }
+
+    function populateTeamDropdown() {
+      const sel = document.getElementById('reg-equipo');
+      ALL_TEAMS.sort((a,b) => a.name.localeCompare(b.name)).forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.name;
+        opt.textContent = `${t.emoji} ${t.name}`;
+        sel.appendChild(opt);
+      });
+    }
+
+    function populateAvatarGrid() {
+      const grid = document.getElementById('avatar-grid');
+      AVATARS.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'avatar-option';
+        btn.textContent = emoji;
+        btn.addEventListener('click', () => {
+          grid.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          document.getElementById('reg-avatar').value = emoji;
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    document.getElementById('register-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      let valid = true;
+
+      const nombre = document.getElementById('reg-nombre').value.trim();
+      const apodo = document.getElementById('reg-apodo').value.trim();
+      const grupo = document.getElementById('reg-grupo').value;
+      const equipo = document.getElementById('reg-equipo').value;
+      const avatar = document.getElementById('reg-avatar').value;
+
+      // Validate
+      if (!nombre) {
+        document.getElementById('err-nombre').classList.add('visible');
+        document.getElementById('reg-nombre').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-nombre').classList.remove('visible');
+        document.getElementById('reg-nombre').classList.remove('error');
+      }
+      if (!apodo || apodo.length < 3) {
+        document.getElementById('err-apodo').classList.add('visible');
+        document.getElementById('reg-apodo').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-apodo').classList.remove('visible');
+        document.getElementById('reg-apodo').classList.remove('error');
+      }
+      if (!grupo) {
+        document.getElementById('err-grupo').classList.add('visible');
+        document.getElementById('reg-grupo').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-grupo').classList.remove('visible');
+        document.getElementById('reg-grupo').classList.remove('error');
+      }
+      if (!equipo) {
+        document.getElementById('err-equipo').classList.add('visible');
+        document.getElementById('reg-equipo').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('err-equipo').classList.remove('visible');
+        document.getElementById('reg-equipo').classList.remove('error');
+      }
+      if (!avatar) {
+        document.getElementById('err-avatar').classList.add('visible');
+        valid = false;
+      } else {
+        document.getElementById('err-avatar').classList.remove('visible');
+      }
+
+      if (!valid) {
+        showToast('Completá todos los campos', 'error');
+        return;
+      }
+
+      const user = { nombre, apodo, grupo, equipoFavorito: equipo, avatar, fechaRegistro: new Date().toISOString() };
+      saveUser(user);
+      showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
+      document.getElementById('register-screen').style.display = 'none';
+      showOnboarding();
+    });
+
+    // ============================================
+    // ONBOARDING
+    // ============================================
+    let onboardSlide = 0;
+
+    function showOnboarding() {
+      document.getElementById('onboarding-screen').style.display = 'flex';
+      fillInstallInstructions();
+      updateOnboardSlide();
+    }
+
+    function fillInstallInstructions() {
+      const el = document.getElementById('install-instructions');
+      const ua = navigator.userAgent.toLowerCase();
+      if (/iphone|ipad|ipod/.test(ua)) {
+        el.innerHTML = '<p>En <strong>Safari</strong>: Tocá el ícono de <strong>Compartir</strong> (cuadrado con flecha) → <strong>"Agregar a pantalla de inicio"</strong></p>';
+      } else if (/android/.test(ua)) {
+        el.innerHTML = '<p>En <strong>Chrome</strong>: Tocá el menú <strong>⋮</strong> → <strong>"Instalar aplicación"</strong> o <strong>"Agregar a pantalla de inicio"</strong></p>';
+      } else {
+        el.innerHTML = '<p>En tu navegador, buscá la opción <strong>"Instalar"</strong> en la barra de direcciones o el menú del navegador.</p>';
+      }
+    }
+
+    function updateOnboardSlide() {
+      const slides = document.querySelectorAll('.onboarding-slide');
+      const dots = document.querySelectorAll('.onboarding-dot');
+      slides.forEach((s, i) => {
+        s.classList.remove('active', 'prev');
+        if (i === onboardSlide) s.classList.add('active');
+        else if (i < onboardSlide) s.classList.add('prev');
+      });
+      dots.forEach((d, i) => d.classList.toggle('active', i === onboardSlide));
+
+      const btn = document.getElementById('onboarding-next');
+      btn.textContent = onboardSlide === 3 ? '¡Empezar! 🚀' : 'Siguiente →';
+    }
+
+    document.getElementById('onboarding-next').addEventListener('click', () => {
+      if (onboardSlide < 3) {
+        onboardSlide++;
+        updateOnboardSlide();
+      } else {
+        finishOnboarding();
+      }
+    });
+
+    document.getElementById('onboarding-skip').addEventListener('click', finishOnboarding);
+
+    function finishOnboarding() {
+      localStorage.setItem('prode-onboarding-done', 'true');
+      document.getElementById('onboarding-screen').style.display = 'none';
+      startMainApp();
+    }
+
+    // ============================================
+    // START MAIN APP
+    // ============================================
+    function startMainApp() {
+      const user = getUser();
+      if (!user) return showRegistration();
+
+      // Show app chrome
+      document.getElementById('app-header').classList.add('visible');
+      document.getElementById('bottom-nav').classList.add('visible');
+      document.getElementById('app-content').classList.add('visible');
+
+      // Set avatar in header
+      document.getElementById('header-avatar').textContent = user.avatar;
+
+      // Restore expert mode
+      if (isExpertMode()) {
+        document.body.classList.add('expert-mode');
+        document.getElementById('expert-toggle').classList.add('active');
+      }
+
+      // Initial route
+      const hash = window.location.hash.replace('#', '') || 'inicio';
+      navigateTo(hash);
+    }
+
+    // ============================================
+    // HASH ROUTER
+    // ============================================
+    const validViews = ['inicio', 'pronosticos', 'ranking', 'stats', 'mas'];
+
+    function navigateTo(view) {
+      if (!validViews.includes(view)) view = 'inicio';
+      currentView = view;
+      window.location.hash = view === 'inicio' ? '' : view;
+
+      // Update nav
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.view === view);
+      });
+
+      // Update views
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      const section = document.getElementById('view-' + view);
+      if (section) {
+        section.classList.add('active');
+        section.style.animation = 'none';
+        section.offsetHeight; // reflow
+        section.style.animation = '';
+      }
+
+      // Show/hide FAB
+      const fab = document.getElementById('fab-save-all');
+      fab.classList.toggle('visible', view === 'pronosticos');
+
+      // Render content
+      renderView(view);
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => navigateTo(item.dataset.view));
+    });
+
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '') || 'inicio';
+      navigateTo(hash);
+    });
+
+    function renderView(view) {
+      switch(view) {
+        case 'inicio': renderHome(); break;
+        case 'pronosticos': renderPredictions(); break;
+        case 'ranking': renderRanking(); break;
+        case 'stats': renderStats(); break;
+        case 'mas': renderMas(); break;
+      }
+    }
+
+    // ============================================
+    // HOME VIEW
+    // ============================================
+    function renderHome() {
+      const user = getUser();
+      if (!user) return;
+      const preds = getPredictions();
+      const savedCount = Object.keys(preds).length;
+      const totalMatches = MATCHES.length;
+
+      // Find next match
+      const now = new Date();
+      let nextMatch = MATCHES.find(m => new Date(m.date + 'T' + m.time + ':00') > now) || MATCHES[0];
+
+      const html = `
+        <!-- Welcome Card -->
+        <div class="welcome-card card">
+          <div class="welcome-card-content">
+            <div class="welcome-avatar">${user.avatar}</div>
+            <div class="welcome-name">¡Hola, ${user.apodo}! 👋</div>
+            <div class="welcome-greeting">
+              <span class="group-badge ${groupClass(user.grupo)}">${user.grupo}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tournament Progress -->
+        <div class="card">
+          <div class="progress-container">
+            <div class="progress-header">
+              <span class="progress-title">🏟️ Mundial 2026</span>
+              <span class="progress-count">${savedCount}/${totalMatches} pronósticos</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width: ${(savedCount/totalMatches*100).toFixed(0)}%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Position Card -->
+        <div class="card card-gold position-card">
+          <div>
+            <div class="position-label">Tu posición</div>
+            <div class="position-number">${savedCount > 0 ? '5°' : '-'}</div>
+          </div>
+          <div style="flex:1">
+            <div class="position-variation same">— sin cambios</div>
+            <div class="position-stats">
+              <span class="position-stat"><strong class="text-gold">${savedCount > 0 ? '35' : '0'}</strong> pts</span>
+              <span class="position-stat"><strong>${savedCount > 0 ? '45' : '0'}%</strong> aciertos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Match Countdown -->
+        <div class="section-title"><h3>⏱️ Próximo Partido</h3></div>
+        <div class="card next-match-card">
+          <div class="match-card-header">
+            <span class="badge badge-gold">${nextMatch.group}</span>
+            <div class="match-meta">
+              <span class="match-date">${formatMatchDate(nextMatch.date, nextMatch.time)}</span>
+              <span class="match-venue">${nextMatch.venue}</span>
+            </div>
+          </div>
+          <div class="next-match-teams">
+            <div class="next-match-team">
+              <img src="${flagUrl(nextMatch.homeIso)}" class="team-flag team-flag-lg" alt="${nextMatch.home}" onerror="this.style.display='none'">
+              <span class="team-name">${nextMatch.home}</span>
+            </div>
+            <div class="next-match-vs">VS</div>
+            <div class="next-match-team">
+              <img src="${flagUrl(nextMatch.awayIso)}" class="team-flag team-flag-lg" alt="${nextMatch.away}" onerror="this.style.display='none'">
+              <span class="team-name">${nextMatch.away}</span>
+            </div>
+          </div>
+          <div class="countdown" id="home-countdown">
+            <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="section-title"><h3>📊 Tu Resumen</h3></div>
+        <div class="quick-stats">
+          <div class="quick-stat"><div class="quick-stat-value text-gold">${savedCount > 0 ? '35' : '0'}</div><div class="quick-stat-label">Puntos</div></div>
+          <div class="quick-stat"><div class="quick-stat-value">${savedCount > 0 ? '5°' : '-'}</div><div class="quick-stat-label">Posición</div></div>
+          <div class="quick-stat"><div class="quick-stat-value text-success">${savedCount > 0 ? '2' : '0'}</div><div class="quick-stat-label">Exactos</div></div>
+          <div class="quick-stat"><div class="quick-stat-value">${savedCount > 0 ? '3' : '0'} 🔥</div><div class="quick-stat-label">Racha</div></div>
+        </div>
+
+        <!-- CTA -->
+        <button class="cta-btn" onclick="navigateTo('pronosticos')">⚽ Cargar Pronósticos</button>
+
+        <!-- Recent Activity -->
+        <div class="section-title"><h3>📋 Actividad Reciente</h3></div>
+        <div class="card" style="padding:0;">
+          ${savedCount > 0 ? Object.entries(preds).slice(-3).reverse().map(([id, p]) => {
+            const m = MATCHES.find(x => x.id == id);
+            if (!m) return '';
+            return `<div class="activity-item" style="padding:12px 16px;">
+              <div class="activity-icon correct">✅</div>
+              <div class="activity-text">${m.home} ${p.home} - ${p.away} ${m.away}<small>Tu pronóstico guardado</small></div>
+            </div>`;
+          }).join('') : `
+          <div class="empty-state" style="padding:24px;">
+            <div class="empty-state-icon">📝</div>
+            <div class="empty-state-desc">Todavía no cargaste pronósticos. ¡Empezá ahora!</div>
+          </div>`}
+        </div>
+      `;
+
+      document.getElementById('home-content').innerHTML = html;
+      startCountdown(nextMatch);
+    }
+
+    function startCountdown(match) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const target = new Date(match.date + 'T' + match.time + ':00');
+      function update() {
+        const now = new Date();
+        const diff = target - now;
+        if (diff <= 0) {
+          ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = '00';
+          });
+          return;
+        }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        const de = document.getElementById('cd-days');
+        const he = document.getElementById('cd-hours');
+        const me = document.getElementById('cd-mins');
+        const se = document.getElementById('cd-secs');
+        if (de) de.textContent = String(d).padStart(2, '0');
+        if (he) he.textContent = String(h).padStart(2, '0');
+        if (me) me.textContent = String(m).padStart(2, '0');
+        if (se) se.textContent = String(s).padStart(2, '0');
+      }
+      update();
+      countdownInterval = setInterval(update, 1000);
+    }
+
+    // ============================================
+    // PREDICTIONS VIEW
+    // ============================================
+    function renderPredictions() {
+      const preds = getPredictions();
+      const savedCount = Object.keys(preds).length;
+      const total = MATCHES.length;
+
+      // Get unique groups
+      const groups = ['Todos', ...new Set(MATCHES.map(m => m.group))];
+
+      // Filter matches
+      let filtered = MATCHES;
+      if (currentPredFilter !== 'Todos') {
+        filtered = MATCHES.filter(m => m.group === currentPredFilter);
+      }
+      if (currentStatusFilter === 'cargados') {
+        filtered = filtered.filter(m => preds[m.id]);
+      } else if (currentStatusFilter === 'pendientes') {
+        filtered = filtered.filter(m => !preds[m.id]);
+      }
+
+      const html = `
+        <!-- Completion Pill -->
+        <div class="completion-pill">
+          <span class="completion-text">${savedCount}/${total} cargados</span>
+          <div class="completion-bar"><div class="completion-bar-fill" style="width:${(savedCount/total*100).toFixed(0)}%"></div></div>
+        </div>
+
+        <!-- Group Filter Tabs -->
+        <div class="filter-tabs">
+          ${groups.map(g => `<button class="filter-tab ${currentPredFilter === g ? 'active' : ''}" onclick="setPredFilter('${g}')">${g}</button>`).join('')}
+        </div>
+
+        <!-- Status Filters -->
+        <div class="status-filters">
+          <button class="status-filter ${currentStatusFilter === 'todos' ? 'active' : ''}" onclick="setStatusFilter('todos')">Todos</button>
+          <button class="status-filter ${currentStatusFilter === 'pendientes' ? 'active' : ''}" onclick="setStatusFilter('pendientes')">🟡 Pendientes</button>
+          <button class="status-filter ${currentStatusFilter === 'cargados' ? 'active' : ''}" onclick="setStatusFilter('cargados')">🟢 Cargados</button>
+        </div>
+
+        <!-- Match Cards -->
+        <div class="match-cards-grid">
+          ${filtered.map((m, idx) => {
+            const p = preds[m.id];
+            const homeVal = p ? p.home : '';
+            const awayVal = p ? p.away : '';
+            const isSaved = !!p;
+            return `
+            <div class="match-card card stagger" style="animation-delay: ${idx * 0.06}s">
+              <div class="match-card-header">
+                <span class="badge badge-gold">${m.group}</span>
+                <div class="match-meta">
+                  <span class="match-date">${formatMatchDate(m.date, m.time)}</span>
+                  <span class="match-venue">${m.venue}</span>
+                </div>
+              </div>
+              <div class="match-card-body">
+                <div class="match-team">
+                  <img src="${flagUrl(m.homeIso)}" class="team-flag" alt="${m.home}" onerror="this.style.display='none'">
+                  <span class="team-name">${m.home}</span>
+                </div>
+                <div class="match-score-area">
+                  <input type="number" class="input-score ${homeVal !== '' ? 'has-value' : ''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" aria-label="Goles ${m.home}" inputmode="numeric">
+                  <span class="match-divider">:</span>
+                  <input type="number" class="input-score ${awayVal !== '' ? 'has-value' : ''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" aria-label="Goles ${m.away}" inputmode="numeric">
+                </div>
+                <div class="match-team">
+                  <img src="${flagUrl(m.awayIso)}" class="team-flag" alt="${m.away}" onerror="this.style.display='none'">
+                  <span class="team-name">${m.away}</span>
+                </div>
+              </div>
+              <div class="match-card-footer">
+                <div class="match-status">
+                  <span class="match-status-indicator">${isSaved ? '🟢 Guardado' : '🟡 Pendiente'}</span>
+                </div>
+                <button class="match-save-btn ${isSaved ? 'saved' : ''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})">${isSaved ? '✅ Guardado' : '💾 Guardar'}</button>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+
+        ${filtered.length === 0 ? `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">No hay partidos</div>
+            <div class="empty-state-desc">No se encontraron partidos con los filtros seleccionados.</div>
+          </div>
+        </div>` : ''}
+
+        <p class="text-muted text-center" style="margin-top:20px;font-size:12px;">Los pronósticos se bloquean 1 hora antes del partido ⏰</p>
+      `;
+
+      document.getElementById('predictions-content').innerHTML = html;
+    }
+
+    // Expose filter functions globally
+    window.setPredFilter = function(f) { currentPredFilter = f; renderPredictions(); };
+    window.setStatusFilter = function(f) { currentStatusFilter = f; renderPredictions(); };
+
+    window.saveMatch = function(id) {
+      const homeInput = document.getElementById('score-home-' + id);
+      const awayInput = document.getElementById('score-away-' + id);
+      const homeVal = homeInput.value;
+      const awayVal = awayInput.value;
+
+      if (homeVal === '' || awayVal === '') {
+        showToast('Completá ambos marcadores', 'error');
+        if (homeVal === '') homeInput.classList.add('error');
+        if (awayVal === '') awayInput.classList.add('error');
+        return;
+      }
+
+      const preds = getPredictions();
+      preds[id] = { home: parseInt(homeVal), away: parseInt(awayVal), savedAt: new Date().toISOString() };
+      savePredictions(preds);
+
+      const btn = document.getElementById('save-btn-' + id);
+      btn.textContent = '✅ Guardado';
+      btn.classList.add('saved');
+      homeInput.classList.add('has-value');
+      awayInput.classList.add('has-value');
+      homeInput.classList.remove('error');
+      awayInput.classList.remove('error');
+
+      const match = MATCHES.find(m => m.id === id);
+      showToast(`${match.home} ${homeVal} - ${awayVal} ${match.away} guardado ✅`, 'success');
+    };
+
+    window.saveAllPredictions = function() {
+      let saved = 0;
+      MATCHES.forEach(m => {
+        const h = document.getElementById('score-home-' + m.id);
+        const a = document.getElementById('score-away-' + m.id);
+        if (h && a && h.value !== '' && a.value !== '') {
+          const preds = getPredictions();
+          preds[m.id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
+          savePredictions(preds);
+          const btn = document.getElementById('save-btn-' + m.id);
+          if (btn) { btn.textContent = '✅ Guardado'; btn.classList.add('saved'); }
+          saved++;
+        }
+      });
+      if (saved > 0) {
+        showToast(`${saved} pronósticos guardados 🎉`, 'success');
+      } else {
+        showToast('No hay pronósticos nuevos para guardar', 'warning');
+      }
+    };
+
+    // ============================================
+    // RANKING VIEW
+    // ============================================
+    function renderRanking() {
+      const user = getUser();
+      if (!user) return;
+
+      // Build ranking with demo + current user
+      let ranking = [...DEMO_PARTICIPANTS];
+      const preds = getPredictions();
+      const userEntry = {
+        apodo: user.apodo,
+        avatar: user.avatar,
+        grupo: user.grupo,
+        points: Object.keys(preds).length > 0 ? 35 : 0,
+        exactos: Object.keys(preds).length > 0 ? 2 : 0,
+        accuracy: Object.keys(preds).length > 0 ? 45 : 0,
+        isMe: true
+      };
+      ranking.push(userEntry);
+      ranking.sort((a, b) => b.points - a.points);
+
+      // Filter by tab
+      let filtered = ranking;
+      if (currentRankingTab === 'grupo') {
+        filtered = ranking.filter(p => p.grupo === user.grupo);
+      }
+
+      const top3 = filtered.slice(0, 3);
+      const rest = filtered;
+
+      const html = `
+        <!-- Ranking Tabs -->
+        <div class="ranking-tabs">
+          <button class="ranking-tab ${currentRankingTab === 'general' ? 'active' : ''}" onclick="setRankingTab('general')">General</button>
+          <button class="ranking-tab ${currentRankingTab === 'grupo' ? 'active' : ''}" onclick="setRankingTab('grupo')">Mi Grupo</button>
+          <button class="ranking-tab ${currentRankingTab === 'semanal' ? 'active' : ''}" onclick="setRankingTab('semanal')">Semanal</button>
+        </div>
+
+        <!-- Podium -->
+        <div class="section-title"><h3>🏆 Podio</h3></div>
+        <div class="podium">
+          ${top3.length >= 2 ? `
+          <div class="podium-place podium-second">
+            <div class="podium-avatar">${top3[1].avatar}</div>
+            <span class="podium-name">${top3[1].apodo}</span>
+            <span class="podium-points">${top3[1].points} pts</span>
+            <div class="podium-bar">2°</div>
+          </div>` : ''}
+          ${top3.length >= 1 ? `
+          <div class="podium-place podium-first">
+            <div class="podium-avatar">${top3[0].avatar}</div>
+            <span class="podium-name">${top3[0].apodo}</span>
+            <span class="podium-points">${top3[0].points} pts</span>
+            <div class="podium-bar">1°</div>
+          </div>` : ''}
+          ${top3.length >= 3 ? `
+          <div class="podium-place podium-third">
+            <div class="podium-avatar">${top3[2].avatar}</div>
+            <span class="podium-name">${top3[2].apodo}</span>
+            <span class="podium-points">${top3[2].points} pts</span>
+            <div class="podium-bar">3°</div>
+          </div>` : ''}
+        </div>
+
+        <!-- Full Ranking -->
+        <div class="section-title"><h3>📋 Tabla Completa</h3></div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          ${rest.map((p, i) => {
+            const pos = i + 1;
+            const posClass = pos === 1 ? 'gold' : pos === 2 ? 'silver' : pos === 3 ? 'bronze' : '';
+            return `
+            <div class="ranking-item ${p.isMe ? 'is-me' : ''}" ${pos <= 3 ? `style="background:linear-gradient(90deg,${pos===1?'rgba(197,165,90,0.12)':pos===2?'rgba(192,192,192,0.08)':'rgba(205,127,50,0.08)'} 0%,transparent 100%)"` : ''}>
+              <span class="ranking-position ${posClass}">${pos}</span>
+              <div class="ranking-avatar">${p.avatar}</div>
+              <div class="ranking-info">
+                <div class="ranking-name">${p.apodo} ${p.isMe ? '(vos)' : ''}</div>
+                <span class="group-badge ${groupClass(p.grupo)} ranking-group">${p.grupo}</span>
+              </div>
+              <div class="ranking-stats">
+                <span class="ranking-points ${pos <= 3 ? 'text-gold' : ''}">${p.points} pts</span>
+                <span class="ranking-extra">🎯 ${p.exactos} · ${p.accuracy}%</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+
+      document.getElementById('ranking-content').innerHTML = html;
+    }
+
+    window.setRankingTab = function(tab) {
+      currentRankingTab = tab;
+      renderRanking();
+    };
+
+    // ============================================
+    // STATS VIEW
+    // ============================================
+    function renderStats() {
+      const user = getUser();
+      const preds = getPredictions();
+      const expert = isExpertMode();
+      const savedCount = Object.keys(preds).length;
+
+      let html = `
+        <div class="section-title"><h3>📊 Tus Estadísticas</h3></div>
+        <div class="stats-grid">
+          <div class="stat-card card"><span class="stat-label">Puntos</span><span class="stat-value text-gold">${savedCount > 0 ? '35' : '0'}</span></div>
+          <div class="stat-card card"><span class="stat-label">Posición</span><span class="stat-value">${savedCount > 0 ? '5°' : '-'}</span></div>
+          <div class="stat-card card"><span class="stat-label">Exactos</span><span class="stat-value text-success">${savedCount > 0 ? '2' : '0'}</span></div>
+          <div class="stat-card card"><span class="stat-label">Aciertos</span><span class="stat-value">${savedCount > 0 ? '45%' : '0%'}</span></div>
+        </div>
+
+        <!-- Results Breakdown -->
+        <div class="section-title mt-3"><h3>🎯 Desglose de Resultados</h3></div>
+        <div class="card">
+          <div class="stat-bar"><span class="stat-bar-label">Exactos (10pts)</span><div class="stat-bar-track"><div class="stat-bar-fill exact" style="width:${savedCount>0?'25':'0'}%"></div></div><span class="stat-bar-value">${savedCount>0?'2':'0'}</span></div>
+          <div class="stat-bar"><span class="stat-bar-label">Diferencia (7pts)</span><div class="stat-bar-track"><div class="stat-bar-fill diff" style="width:${savedCount>0?'15':'0'}%"></div></div><span class="stat-bar-value">${savedCount>0?'1':'0'}</span></div>
+          <div class="stat-bar"><span class="stat-bar-label">Ganador (5pts)</span><div class="stat-bar-track"><div class="stat-bar-fill winner" style="width:${savedCount>0?'35':'0'}%"></div></div><span class="stat-bar-value">${savedCount>0?'3':'0'}</span></div>
+          <div class="stat-bar"><span class="stat-bar-label">Error (0pts)</span><div class="stat-bar-track"><div class="stat-bar-fill error" style="width:${savedCount>0?'25':'0'}%"></div></div><span class="stat-bar-value">${savedCount>0?'2':'0'}</span></div>
+        </div>
+
+        <!-- Recent Predictions -->
+        <div class="section-title mt-3"><h3>📝 Pronósticos Recientes</h3></div>
+        <div class="card" style="padding:0;">
+          ${savedCount > 0 ? Object.entries(preds).slice(-5).reverse().map(([id, p]) => {
+            const m = MATCHES.find(x => x.id == id);
+            if (!m) return '';
+            return `<div class="activity-item" style="padding:12px 16px;">
+              <div class="activity-icon correct">✅</div>
+              <div class="activity-text">${m.home} <strong>${p.home} - ${p.away}</strong> ${m.away}<small>${m.group} · ${formatMatchDate(m.date, m.time)}</small></div>
+            </div>`;
+          }).join('') : `
+          <div class="empty-state" style="padding:24px;">
+            <div class="empty-state-icon">📊</div>
+            <div class="empty-state-desc">Las estadísticas se actualizan cuando cargues pronósticos.</div>
+          </div>`}
+        </div>
+      `;
+
+      if (!expert) {
+        html += `
+        <div class="card mt-3" style="text-align:center;padding:24px;">
+          <span style="font-size:40px;">🧠</span>
+          <p class="text-muted" style="margin-top:12px;font-size:13px;">Activá el <strong class="text-gold">Modo Experto</strong> para ver estadísticas avanzadas: posesión, xG, H2H, rankings FIFA y más.</p>
+          <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="toggleExpertMode()">Activar Modo PRO</button>
+        </div>`;
+      } else {
+        html += `
+        <!-- EXPERT MODE CONTENT -->
+        <div class="section-title mt-4"><h3>⚽ Estadísticas de Partidos <span class="badge badge-gold">🧠 PRO</span></h3></div>
+        <div class="card">
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+            <div class="stat-card"><span class="stat-label">Goles Totales</span><span class="stat-value" style="font-size:1.4rem;">0</span></div>
+            <div class="stat-card"><span class="stat-label">Prom. Goles</span><span class="stat-value" style="font-size:1.4rem;">0.0</span></div>
+            <div class="stat-card"><span class="stat-label">Partidos</span><span class="stat-value" style="font-size:1.4rem;">0</span></div>
+          </div>
+        </div>
+
+        <div class="section-title mt-3"><h3>📈 Comparar Equipos</h3></div>
+        <div class="card">
+          <div class="team-comparison">
+            <select class="form-input form-select" id="compare-team1" style="font-size:13px;padding:10px 12px;">
+              ${ALL_TEAMS.slice(0, 12).map(t => `<option value="${t.name}">${t.emoji} ${t.name}</option>`).join('')}
+            </select>
+            <span class="team-comparison-vs">vs</span>
+            <select class="form-input form-select" id="compare-team2" style="font-size:13px;padding:10px 12px;">
+              ${ALL_TEAMS.slice(0, 12).map((t,i) => `<option value="${t.name}" ${i===1?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+            </select>
+          </div>
+          <div class="card" style="background:var(--bg-elevated);margin-bottom:0;">
+            <div class="stat-bar"><span class="stat-bar-label">Posesión</span><div class="stat-bar-track"><div class="stat-bar-fill default" style="width:55%"></div></div><span class="stat-bar-value">55%</span></div>
+            <div class="stat-bar"><span class="stat-bar-label">Tiros al arco</span><div class="stat-bar-track"><div class="stat-bar-fill default" style="width:62%"></div></div><span class="stat-bar-value">6.2</span></div>
+            <div class="stat-bar"><span class="stat-bar-label">xG promedio</span><div class="stat-bar-track"><div class="stat-bar-fill default" style="width:48%"></div></div><span class="stat-bar-value">1.8</span></div>
+            <div class="stat-bar"><span class="stat-bar-label">Córners</span><div class="stat-bar-track"><div class="stat-bar-fill default" style="width:42%"></div></div><span class="stat-bar-value">5.1</span></div>
+          </div>
+        </div>
+
+        <div class="section-title mt-3"><h3>🏅 Insignias</h3></div>
+        <div class="badges-grid">
+          <div class="badge-card card"><span class="badge-icon">🔮</span><span class="badge-name">Vidente</span><span class="badge-desc text-muted">3 exactos seguidos</span><span class="badge badge-locked">Bloqueada</span></div>
+          <div class="badge-card card"><span class="badge-icon">🔥</span><span class="badge-name">En Racha</span><span class="badge-desc text-muted">5 aciertos seguidos</span><span class="badge badge-locked">Bloqueada</span></div>
+          <div class="badge-card card"><span class="badge-icon">👑</span><span class="badge-name">Rey del Prode</span><span class="badge-desc text-muted">1ro en el ranking</span><span class="badge badge-locked">Bloqueada</span></div>
+        </div>`;
+      }
+
+      document.getElementById('stats-content').innerHTML = html;
+    }
+
+    // ============================================
+    // MORE (MÁS) VIEW
+    // ============================================
+    function renderMas() {
+      const user = getUser();
+      if (!user) return;
+      const gp = getGroupPredictions();
+      const apiUrl = localStorage.getItem('prode-api-url') || '';
+      const notifOn = localStorage.getItem('prode-notifs') !== 'false';
+      const soundsOn = localStorage.getItem('prode-sounds') === 'true';
+      const favTeam = ALL_TEAMS.find(t => t.name === user.equipoFavorito);
+
+      const html = `
+        <!-- Profile Card -->
+        <div class="section-title"><h3>👤 Mi Perfil</h3></div>
+        <div class="card profile-card">
+          <span class="profile-avatar">${user.avatar}</span>
+          <div class="profile-info">
+            <div class="profile-name">${user.apodo}</div>
+            <div class="profile-details">${user.nombre}</div>
+            <div style="margin-top:4px;">
+              <span class="group-badge ${groupClass(user.grupo)}">${user.grupo}</span>
+              ${favTeam ? `<span style="margin-left:6px;font-size:12px;">${favTeam.emoji} ${favTeam.name}</span>` : ''}
+            </div>
+          </div>
+          <button class="profile-edit-btn" onclick="openEditProfile()">Editar</button>
+        </div>
+
+        <!-- Group Predictions -->
+        <div class="section-title mt-3"><h3>🏆 Predicciones del Torneo</h3></div>
+        <div class="card">
+          <div class="predictions-form" id="group-predictions-form">
+            <div class="form-group">
+              <label class="form-label">🏆 Campeón</label>
+              <select class="form-input form-select" id="gp-champion">
+                <option value="">Elegí al campeón...</option>
+                ${ALL_TEAMS.sort((a,b)=>a.name.localeCompare(b.name)).map(t => `<option value="${t.name}" ${gp.champion===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">🥈 Subcampeón</label>
+              <select class="form-input form-select" id="gp-runner">
+                <option value="">Elegí al subcampeón...</option>
+                ${ALL_TEAMS.map(t => `<option value="${t.name}" ${gp.runner===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">👟 Goleador</label>
+              <input type="text" class="form-input" id="gp-scorer" placeholder="Ej: Messi, Mbappé..." value="${gp.scorer||''}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">⚽ Goles totales del torneo</label>
+              <input type="number" class="form-input" id="gp-goals" min="0" max="500" placeholder="Ej: 172" value="${gp.goals||''}" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <label class="form-label">🎭 Equipo sorpresa</label>
+              <select class="form-input form-select" id="gp-surprise">
+                <option value="">Elegí un equipo sorpresa...</option>
+                ${ALL_TEAMS.map(t => `<option value="${t.name}" ${gp.surprise===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+              </select>
+            </div>
+            <button class="btn btn-gold btn-block" onclick="saveGroupPreds()">💾 Guardar Predicciones</button>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="section-title mt-3"><h3>🔔 Notificaciones</h3></div>
+        <div class="card">
+          <div class="settings-item">
+            <div class="settings-info"><span class="settings-label">Recordatorios de partidos</span><span class="settings-desc text-muted">Avisos antes de cada partido</span></div>
+            <label class="toggle"><input type="checkbox" id="set-notifs" ${notifOn?'checked':''} onchange="localStorage.setItem('prode-notifs',this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="settings-item">
+            <div class="settings-info"><span class="settings-label">Sonidos</span><span class="settings-desc text-muted">Efectos al guardar</span></div>
+            <label class="toggle"><input type="checkbox" id="set-sounds" ${soundsOn?'checked':''} onchange="localStorage.setItem('prode-sounds',this.checked?'true':'false')"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <!-- Installation Guide -->
+        <div class="section-title mt-3"><h3>📱 Instalar App</h3></div>
+        <div class="card install-guide">
+          <div class="install-guide-icon">📲</div>
+          <div class="install-guide-title">Instalá PRODE como App</div>
+          <div class="install-guide-desc">Accedé más rápido y recibí notificaciones</div>
+          ${deferredPrompt ? '<button class="btn btn-gold btn-block mb-3" onclick="triggerInstall()">📱 Instalar como App</button>' : ''}
+          <div class="install-steps" id="install-guide-steps"></div>
+        </div>
+
+        <!-- API Config -->
+        <div class="section-title mt-3"><h3>🔧 Avanzado</h3></div>
+        <div class="card">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">URL del API (opcional)</label>
+            <input type="url" class="form-input" id="api-url-input" placeholder="https://api.tuprode.com" value="${apiUrl}">
+          </div>
+          <button class="btn btn-outline btn-sm btn-block mt-2" onclick="saveApiUrl()">Guardar URL</button>
+        </div>
+
+        <!-- App Info -->
+        <div class="section-title mt-3"><h3>ℹ️ Acerca de</h3></div>
+        <div class="card text-center">
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.8;">
+            <strong>PRODE Familiar</strong><br>
+            Mundial de Fútbol 2026<br>
+            Versión 1.0.0<br>
+            Hecho con ❤️ para la familia
+          </p>
+        </div>
+
+        <!-- Share -->
+        <button class="btn btn-primary btn-block mt-2" onclick="shareApp()">📤 Compartir PRODE</button>
+
+        <!-- Logout -->
+        <button class="btn btn-danger btn-block mt-2" onclick="logout()" style="margin-bottom:32px;">🚪 Cerrar Sesión</button>
+      `;
+
+      document.getElementById('mas-content').innerHTML = html;
+      fillInstallGuide();
+    }
+
+    function fillInstallGuide() {
+      const el = document.getElementById('install-guide-steps');
+      if (!el) return;
+      const ua = navigator.userAgent.toLowerCase();
+      if (/iphone|ipad|ipod/.test(ua)) {
+        el.innerHTML = `
+          <div class="install-step"><span class="install-step-number">1</span><span class="install-step-text">Abrí esta página en <strong>Safari</strong></span></div>
+          <div class="install-step"><span class="install-step-number">2</span><span class="install-step-text">Tocá el ícono <strong>Compartir</strong> (cuadrado con flecha)</span></div>
+          <div class="install-step"><span class="install-step-number">3</span><span class="install-step-text">Seleccioná <strong>"Agregar a pantalla de inicio"</strong></span></div>
+        `;
+      } else {
+        el.innerHTML = `
+          <div class="install-step"><span class="install-step-number">1</span><span class="install-step-text">Abrí esta página en <strong>Chrome</strong></span></div>
+          <div class="install-step"><span class="install-step-number">2</span><span class="install-step-text">Tocá el menú <strong>⋮</strong> (tres puntos)</span></div>
+          <div class="install-step"><span class="install-step-number">3</span><span class="install-step-text">Seleccioná <strong>"Instalar aplicación"</strong></span></div>
+        `;
+      }
+    }
+
+    window.saveGroupPreds = function() {
+      const data = {
+        champion: document.getElementById('gp-champion').value,
+        runner: document.getElementById('gp-runner').value,
+        scorer: document.getElementById('gp-scorer').value,
+        goals: document.getElementById('gp-goals').value,
+        surprise: document.getElementById('gp-surprise').value,
+        savedAt: new Date().toISOString()
+      };
+      saveGroupPredictions(data);
+      showToast('Predicciones del torneo guardadas 🏆', 'success');
+    };
+
+    window.saveApiUrl = function() {
+      const url = document.getElementById('api-url-input').value.trim();
+      localStorage.setItem('prode-api-url', url);
+      showToast(url ? 'URL del API guardada' : 'URL del API borrada', 'success');
+    };
+
+    window.triggerInstall = async function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+      }
+    };
+
+    window.shareApp = function() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'PRODE Mundial 2026',
+          text: '¡Sumate al PRODE Familiar del Mundial 2026! 🏆⚽',
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href)
+          .then(() => showToast('Link copiado al portapapeles 📋', 'success'))
+          .catch(() => showToast('No se pudo compartir', 'error'));
+      }
+    };
+
+    window.logout = function() {
+      if (confirm('¿Seguro que querés cerrar sesión? Se borrarán todos tus datos.')) {
+        localStorage.removeItem('prode-user');
+        localStorage.removeItem('prode-predictions');
+        localStorage.removeItem('prode-group-predictions');
+        localStorage.removeItem('prode-onboarding-done');
+        localStorage.removeItem('prode-expert-mode');
+        localStorage.removeItem('prode-api-url');
+        localStorage.removeItem('prode-notifs');
+        localStorage.removeItem('prode-sounds');
+        location.reload();
+      }
+    };
+
+    window.openEditProfile = function() {
+      const user = getUser();
+      openModal('Editar Perfil', `
+        <div class="form-group">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-input" id="edit-nombre" value="${user.nombre}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apodo</label>
+          <input type="text" class="form-input" id="edit-apodo" value="${user.apodo}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Grupo familiar</label>
+          <select class="form-input form-select" id="edit-grupo">
+            <option value="Familia Santos" ${user.grupo==='Familia Santos'?'selected':''}>Familia Santos</option>
+            <option value="Familia García" ${user.grupo==='Familia García'?'selected':''}>Familia García</option>
+            <option value="Amigos" ${user.grupo==='Amigos'?'selected':''}>Amigos</option>
+            <option value="Trabajo" ${user.grupo==='Trabajo'?'selected':''}>Trabajo</option>
+            <option value="General" ${user.grupo==='General'?'selected':''}>General</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Equipo favorito</label>
+          <select class="form-input form-select" id="edit-equipo">
+            ${ALL_TEAMS.sort((a,b)=>a.name.localeCompare(b.name)).map(t => `<option value="${t.name}" ${user.equipoFavorito===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Avatar</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            ${AVATARS.map(a => `<button type="button" class="avatar-option ${user.avatar===a?'selected':''}" onclick="selectEditAvatar(this,'${a}')" style="width:44px;height:44px;font-size:22px;">${a}</button>`).join('')}
+          </div>
+          <input type="hidden" id="edit-avatar" value="${user.avatar}">
+        </div>
+        <button class="btn btn-gold btn-block" onclick="saveEditProfile()">Guardar Cambios</button>
+      `);
+    };
+
+    window.selectEditAvatar = function(btn, emoji) {
+      btn.closest('.form-group').querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('edit-avatar').value = emoji;
+    };
+
+    window.saveEditProfile = function() {
+      const user = getUser();
+      const apodo = document.getElementById('edit-apodo').value.trim();
+      if (!apodo || apodo.length < 3) {
+        showToast('El apodo debe tener al menos 3 caracteres', 'error');
+        return;
+      }
+      user.nombre = document.getElementById('edit-nombre').value.trim() || user.nombre;
+      user.apodo = apodo;
+      user.grupo = document.getElementById('edit-grupo').value;
+      user.equipoFavorito = document.getElementById('edit-equipo').value;
+      user.avatar = document.getElementById('edit-avatar').value;
+      saveUser(user);
+      document.getElementById('header-avatar').textContent = user.avatar;
+      closeModal();
+      showToast('Perfil actualizado ✅', 'success');
+      renderView(currentView);
+    };
+
+    // ============================================
+    // EXPERT MODE TOGGLE
     // ============================================
     function toggleExpertMode() {
       const isExpert = document.body.classList.toggle('expert-mode');
       const toggle = document.getElementById('expert-toggle');
-      const settingsToggle = document.getElementById('setting-expert');
-
-      // Update header toggle appearance
       if (toggle) toggle.classList.toggle('active', isExpert);
-
-      // Sync settings toggle if visible
-      if (settingsToggle) settingsToggle.checked = isExpert;
-
-      // Persist preference
       localStorage.setItem('prode-expert-mode', isExpert ? 'true' : 'false');
-
-      // Show feedback
-      showToast(
-        isExpert ? '🧠 Modo Experto activado' : 'Modo Simple activado',
-        isExpert ? 'success' : 'info'
-      );
-
-      // Re-render current view to update content
-      const currentView = window.location.hash.replace('#', '') || 'inicio';
+      showToast(isExpert ? '🧠 Modo Experto activado' : 'Modo Simple activado', isExpert ? 'success' : 'info');
       renderView(currentView);
     }
+    window.toggleExpertMode = toggleExpertMode;
 
-    // Header toggle click
-    document.getElementById('expert-toggle')?.addEventListener('click', toggleExpertMode);
+    document.getElementById('expert-toggle').addEventListener('click', toggleExpertMode);
 
-    // Settings toggle sync (delegated since settings view is dynamic)
-    document.addEventListener('change', (e) => {
-      if (e.target && e.target.id === 'setting-expert') {
-        const isExpert = e.target.checked;
-        document.body.classList.toggle('expert-mode', isExpert);
-        document.getElementById('expert-toggle')?.classList.toggle('active', isExpert);
-        localStorage.setItem('prode-expert-mode', isExpert ? 'true' : 'false');
-        showToast(
-          isExpert ? '🧠 Modo Experto activado' : 'Modo Simple activado',
-          isExpert ? 'success' : 'info'
-        );
-        // Re-render to reflect mode change
-        const currentView = window.location.hash.replace('#', '') || 'inicio';
-        renderView(currentView);
+    // ============================================
+    // NOTIFICATION BELL
+    // ============================================
+    document.getElementById('notification-bell').addEventListener('click', () => {
+      showToast('No hay notificaciones nuevas', 'info');
+    });
+
+    // ============================================
+    // PULL TO REFRESH
+    // ============================================
+    let tsy = 0, tey = 0;
+    const appContent = document.getElementById('app-content');
+    appContent.addEventListener('touchstart', (e) => { tsy = e.touches[0].clientY; }, { passive: true });
+    appContent.addEventListener('touchmove', (e) => { tey = e.touches[0].clientY; }, { passive: true });
+    appContent.addEventListener('touchend', () => {
+      if (tey - tsy > 120 && appContent.scrollTop <= 0) {
+        showToast('Actualizando...', 'info', 1500);
+        setTimeout(() => renderView(currentView), 800);
       }
     });
 
-    // Restore expert mode on load
-    if (localStorage.getItem('prode-expert-mode') === 'true') {
-      document.body.classList.add('expert-mode');
-      document.getElementById('expert-toggle')?.classList.add('active');
-    }
+    // ============================================
+    // EXPOSE navigateTo globally
+    // ============================================
+    window.navigateTo = navigateTo;
+
+  })();
   </script>
 </body>
 </html>
