@@ -2124,14 +2124,11 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:10px;">
               <span style="font-size:32px;">${user.avatar}</span>
-              <div>
-                <div style="font-size:16px;font-weight:800;">${user.apodo}</div>
-                <div style="font-size:12px;color:var(--text-muted);">${familyBadgeHTML(user.grupo)}</div>
-              </div>
+              <div style="font-size:16px;font-weight:800;">${user.apodo}</div>
             </div>
-            <div style="text-align:right;">
-              ${favIso ? `<img src="https://flagcdn.com/48x36/${favIso}.png" style="height:24px;border-radius:3px;" alt="${user.equipoFavorito}">` : ''}
-              <div style="font-size:11px;color:var(--text-muted);">${user.equipoFavorito || ''}</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${familyBadgeHTML(user.grupo)}
+              ${favIso ? `<img src="https://flagcdn.com/48x36/${favIso}.png" style="height:20px;border-radius:3px;" alt="${user.equipoFavorito}">` : ''}
             </div>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px;text-align:center;">
