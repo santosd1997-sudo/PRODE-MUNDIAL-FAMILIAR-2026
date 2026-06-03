@@ -38,6 +38,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   
   <!-- Styles -->
   <link rel="stylesheet" href="css/app.css">
@@ -145,6 +148,139 @@
       .bracket-wrapper { justify-content:center; }
       .bracket-round { min-width:180px; }
     }
+
+    /* === ADMIN PANEL STYLES === */
+    .admin-link { display:block; text-align:center; margin-top:16px; font-size:12px; color:var(--text-muted); cursor:pointer; opacity:0.6; transition:opacity .2s; text-decoration:none; }
+    .admin-link:hover { opacity:1; color:var(--gold); }
+    .admin-pin-area { display:none; margin-top:12px; text-align:center; animation:fadeIn .3s ease; }
+    .admin-pin-area.visible { display:block; }
+    .admin-pin-input { background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-primary); font-size:16px; padding:12px; border-radius:8px; width:100%; max-width:280px; text-align:center; letter-spacing:2px; }
+    .admin-pin-input:focus { border-color:var(--gold); outline:none; }
+    .admin-pin-btn { margin-top:8px; background:var(--gold); color:#1a1a2e; border:none; padding:10px 24px; border-radius:8px; font-weight:700; cursor:pointer; font-size:14px; }
+
+    .admin-stats-row { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:16px; }
+    @media(min-width:480px) { .admin-stats-row { grid-template-columns:repeat(4,1fr); } }
+    .admin-stat-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; }
+    .admin-stat-value { font-family:'Outfit',sans-serif; font-size:28px; font-weight:800; }
+    .admin-stat-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; margin-top:4px; }
+    .admin-stat-value.gold { color:var(--gold); }
+    .admin-stat-value.green { color:#22c55e; }
+    .admin-stat-value.orange { color:#f59e0b; }
+    .admin-stat-value.red { color:#ef4444; }
+
+    .admin-tabs { display:flex; gap:0; background:var(--bg-card); border-radius:10px; padding:3px; margin-bottom:16px; border:1px solid var(--border); overflow-x:auto; }
+    .admin-tab { flex:1; padding:10px 12px; border:none; background:transparent; color:var(--text-secondary); font-size:12px; font-weight:600; border-radius:7px; cursor:pointer; transition:all .2s; text-align:center; white-space:nowrap; min-width:fit-content; }
+    .admin-tab.active { background:var(--gold); color:#1a1a2e; }
+
+    .admin-user-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; transition:all .2s; }
+    .admin-user-card:hover { border-color:rgba(197,165,90,0.3); }
+    .admin-user-header { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    .admin-user-avatar { font-size:36px; }
+    .admin-user-info { flex:1; }
+    .admin-user-name { font-family:'Outfit',sans-serif; font-weight:700; font-size:16px; }
+    .admin-user-apodo { color:var(--gold); font-size:13px; font-weight:600; }
+    .admin-user-details { display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:12px; color:var(--text-secondary); margin-bottom:12px; }
+    .admin-user-detail { display:flex; align-items:center; gap:6px; }
+    .admin-user-actions { display:flex; gap:8px; }
+    .admin-btn { flex:1; padding:12px; border:none; border-radius:8px; font-weight:700; font-size:14px; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+    .admin-btn:active { transform:scale(0.97); }
+    .admin-btn-approve { background:#22c55e; color:#fff; }
+    .admin-btn-reject { background:#ef4444; color:#fff; }
+    .admin-btn-revoke { background:#f59e0b; color:#1a1a2e; }
+    .admin-btn-outline { background:transparent; border:1px solid var(--border); color:var(--text-secondary); }
+    .admin-btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+    .admin-btn-sm { padding:8px 14px; font-size:12px; flex:none; }
+    .admin-btn-gold { background:var(--gold); color:#1a1a2e; }
+
+    .status-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; }
+    .status-badge.pendiente { background:rgba(245,158,11,0.15); color:#f59e0b; }
+    .status-badge.aprobado { background:rgba(34,197,94,0.15); color:#22c55e; }
+    .status-badge.rechazado { background:rgba(239,68,68,0.15); color:#ef4444; }
+
+    .admin-search { width:100%; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-primary); padding:12px 14px; border-radius:8px; font-size:14px; margin-bottom:12px; }
+    .admin-search:focus { border-color:var(--gold); outline:none; }
+    .admin-search::placeholder { color:var(--text-muted); }
+
+    .admin-shortcuts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+    .admin-shortcut-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; cursor:pointer; transition:all .2s; }
+    .admin-shortcut-card:hover { border-color:var(--gold); background:rgba(197,165,90,0.05); }
+    .admin-shortcut-icon { font-size:24px; margin-bottom:6px; }
+    .admin-shortcut-label { font-size:12px; font-weight:600; color:var(--text-secondary); }
+
+    .admin-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--border); }
+    .admin-toggle-info { }
+    .admin-toggle-label { font-weight:600; font-size:14px; }
+    .admin-toggle-desc { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+    /* EmailJS Config */
+    .emailjs-config { background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:16px; }
+    .emailjs-config .form-group { margin-bottom:12px; }
+    .emailjs-config .form-label { font-size:12px; font-weight:600; }
+    .emailjs-config .form-input { font-size:14px; min-height:42px; padding:10px 12px; }
+
+    /* Pending Screen */
+    .pending-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; background:var(--bg-primary); padding:20px; }
+    .pending-content { text-align:center; max-width:380px; }
+    .pending-icon { font-size:80px; margin-bottom:20px; animation:float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+    .pending-title { font-family:'Outfit',sans-serif; font-size:24px; font-weight:800; color:var(--gold); margin-bottom:8px; }
+    .pending-desc { font-size:14px; color:var(--text-secondary); margin-bottom:20px; line-height:1.6; }
+    .pending-data { background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:left; margin-bottom:20px; }
+    .pending-data-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); }
+    .pending-data-row:last-child { border-bottom:none; }
+    .pending-data-label { color:var(--text-muted); }
+    .pending-data-value { color:var(--text-primary); font-weight:600; }
+
+    /* Team Detail Modal */
+    .team-detail-modal { max-width:480px; }
+    .team-detail-header { text-align:center; padding:20px 0; }
+    .team-detail-flag { width:120px; height:80px; border-radius:8px; object-fit:cover; margin-bottom:12px; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+    .team-detail-name { font-family:'Outfit',sans-serif; font-size:28px; font-weight:800; margin-bottom:8px; }
+    .team-detail-badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .team-detail-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .team-detail-badge.rank { background:rgba(197,165,90,0.15); color:var(--gold); }
+    .team-detail-badge.group { background:rgba(59,130,246,0.15); color:#60a5fa; }
+    .team-detail-badge.conf { background:rgba(168,85,247,0.15); color:#a78bfa; }
+
+    .team-detail-section { margin-top:20px; }
+    .team-detail-section-title { font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
+    .team-detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .team-detail-stat { background:var(--bg-elevated); border-radius:8px; padding:12px; text-align:center; }
+    .team-detail-stat-value { font-family:'Outfit',sans-serif; font-weight:700; font-size:18px; color:var(--text-primary); }
+    .team-detail-stat-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; margin-top:2px; }
+
+    .team-detail-titles { display:flex; gap:4px; justify-content:center; flex-wrap:wrap; margin:8px 0; }
+    .team-detail-coach { background:var(--bg-elevated); border-radius:8px; padding:12px; display:flex; align-items:center; gap:10px; margin-top:8px; }
+    .team-detail-coach-icon { font-size:24px; }
+    .team-detail-coach-info { font-size:13px; }
+    .team-detail-coach-name { font-weight:700; color:var(--text-primary); }
+    .team-detail-coach-role { color:var(--text-muted); font-size:11px; }
+
+    .team-form-dots { display:flex; gap:6px; justify-content:center; margin:10px 0; }
+    .team-form-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+    .team-form-dot.W { background:rgba(34,197,94,0.2); color:#22c55e; }
+    .team-form-dot.D { background:rgba(245,158,11,0.2); color:#f59e0b; }
+    .team-form-dot.L { background:rgba(239,68,68,0.2); color:#ef4444; }
+
+    .team-recent-match { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px; }
+    .team-recent-match:last-child { border-bottom:none; }
+    .team-recent-result { font-weight:700; min-width:40px; text-align:center; padding:3px 8px; border-radius:4px; font-size:11px; }
+    .team-recent-result.W { background:rgba(34,197,94,0.15); color:#22c55e; }
+    .team-recent-result.D { background:rgba(245,158,11,0.15); color:#f59e0b; }
+    .team-recent-result.L { background:rgba(239,68,68,0.15); color:#ef4444; }
+    .team-recent-opponent { display:flex; align-items:center; gap:6px; flex:1; }
+    .team-recent-opponent img { width:18px; height:13px; border-radius:2px; }
+    .team-recent-score { font-weight:700; color:var(--text-primary); min-width:35px; text-align:center; }
+
+    /* Tappable teams */
+    .team-tappable { cursor:pointer; transition:all .15s ease; }
+    .team-tappable:hover { opacity:0.85; }
+    .team-tappable:active { transform:scale(0.97); }
+    .team-name.team-tappable { text-decoration-style:dotted; text-underline-offset:3px; }
+    .team-flag.team-tappable { box-shadow:0 0 0 0 rgba(197,165,90,0); transition:box-shadow .2s; }
+    .team-flag.team-tappable:hover { box-shadow:0 0 0 2px rgba(197,165,90,0.4); }
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
 <body>
@@ -160,6 +296,19 @@
       <div class="splash-loader">
         <div class="splash-loader-bar"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PENDING APPROVAL SCREEN -->
+  <!-- ============================================ -->
+  <div id="pending-screen" class="pending-screen" style="display:none;">
+    <div class="pending-content">
+      <div class="pending-icon">⏳</div>
+      <div class="pending-title">¡Registro recibido!</div>
+      <div class="pending-desc">Tu solicitud está siendo revisada por el administrador.<br>Te avisaremos por email cuando seas aprobado.</div>
+      <div class="pending-data" id="pending-data"></div>
+      <button class="btn btn-outline btn-block" onclick="closePendingScreen()">Cerrar</button>
     </div>
   </div>
 
@@ -229,8 +378,15 @@
         </div>
         <button type="submit" class="register-btn">⚽ ¡Entrar al PRODE!</button>
       </form>
+      <!-- Admin Access Link -->
+      <a class="admin-link" id="admin-access-link" onclick="toggleAdminPin()">🔑 ¿Sos administrador?</a>
+      <div class="admin-pin-area" id="admin-pin-area">
+        <input type="password" class="admin-pin-input" id="admin-pin-input" placeholder="Ingresá el PIN de admin" autocomplete="off">
+        <br>
+        <button class="admin-pin-btn" onclick="verifyAdminPin()">Verificar</button>
+      </div>
       <div class="register-footer">
-        Versión 2.0 — Hecho con ❤️ para la familia
+        Versión 3.0 — Hecho con ❤️ para la familia
       </div>
     </div>
   </div>
@@ -351,6 +507,11 @@
     <section id="view-mas" class="view-section">
       <div id="mas-content"></div>
     </section>
+
+    <!-- ADMIN VIEW -->
+    <section id="view-admin" class="view-section">
+      <div id="admin-content"></div>
+    </section>
   </main>
 
   <!-- ============================================ -->
@@ -380,6 +541,11 @@
     <button class="nav-item" data-view="mas" aria-label="Más">
       <span class="nav-icon">⚙️</span>
       <span class="nav-label">Más</span>
+      <span class="nav-indicator"></span>
+    </button>
+    <button class="nav-item" data-view="admin" aria-label="Admin" id="nav-admin" style="display:none;">
+      <span class="nav-icon">🔑</span>
+      <span class="nav-label">Admin</span>
       <span class="nav-indicator"></span>
     </button>
   </nav>
@@ -427,6 +593,21 @@
   <script>
   (function() {
     'use strict';
+
+    // ============================================
+    // ADMIN PIN
+    // ============================================
+    const ADMIN_PIN = '2026mundial';
+
+    // ============================================
+    // EmailJS CONFIG
+    // ============================================
+    const EMAILJS_CONFIG = {
+      serviceId: localStorage.getItem('prode-emailjs-service') || '',
+      templateId: localStorage.getItem('prode-emailjs-template') || '',
+      publicKey: localStorage.getItem('prode-emailjs-key') || '',
+      get enabled() { return localStorage.getItem('prode-emailjs-enabled') === 'true' && this.serviceId && this.templateId && this.publicKey; }
+    };
 
     // ============================================
     // ALL 48 WORLD CUP TEAMS
@@ -481,6 +662,252 @@
       { name: 'Wales', iso: 'gb-wls', emoji: '🏴' },
       { name: 'Algeria', iso: 'dz', emoji: '🇩🇿' }
     ];
+
+    // ============================================
+    // TEAM DETAILS DATA (TOP 20)
+    // ============================================
+    const TEAM_DETAILS = {
+      'Argentina': {
+        rank: 1, coach: 'Lionel Scaloni', star: 'Julián Álvarez', confederation: 'CONMEBOL',
+        titles: 3, titleYears: [1978, 1986, 2022], bestFinish: 'Campeón (x3)',
+        wcMatches: 93, wcRecord: '47-15-31', qatar2022: 'Campeón 🏆',
+        recentForm: [
+          { opponent: 'Chile', opIso: 'cl', score: '2-0', result: 'W', date: '2026-03' },
+          { opponent: 'Paraguay', opIso: 'py', score: '1-1', result: 'D', date: '2026-03' },
+          { opponent: 'Colombia', opIso: 'co', score: '3-1', result: 'W', date: '2025-11' },
+          { opponent: 'Peru', opIso: 'pe', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'Brazil', opIso: 'br', score: '2-1', result: 'W', date: '2025-09' }
+        ]
+      },
+      'France': {
+        rank: 2, coach: 'Didier Deschamps', star: 'Kylian Mbappé', confederation: 'UEFA',
+        titles: 2, titleYears: [1998, 2018], bestFinish: 'Campeón (x2)',
+        wcMatches: 75, wcRecord: '39-13-23', qatar2022: 'Subcampeón',
+        recentForm: [
+          { opponent: 'Germany', opIso: 'de', score: '2-1', result: 'W', date: '2026-03' },
+          { opponent: 'Belgium', opIso: 'be', score: '0-0', result: 'D', date: '2026-03' },
+          { opponent: 'Italy', opIso: 'it', score: '3-2', result: 'W', date: '2025-11' },
+          { opponent: 'Spain', opIso: 'es', score: '1-2', result: 'L', date: '2025-11' },
+          { opponent: 'Netherlands', opIso: 'nl', score: '4-0', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Brazil': {
+        rank: 3, coach: 'Dorival Júnior', star: 'Vinícius Jr.', confederation: 'CONMEBOL',
+        titles: 5, titleYears: [1958, 1962, 1970, 1994, 2002], bestFinish: 'Campeón (x5)',
+        wcMatches: 114, wcRecord: '76-19-19', qatar2022: 'Cuartos de final',
+        recentForm: [
+          { opponent: 'Uruguay', opIso: 'uy', score: '2-2', result: 'D', date: '2026-03' },
+          { opponent: 'Ecuador', opIso: 'ec', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Venezuela', opIso: 've', score: '2-1', result: 'W', date: '2025-11' },
+          { opponent: 'Colombia', opIso: 'co', score: '0-1', result: 'L', date: '2025-11' },
+          { opponent: 'Argentina', opIso: 'ar', score: '1-2', result: 'L', date: '2025-09' }
+        ]
+      },
+      'England': {
+        rank: 4, coach: 'Thomas Tuchel', star: 'Jude Bellingham', confederation: 'UEFA',
+        titles: 1, titleYears: [1966], bestFinish: 'Campeón (1966)',
+        wcMatches: 74, wcRecord: '32-22-20', qatar2022: 'Cuartos de final',
+        recentForm: [
+          { opponent: 'Ireland', opIso: 'ie', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Greece', opIso: 'gr', score: '1-1', result: 'D', date: '2026-03' },
+          { opponent: 'Germany', opIso: 'de', score: '2-0', result: 'W', date: '2025-11' },
+          { opponent: 'Finland', opIso: 'fi', score: '3-1', result: 'W', date: '2025-11' },
+          { opponent: 'France', opIso: 'fr', score: '1-2', result: 'L', date: '2025-09' }
+        ]
+      },
+      'Spain': {
+        rank: 5, coach: 'Luis de la Fuente', star: 'Pedri', confederation: 'UEFA',
+        titles: 1, titleYears: [2010], bestFinish: 'Campeón (2010)',
+        wcMatches: 67, wcRecord: '33-17-17', qatar2022: 'Octavos de final',
+        recentForm: [
+          { opponent: 'Portugal', opIso: 'pt', score: '1-0', result: 'W', date: '2026-03' },
+          { opponent: 'Switzerland', opIso: 'ch', score: '3-1', result: 'W', date: '2026-03' },
+          { opponent: 'France', opIso: 'fr', score: '2-1', result: 'W', date: '2025-11' },
+          { opponent: 'Serbia', opIso: 'rs', score: '0-0', result: 'D', date: '2025-11' },
+          { opponent: 'Denmark', opIso: 'dk', score: '2-1', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Germany': {
+        rank: 6, coach: 'Julian Nagelsmann', star: 'Jamal Musiala', confederation: 'UEFA',
+        titles: 4, titleYears: [1954, 1974, 1990, 2014], bestFinish: 'Campeón (x4)',
+        wcMatches: 112, wcRecord: '68-21-23', qatar2022: 'Fase de grupos',
+        recentForm: [
+          { opponent: 'France', opIso: 'fr', score: '1-2', result: 'L', date: '2026-03' },
+          { opponent: 'Netherlands', opIso: 'nl', score: '2-2', result: 'D', date: '2026-03' },
+          { opponent: 'Bosnia', opIso: 'ba', score: '7-0', result: 'W', date: '2025-11' },
+          { opponent: 'Hungary', opIso: 'hu', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'England', opIso: 'gb-eng', score: '0-2', result: 'L', date: '2025-09' }
+        ]
+      },
+      'Portugal': {
+        rank: 7, coach: 'Roberto Martínez', star: 'Cristiano Ronaldo', confederation: 'UEFA',
+        titles: 0, titleYears: [], bestFinish: 'Tercer lugar (1966)',
+        wcMatches: 38, wcRecord: '19-6-13', qatar2022: 'Cuartos de final',
+        recentForm: [
+          { opponent: 'Spain', opIso: 'es', score: '0-1', result: 'L', date: '2026-03' },
+          { opponent: 'Scotland', opIso: 'gb-sct', score: '2-1', result: 'W', date: '2026-03' },
+          { opponent: 'Poland', opIso: 'pl', score: '5-1', result: 'W', date: '2025-11' },
+          { opponent: 'Croatia', opIso: 'hr', score: '2-1', result: 'W', date: '2025-11' },
+          { opponent: 'Czech Republic', opIso: 'cz', score: '3-1', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Netherlands': {
+        rank: 8, coach: 'Ronald Koeman', star: 'Frenkie de Jong', confederation: 'UEFA',
+        titles: 0, titleYears: [], bestFinish: 'Subcampeón (1974, 1978, 2010)',
+        wcMatches: 54, wcRecord: '30-12-12', qatar2022: 'Cuartos de final',
+        recentForm: [
+          { opponent: 'Hungary', opIso: 'hu', score: '4-0', result: 'W', date: '2026-03' },
+          { opponent: 'Germany', opIso: 'de', score: '2-2', result: 'D', date: '2026-03' },
+          { opponent: 'Bosnia', opIso: 'ba', score: '3-1', result: 'W', date: '2025-11' },
+          { opponent: 'Ireland', opIso: 'ie', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'France', opIso: 'fr', score: '0-4', result: 'L', date: '2025-09' }
+        ]
+      },
+      'Italy': {
+        rank: 9, coach: 'Luciano Spalletti', star: 'Gianluigi Donnarumma', confederation: 'UEFA',
+        titles: 4, titleYears: [1934, 1938, 1982, 2006], bestFinish: 'Campeón (x4)',
+        wcMatches: 83, wcRecord: '45-21-17', qatar2022: 'No clasificó',
+        recentForm: [
+          { opponent: 'Belgium', opIso: 'be', score: '1-0', result: 'W', date: '2026-03' },
+          { opponent: 'France', opIso: 'fr', score: '2-3', result: 'L', date: '2025-11' },
+          { opponent: 'Israel', opIso: 'il', score: '4-1', result: 'W', date: '2025-11' },
+          { opponent: 'Belgium', opIso: 'be', score: '2-2', result: 'D', date: '2025-10' },
+          { opponent: 'Albania', opIso: 'al', score: '2-1', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Croatia': {
+        rank: 10, coach: 'Zlatko Dalić', star: 'Luka Modrić', confederation: 'UEFA',
+        titles: 0, titleYears: [], bestFinish: 'Subcampeón (2018)',
+        wcMatches: 30, wcRecord: '16-3-11', qatar2022: 'Tercer lugar',
+        recentForm: [
+          { opponent: 'Wales', opIso: 'gb-wls', score: '2-1', result: 'W', date: '2026-03' },
+          { opponent: 'Scotland', opIso: 'gb-sct', score: '1-1', result: 'D', date: '2026-03' },
+          { opponent: 'Portugal', opIso: 'pt', score: '1-2', result: 'L', date: '2025-11' },
+          { opponent: 'Poland', opIso: 'pl', score: '3-1', result: 'W', date: '2025-11' },
+          { opponent: 'Turkey', opIso: 'tr', score: '1-0', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Uruguay': {
+        rank: 11, coach: 'Marcelo Bielsa', star: 'Darwin Núñez', confederation: 'CONMEBOL',
+        titles: 2, titleYears: [1930, 1950], bestFinish: 'Campeón (x2)',
+        wcMatches: 59, wcRecord: '26-13-20', qatar2022: 'Fase de grupos',
+        recentForm: [
+          { opponent: 'Brazil', opIso: 'br', score: '2-2', result: 'D', date: '2026-03' },
+          { opponent: 'Bolivia', opIso: 'bo', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Colombia', opIso: 'co', score: '2-3', result: 'L', date: '2025-11' },
+          { opponent: 'Ecuador', opIso: 'ec', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'Paraguay', opIso: 'py', score: '3-1', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Colombia': {
+        rank: 12, coach: 'Néstor Lorenzo', star: 'Luis Díaz', confederation: 'CONMEBOL',
+        titles: 0, titleYears: [], bestFinish: 'Cuartos de final (2014)',
+        wcMatches: 21, wcRecord: '9-4-8', qatar2022: 'No clasificó',
+        recentForm: [
+          { opponent: 'Venezuela', opIso: 've', score: '2-0', result: 'W', date: '2026-03' },
+          { opponent: 'Chile', opIso: 'cl', score: '3-1', result: 'W', date: '2026-03' },
+          { opponent: 'Uruguay', opIso: 'uy', score: '3-2', result: 'W', date: '2025-11' },
+          { opponent: 'Ecuador', opIso: 'ec', score: '0-0', result: 'D', date: '2025-11' },
+          { opponent: 'Bolivia', opIso: 'bo', score: '3-0', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Mexico': {
+        rank: 13, coach: 'Javier Aguirre', star: 'Edson Álvarez', confederation: 'CONCACAF',
+        titles: 0, titleYears: [], bestFinish: 'Cuartos de final (1970, 1986)',
+        wcMatches: 60, wcRecord: '17-15-28', qatar2022: 'Fase de grupos',
+        recentForm: [
+          { opponent: 'Honduras', opIso: 'hn', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Canada', opIso: 'ca', score: '2-1', result: 'W', date: '2026-03' },
+          { opponent: 'USA', opIso: 'us', score: '0-2', result: 'L', date: '2025-11' },
+          { opponent: 'Panama', opIso: 'pa', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'Jamaica', opIso: 'jm', score: '1-1', result: 'D', date: '2025-09' }
+        ]
+      },
+      'USA': {
+        rank: 14, coach: 'Mauricio Pochettino', star: 'Christian Pulisic', confederation: 'CONCACAF',
+        titles: 0, titleYears: [], bestFinish: 'Tercer lugar (1930)',
+        wcMatches: 37, wcRecord: '10-7-20', qatar2022: 'Octavos de final',
+        recentForm: [
+          { opponent: 'Costa Rica', opIso: 'cr', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Canada', opIso: 'ca', score: '4-1', result: 'W', date: '2026-03' },
+          { opponent: 'Mexico', opIso: 'mx', score: '2-0', result: 'W', date: '2025-11' },
+          { opponent: 'Jamaica', opIso: 'jm', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'Panama', opIso: 'pa', score: '2-2', result: 'D', date: '2025-09' }
+        ]
+      },
+      'Japan': {
+        rank: 15, coach: 'Hajime Moriyasu', star: 'Kaoru Mitoma', confederation: 'AFC',
+        titles: 0, titleYears: [], bestFinish: 'Octavos de final',
+        wcMatches: 24, wcRecord: '8-5-11', qatar2022: 'Octavos de final',
+        recentForm: [
+          { opponent: 'Australia', opIso: 'au', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Saudi Arabia', opIso: 'sa', score: '2-0', result: 'W', date: '2026-03' },
+          { opponent: 'Indonesia', opIso: 'id', score: '4-0', result: 'W', date: '2025-11' },
+          { opponent: 'China', opIso: 'cn', score: '3-1', result: 'W', date: '2025-11' },
+          { opponent: 'Bahrain', opIso: 'bh', score: '5-0', result: 'W', date: '2025-09' }
+        ]
+      },
+      'South Korea': {
+        rank: 16, coach: 'Hong Myung-bo', star: 'Son Heung-min', confederation: 'AFC',
+        titles: 0, titleYears: [], bestFinish: 'Cuarto lugar (2002)',
+        wcMatches: 37, wcRecord: '8-10-19', qatar2022: 'Octavos de final',
+        recentForm: [
+          { opponent: 'Jordan', opIso: 'jo', score: '2-0', result: 'W', date: '2026-03' },
+          { opponent: 'Iraq', opIso: 'iq', score: '1-0', result: 'W', date: '2026-03' },
+          { opponent: 'Kuwait', opIso: 'kw', score: '3-0', result: 'W', date: '2025-11' },
+          { opponent: 'Palestine', opIso: 'ps', score: '0-0', result: 'D', date: '2025-11' },
+          { opponent: 'Oman', opIso: 'om', score: '1-1', result: 'D', date: '2025-09' }
+        ]
+      },
+      'Denmark': {
+        rank: 17, coach: 'Kasper Hjulmand', star: 'Christian Eriksen', confederation: 'UEFA',
+        titles: 0, titleYears: [], bestFinish: 'Cuartos de final (1998)',
+        wcMatches: 22, wcRecord: '9-4-9', qatar2022: 'Fase de grupos',
+        recentForm: [
+          { opponent: 'Sweden', opIso: 'se', score: '2-1', result: 'W', date: '2026-03' },
+          { opponent: 'Switzerland', opIso: 'ch', score: '0-1', result: 'L', date: '2026-03' },
+          { opponent: 'Serbia', opIso: 'rs', score: '2-0', result: 'W', date: '2025-11' },
+          { opponent: 'Spain', opIso: 'es', score: '1-2', result: 'L', date: '2025-09' },
+          { opponent: 'Kazakhstan', opIso: 'kz', score: '3-1', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Senegal': {
+        rank: 18, coach: 'Aliou Cissé', star: 'Sadio Mané', confederation: 'CAF',
+        titles: 0, titleYears: [], bestFinish: 'Cuartos de final (2002)',
+        wcMatches: 10, wcRecord: '4-3-3', qatar2022: 'Octavos de final',
+        recentForm: [
+          { opponent: 'Congo DR', opIso: 'cd', score: '2-0', result: 'W', date: '2026-03' },
+          { opponent: 'Burkina Faso', opIso: 'bf', score: '1-1', result: 'D', date: '2026-03' },
+          { opponent: 'Togo', opIso: 'tg', score: '3-1', result: 'W', date: '2025-11' },
+          { opponent: 'Egypt', opIso: 'eg', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'Mauritania', opIso: 'mr', score: '2-0', result: 'W', date: '2025-09' }
+        ]
+      },
+      'Morocco': {
+        rank: 19, coach: 'Walid Regragui', star: 'Achraf Hakimi', confederation: 'CAF',
+        titles: 0, titleYears: [], bestFinish: 'Cuarto lugar (2022)',
+        wcMatches: 20, wcRecord: '6-7-7', qatar2022: 'Cuarto lugar',
+        recentForm: [
+          { opponent: 'Zambia', opIso: 'zm', score: '2-0', result: 'W', date: '2026-03' },
+          { opponent: 'Tanzania', opIso: 'tz', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Central African Rep.', opIso: 'cf', score: '5-0', result: 'W', date: '2025-11' },
+          { opponent: 'Gabon', opIso: 'ga', score: '4-1', result: 'W', date: '2025-11' },
+          { opponent: 'Congo', opIso: 'cg', score: '0-0', result: 'D', date: '2025-09' }
+        ]
+      },
+      'Nigeria': {
+        rank: 20, coach: 'Finidi George', star: 'Victor Osimhen', confederation: 'CAF',
+        titles: 0, titleYears: [], bestFinish: 'Octavos de final',
+        wcMatches: 21, wcRecord: '6-4-11', qatar2022: 'No clasificó',
+        recentForm: [
+          { opponent: 'South Africa', opIso: 'za', score: '2-1', result: 'W', date: '2026-03' },
+          { opponent: 'Benin', opIso: 'bj', score: '3-0', result: 'W', date: '2026-03' },
+          { opponent: 'Rwanda', opIso: 'rw', score: '1-1', result: 'D', date: '2025-11' },
+          { opponent: 'Libya', opIso: 'ly', score: '1-0', result: 'W', date: '2025-11' },
+          { opponent: 'Ghana', opIso: 'gh', score: '2-0', result: 'W', date: '2025-09' }
+        ]
+      }
+    };
 
     // ============================================
     // COMPLETE 72-MATCH GROUP STAGE FIXTURE
@@ -605,7 +1032,6 @@
     // KNOCKOUT BRACKET STRUCTURE
     // ============================================
     const BRACKET_MATCHES = [
-      // Round of 32 (16 matches)
       { id:'R32-1', round:'R32', label:'1A vs 2D', home:'1A', away:'2D' },
       { id:'R32-2', round:'R32', label:'1B vs 2C', home:'1B', away:'2C' },
       { id:'R32-3', round:'R32', label:'1C vs 2B', home:'1C', away:'2B' },
@@ -622,7 +1048,6 @@
       { id:'R32-14', round:'R32', label:'3DEF vs 1/2', home:'3DEF', away:'Best3-2' },
       { id:'R32-15', round:'R32', label:'3GHI vs 1/2', home:'3GHI', away:'Best3-3' },
       { id:'R32-16', round:'R32', label:'3JKL vs 1/2', home:'3JKL', away:'Best3-4' },
-      // Round of 16 (8 matches)
       { id:'R16-1', round:'R16', label:'W(R32-1) vs W(R32-2)', from:['R32-1','R32-2'] },
       { id:'R16-2', round:'R16', label:'W(R32-3) vs W(R32-4)', from:['R32-3','R32-4'] },
       { id:'R16-3', round:'R16', label:'W(R32-5) vs W(R32-6)', from:['R32-5','R32-6'] },
@@ -631,15 +1056,12 @@
       { id:'R16-6', round:'R16', label:'W(R32-11) vs W(R32-12)', from:['R32-11','R32-12'] },
       { id:'R16-7', round:'R16', label:'W(R32-13) vs W(R32-14)', from:['R32-13','R32-14'] },
       { id:'R16-8', round:'R16', label:'W(R32-15) vs W(R32-16)', from:['R32-15','R32-16'] },
-      // Quarter-finals (4 matches)
       { id:'QF-1', round:'QF', label:'W(R16-1) vs W(R16-2)', from:['R16-1','R16-2'] },
       { id:'QF-2', round:'QF', label:'W(R16-3) vs W(R16-4)', from:['R16-3','R16-4'] },
       { id:'QF-3', round:'QF', label:'W(R16-5) vs W(R16-6)', from:['R16-5','R16-6'] },
       { id:'QF-4', round:'QF', label:'W(R16-7) vs W(R16-8)', from:['R16-7','R16-8'] },
-      // Semi-finals (2 matches)
       { id:'SF-1', round:'SF', label:'W(QF-1) vs W(QF-2)', from:['QF-1','QF-2'] },
       { id:'SF-2', round:'SF', label:'W(QF-3) vs W(QF-4)', from:['QF-3','QF-4'] },
-      // Final
       { id:'F-1', round:'F', label:'W(SF-1) vs W(SF-2)', from:['SF-1','SF-2'] }
     ];
 
@@ -652,27 +1074,22 @@
     // DEMO RANKING PARTICIPANTS (20 across families)
     // ============================================
     const DEMO_PARTICIPANTS = [
-      // Familia Santos (5)
       { nombre:'Juan', apellido:'Santos', apodo:'Juanchi', avatar:'🐐', grupo:'Familia Santos', points:175, exactos:11, accuracy:78 },
       { nombre:'Matías', apellido:'Santos', apodo:'Mati', avatar:'🔥', grupo:'Familia Santos', points:142, exactos:8, accuracy:68 },
       { nombre:'Sofía', apellido:'Santos', apodo:'Sofi', avatar:'🌟', grupo:'Familia Santos', points:118, exactos:6, accuracy:60 },
       { nombre:'Marta', apellido:'Santos', apodo:'Tía Marta', avatar:'💎', grupo:'Familia Santos', points:88, exactos:4, accuracy:52 },
       { nombre:'Carlos', apellido:'Santos', apodo:'Abuelo Carlos', avatar:'👑', grupo:'Familia Santos', points:65, exactos:2, accuracy:40 },
-      // Familia García (4)
       { nombre:'Nicolás', apellido:'García', apodo:'Nico', avatar:'🦁', grupo:'Familia García', points:160, exactos:10, accuracy:75 },
       { nombre:'Florencia', apellido:'García', apodo:'Flor', avatar:'🎯', grupo:'Familia García', points:130, exactos:7, accuracy:63 },
       { nombre:'Pedro', apellido:'García', apodo:'Tío Pepe', avatar:'🏆', grupo:'Familia García', points:95, exactos:5, accuracy:55 },
       { nombre:'Lucía', apellido:'García', apodo:'Prima Luli', avatar:'⭐', grupo:'Familia García', points:72, exactos:3, accuracy:42 },
-      // Familia López (3)
       { nombre:'Gonzalo', apellido:'López', apodo:'Gonza', avatar:'🎪', grupo:'Familia López', points:148, exactos:9, accuracy:72 },
       { nombre:'Milagros', apellido:'López', apodo:'Mili', avatar:'🔮', grupo:'Familia López', points:105, exactos:5, accuracy:56 },
       { nombre:'Roberto', apellido:'López', apodo:'Papá López', avatar:'🧠', grupo:'Familia López', points:78, exactos:3, accuracy:45 },
-      // Amigos del Trabajo (4)
       { nombre:'Emiliano', apellido:'Turk', apodo:'El Turco', avatar:'💪', grupo:'Amigos del Trabajo', points:155, exactos:9, accuracy:73 },
       { nombre:'Iván', apellido:'Petrov', apodo:'Ruso', avatar:'🎩', grupo:'Amigos del Trabajo', points:120, exactos:6, accuracy:62 },
       { nombre:'Adam', apellido:'Kowalski', apodo:'Polaco', avatar:'🃏', grupo:'Amigos del Trabajo', points:92, exactos:4, accuracy:50 },
       { nombre:'Kenji', apellido:'Tanaka', apodo:'Japonés', avatar:'🦅', grupo:'Amigos del Trabajo', points:68, exactos:2, accuracy:38 },
-      // General (4)
       { nombre:'Diego', apellido:'Gómez', apodo:'Dieguito', avatar:'⚽', grupo:'General', points:138, exactos:8, accuracy:67 },
       { nombre:'Javier', apellido:'Mascherano', apodo:'Masche', avatar:'🥅', grupo:'General', points:110, exactos:6, accuracy:58 },
       { nombre:'Lucas', apellido:'Alario', apodo:'Pipa', avatar:'🏅', grupo:'General', points:85, exactos:4, accuracy:48 },
@@ -688,6 +1105,8 @@
     let currentStatusFilter = 'todos';
     let currentRankingTab = 'general';
     let bracketExpanded = false;
+    let currentAdminTab = 'pendientes';
+    let adminSearchQuery = '';
 
     // ============================================
     // HELPER: localStorage
@@ -710,12 +1129,23 @@
     function saveBracketPredictions(p) { localStorage.setItem('prode-bracket', JSON.stringify(p)); }
     function isOnboarded() { return localStorage.getItem('prode-onboarding-done') === 'true'; }
     function isExpertMode() { return localStorage.getItem('prode-expert-mode') === 'true'; }
+    function isAdmin() { return localStorage.getItem('prode-admin') === 'true'; }
+    function isLocked() { return localStorage.getItem('prode-locked') === 'true'; }
+
+    // All Users management
+    function getAllUsers() {
+      try { return JSON.parse(localStorage.getItem('prode-all-users')) || []; } catch(e) { return []; }
+    }
+    function saveAllUsers(users) { localStorage.setItem('prode-all-users', JSON.stringify(users)); }
 
     // ============================================
     // HELPER: Flag URL
     // ============================================
     function flagUrl(iso) {
       return `https://flagcdn.com/w80/${iso}.png`;
+    }
+    function flagUrlLg(iso) {
+      return `https://flagcdn.com/w160/${iso}.png`;
     }
 
     // ============================================
@@ -744,6 +1174,20 @@
         'General': 'general'
       };
       return map[g] || 'general';
+    }
+
+    // ============================================
+    // HELPER: Find team info
+    // ============================================
+    function findTeam(name) {
+      return ALL_TEAMS.find(t => t.name === name);
+    }
+
+    function findTeamGroup(name) {
+      for (const [gName, teams] of Object.entries(GROUPS_DEF)) {
+        if (teams.find(t => t.name === name)) return gName;
+      }
+      return null;
     }
 
     // ============================================
@@ -776,6 +1220,121 @@
     document.getElementById('modal-overlay').addEventListener('click', (e) => {
       if (e.target === document.getElementById('modal-overlay')) closeModal();
     });
+
+    // ============================================
+    // TEAM DETAIL MODAL
+    // ============================================
+    window.showTeamDetail = function(teamName) {
+      const team = findTeam(teamName);
+      if (!team) return;
+      const detail = TEAM_DETAILS[teamName];
+      const teamGroup = findTeamGroup(teamName);
+
+      let html = `<div class="team-detail-header">
+        <img src="${flagUrlLg(team.iso)}" class="team-detail-flag" alt="${team.name}" onerror="this.style.display='none'">
+        <div class="team-detail-name">${team.name}</div>
+        <div class="team-detail-badges">`;
+
+      if (detail) {
+        html += `<span class="team-detail-badge rank">🏅 #${detail.rank} FIFA</span>`;
+      }
+      if (teamGroup) {
+        html += `<span class="team-detail-badge group">⚽ ${teamGroup}</span>`;
+      }
+      if (detail) {
+        html += `<span class="team-detail-badge conf">${detail.confederation}</span>`;
+      }
+      html += `</div></div>`;
+
+      if (detail) {
+        // Coach & Star
+        html += `<div class="team-detail-coach">
+          <span class="team-detail-coach-icon">👔</span>
+          <div class="team-detail-coach-info">
+            <div class="team-detail-coach-name">${detail.coach}</div>
+            <div class="team-detail-coach-role">Director Técnico</div>
+          </div>
+        </div>
+        <div class="team-detail-coach" style="margin-top:6px;">
+          <span class="team-detail-coach-icon">⭐</span>
+          <div class="team-detail-coach-info">
+            <div class="team-detail-coach-name">${detail.star}</div>
+            <div class="team-detail-coach-role">Jugador Estrella</div>
+          </div>
+        </div>`;
+
+        // World Cup History
+        html += `<div class="team-detail-section">
+          <div class="team-detail-section-title">🏆 Historial en Mundiales</div>
+          <div class="team-detail-titles">`;
+        for (let i = 0; i < detail.titles; i++) {
+          html += `<span style="font-size:20px;">⭐</span>`;
+        }
+        if (detail.titles === 0) {
+          html += `<span style="font-size:13px;color:var(--text-muted);">Sin títulos mundialistas</span>`;
+        }
+        html += `</div>`;
+        if (detail.titleYears.length > 0) {
+          html += `<p style="text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:10px;">${detail.titleYears.join(', ')}</p>`;
+        }
+        html += `<div class="team-detail-grid">
+            <div class="team-detail-stat"><div class="team-detail-stat-value">${detail.titles}</div><div class="team-detail-stat-label">Títulos</div></div>
+            <div class="team-detail-stat"><div class="team-detail-stat-value">${detail.wcMatches}</div><div class="team-detail-stat-label">Partidos</div></div>
+            <div class="team-detail-stat"><div class="team-detail-stat-value">${detail.wcRecord}</div><div class="team-detail-stat-label">G-E-P</div></div>
+            <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:11px;">${detail.qatar2022}</div><div class="team-detail-stat-label">Qatar 2022</div></div>
+          </div>
+        </div>`;
+
+        // Recent Form
+        html += `<div class="team-detail-section">
+          <div class="team-detail-section-title">📊 Forma Reciente</div>
+          <div class="team-form-dots">
+            ${detail.recentForm.map(r => `<div class="team-form-dot ${r.result}">${r.result}</div>`).join('')}
+          </div>
+          <div style="margin-top:10px;">
+            ${detail.recentForm.map(r => `<div class="team-recent-match">
+              <span class="team-recent-result ${r.result}">${r.result === 'W' ? 'VIC' : r.result === 'D' ? 'EMP' : 'DER'}</span>
+              <div class="team-recent-opponent">
+                <img src="${flagUrl(r.opIso)}" alt="${r.opponent}" onerror="this.style.display='none'">
+                <span>${r.opponent}</span>
+              </div>
+              <span class="team-recent-score">${r.score}</span>
+            </div>`).join('')}
+          </div>
+        </div>`;
+
+        // Key Stats
+        html += `<div class="team-detail-section">
+          <div class="team-detail-section-title">📈 Datos Clave</div>
+          <div class="team-detail-grid">
+            <div class="team-detail-stat"><div class="team-detail-stat-value">#${detail.rank}</div><div class="team-detail-stat-label">Ranking FIFA</div></div>
+            <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:12px;">${detail.bestFinish}</div><div class="team-detail-stat-label">Mejor resultado</div></div>
+          </div>
+        </div>`;
+      } else {
+        // Basic info for non-top-20 teams
+        html += `<div class="team-detail-section">
+          <div class="team-detail-section-title">ℹ️ Información</div>
+          <div class="team-detail-grid">
+            ${teamGroup ? `<div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:14px;">${teamGroup}</div><div class="team-detail-stat-label">Grupo</div></div>` : ''}
+            <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:30px;">${team.emoji}</div><div class="team-detail-stat-label">Bandera</div></div>
+          </div>
+          <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:12px;">Información detallada próximamente disponible.</p>
+        </div>`;
+      }
+
+      openModal(team.name, html);
+    };
+
+    // ============================================
+    // TAPPABLE TEAM HELPERS
+    // ============================================
+    function tappableTeamFlag(iso, name, extraClass) {
+      return `<img src="${flagUrl(iso)}" class="team-flag ${extraClass || ''} team-tappable" alt="${name}" onclick="showTeamDetail('${name}')" onerror="this.style.display='none'">`;
+    }
+    function tappableTeamName(name, extraClass) {
+      return `<span class="team-name ${extraClass || ''} team-tappable" onclick="showTeamDetail('${name}')">${name}</span>`;
+    }
 
     // ============================================
     // SERVICE WORKER
@@ -848,17 +1407,84 @@
     });
 
     // ============================================
+    // ADMIN PIN FUNCTIONS
+    // ============================================
+    window.toggleAdminPin = function() {
+      const area = document.getElementById('admin-pin-area');
+      area.classList.toggle('visible');
+      if (area.classList.contains('visible')) {
+        document.getElementById('admin-pin-input').focus();
+      }
+    };
+
+    window.verifyAdminPin = function() {
+      const pin = document.getElementById('admin-pin-input').value;
+      if (pin === ADMIN_PIN) {
+        localStorage.setItem('prode-admin', 'true');
+        showToast('🔑 Acceso de administrador activado', 'success');
+        document.getElementById('admin-pin-area').classList.remove('visible');
+        // Check if user exists - if admin and no user, create admin user
+        const user = getUser();
+        if (!user) {
+          // Admin can still register normally, PIN just grants admin status
+          showToast('Ahora registrate normalmente, tendrás acceso admin', 'info');
+        } else {
+          // Existing user, show admin nav
+          document.getElementById('nav-admin').style.display = '';
+        }
+      } else {
+        showToast('PIN incorrecto', 'error');
+        document.getElementById('admin-pin-input').value = '';
+      }
+    };
+
+    window.closePendingScreen = function() {
+      document.getElementById('pending-screen').style.display = 'none';
+    };
+
+    // ============================================
     // INIT APP FLOW
     // ============================================
     function initApp() {
       const user = getUser();
       if (!user) {
         showRegistration();
-      } else if (!isOnboarded()) {
-        showOnboarding();
       } else {
-        startMainApp();
+        // Check if user is pending approval (and not admin)
+        if (user.status === 'pendiente' && !isAdmin()) {
+          showPendingScreen(user);
+        } else if (user.status === 'rechazado' && !isAdmin()) {
+          showPendingScreen(user, true);
+        } else if (!isOnboarded()) {
+          showOnboarding();
+        } else {
+          startMainApp();
+        }
       }
+    }
+
+    // ============================================
+    // PENDING SCREEN
+    // ============================================
+    function showPendingScreen(user, rejected) {
+      const screen = document.getElementById('pending-screen');
+      const dataEl = document.getElementById('pending-data');
+      screen.style.display = 'flex';
+
+      if (rejected) {
+        screen.querySelector('.pending-icon').textContent = '❌';
+        screen.querySelector('.pending-title').textContent = 'Registro rechazado';
+        screen.querySelector('.pending-desc').textContent = 'Tu solicitud fue rechazada por el administrador. Contactalo para más información.';
+      }
+
+      dataEl.innerHTML = `
+        <div class="pending-data-row"><span class="pending-data-label">Nombre</span><span class="pending-data-value">${user.nombre} ${user.apellido}</span></div>
+        <div class="pending-data-row"><span class="pending-data-label">Apodo</span><span class="pending-data-value">${user.apodo}</span></div>
+        <div class="pending-data-row"><span class="pending-data-label">Grupo</span><span class="pending-data-value">${user.grupo}</span></div>
+        <div class="pending-data-row"><span class="pending-data-label">Equipo</span><span class="pending-data-value">${user.equipoFavorito}</span></div>
+        <div class="pending-data-row"><span class="pending-data-label">Email</span><span class="pending-data-value">${user.email}</span></div>
+        <div class="pending-data-row"><span class="pending-data-label">Estado</span><span class="pending-data-value"><span class="status-badge ${user.status}">${user.status}</span></span></div>
+      `;
     }
 
     // ============================================
@@ -918,7 +1544,6 @@
         document.getElementById('err-nombre').classList.remove('visible');
         document.getElementById('reg-nombre').classList.remove('error');
       }
-      // Validate apellido
       if (!apellido) {
         document.getElementById('err-apellido').classList.add('visible');
         document.getElementById('reg-apellido').classList.add('error');
@@ -927,7 +1552,6 @@
         document.getElementById('err-apellido').classList.remove('visible');
         document.getElementById('reg-apellido').classList.remove('error');
       }
-      // Validate apodo
       if (!apodo || apodo.length < 3) {
         document.getElementById('err-apodo').classList.add('visible');
         document.getElementById('reg-apodo').classList.add('error');
@@ -936,7 +1560,6 @@
         document.getElementById('err-apodo').classList.remove('visible');
         document.getElementById('reg-apodo').classList.remove('error');
       }
-      // Validate telefono
       if (!telefono) {
         document.getElementById('err-telefono').classList.add('visible');
         document.getElementById('reg-telefono').classList.add('error');
@@ -945,7 +1568,6 @@
         document.getElementById('err-telefono').classList.remove('visible');
         document.getElementById('reg-telefono').classList.remove('error');
       }
-      // Validate email
       if (!email || !/\S+@\S+\.\S+/.test(email)) {
         document.getElementById('err-email').classList.add('visible');
         document.getElementById('reg-email').classList.add('error');
@@ -954,7 +1576,6 @@
         document.getElementById('err-email').classList.remove('visible');
         document.getElementById('reg-email').classList.remove('error');
       }
-      // Validate grupo
       if (!grupo) {
         document.getElementById('err-grupo').classList.add('visible');
         document.getElementById('reg-grupo').classList.add('error');
@@ -963,7 +1584,6 @@
         document.getElementById('err-grupo').classList.remove('visible');
         document.getElementById('reg-grupo').classList.remove('error');
       }
-      // Validate equipo
       if (!equipo) {
         document.getElementById('err-equipo').classList.add('visible');
         document.getElementById('reg-equipo').classList.add('error');
@@ -972,7 +1592,6 @@
         document.getElementById('err-equipo').classList.remove('visible');
         document.getElementById('reg-equipo').classList.remove('error');
       }
-      // Validate avatar
       if (!avatar) {
         document.getElementById('err-avatar').classList.add('visible');
         valid = false;
@@ -985,15 +1604,33 @@
         return;
       }
 
+      // Determine status based on admin
+      const userIsAdmin = isAdmin();
+      const status = userIsAdmin ? 'aprobado' : 'pendiente';
+
       const user = {
         nombre, apellido, apodo, telefono, email,
         grupo, equipoFavorito: equipo, avatar,
-        fechaRegistro: new Date().toISOString()
+        fechaRegistro: new Date().toISOString(),
+        status: status,
+        id: Date.now().toString(36) + Math.random().toString(36).substr(2, 5)
       };
       saveUser(user);
-      showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
+
+      // Add to all users list
+      const allUsers = getAllUsers();
+      allUsers.push({...user});
+      saveAllUsers(allUsers);
+
       document.getElementById('register-screen').style.display = 'none';
-      showOnboarding();
+
+      if (status === 'pendiente') {
+        showToast('¡Registro enviado! Esperá la aprobación del admin.', 'info');
+        showPendingScreen(user);
+      } else {
+        showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
+        showOnboarding();
+      }
     });
 
     // ============================================
@@ -1065,10 +1702,26 @@
       // Set avatar in header
       document.getElementById('header-avatar').textContent = user.avatar;
 
+      // Show admin nav if admin
+      if (isAdmin()) {
+        document.getElementById('nav-admin').style.display = '';
+      }
+
       // Restore expert mode
       if (isExpertMode()) {
         document.body.classList.add('expert-mode');
         document.getElementById('expert-toggle').classList.add('active');
+      }
+
+      // Check pending notification count for admin
+      if (isAdmin()) {
+        const allUsers = getAllUsers();
+        const pendingCount = allUsers.filter(u => u.status === 'pendiente').length;
+        if (pendingCount > 0) {
+          const notifCount = document.getElementById('notification-count');
+          notifCount.textContent = pendingCount;
+          notifCount.style.display = '';
+        }
       }
 
       // Initial route
@@ -1079,10 +1732,11 @@
     // ============================================
     // HASH ROUTER
     // ============================================
-    const validViews = ['inicio', 'pronosticos', 'ranking', 'stats', 'mas'];
+    const validViews = ['inicio', 'pronosticos', 'ranking', 'stats', 'mas', 'admin'];
 
     function navigateTo(view) {
       if (!validViews.includes(view)) view = 'inicio';
+      if (view === 'admin' && !isAdmin()) view = 'inicio';
       currentView = view;
       window.location.hash = view === 'inicio' ? '' : view;
 
@@ -1125,6 +1779,7 @@
         case 'ranking': renderRanking(); break;
         case 'stats': renderStats(); break;
         case 'mas': renderMas(); break;
+        case 'admin': renderAdmin(); break;
       }
     }
 
@@ -1138,7 +1793,6 @@
       const savedCount = Object.keys(preds).length;
       const totalMatches = MATCHES.length;
 
-      // Find next match
       const now = new Date();
       let nextMatch = MATCHES.find(m => new Date(m.date + 'T' + m.time + ':00') > now) || MATCHES[0];
 
@@ -1194,13 +1848,13 @@
           </div>
           <div class="next-match-teams">
             <div class="next-match-team">
-              <img src="${flagUrl(nextMatch.homeIso)}" class="team-flag team-flag-lg" alt="${nextMatch.home}" onerror="this.style.display='none'">
-              <span class="team-name">${nextMatch.home}</span>
+              ${tappableTeamFlag(nextMatch.homeIso, nextMatch.home, 'team-flag-lg')}
+              ${tappableTeamName(nextMatch.home)}
             </div>
             <div class="next-match-vs">VS</div>
             <div class="next-match-team">
-              <img src="${flagUrl(nextMatch.awayIso)}" class="team-flag team-flag-lg" alt="${nextMatch.away}" onerror="this.style.display='none'">
-              <span class="team-name">${nextMatch.away}</span>
+              ${tappableTeamFlag(nextMatch.awayIso, nextMatch.away, 'team-flag-lg')}
+              ${tappableTeamName(nextMatch.away)}
             </div>
           </div>
           <div class="countdown" id="home-countdown">
@@ -1282,11 +1936,10 @@
       const preds = getPredictions();
       const savedCount = Object.keys(preds).length;
       const total = MATCHES.length;
+      const locked = isLocked();
 
-      // Get unique groups
       const groups = ['Todos', ...new Set(MATCHES.map(m => m.group))];
 
-      // Filter matches
       let filtered = MATCHES;
       if (currentPredFilter !== 'Todos') {
         filtered = MATCHES.filter(m => m.group === currentPredFilter);
@@ -1301,6 +1954,11 @@
       const bracketCount = Object.keys(bracketPreds).length;
 
       const html = `
+        ${locked ? `<div class="card" style="text-align:center;padding:16px;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);">
+          <span style="font-size:24px;">🔒</span>
+          <p style="color:#ef4444;font-weight:700;margin-top:8px;">Los pronósticos están bloqueados por el administrador</p>
+        </div>` : ''}
+
         <!-- Completion Pill -->
         <div class="completion-pill">
           <span class="completion-text">${savedCount}/${total} cargados</span>
@@ -1337,24 +1995,24 @@
               </div>
               <div class="match-card-body">
                 <div class="match-team">
-                  <img src="${flagUrl(m.homeIso)}" class="team-flag" alt="${m.home}" onerror="this.style.display='none'">
-                  <span class="team-name">${m.home}</span>
+                  ${tappableTeamFlag(m.homeIso, m.home)}
+                  ${tappableTeamName(m.home)}
                 </div>
                 <div class="match-score-area">
-                  <input type="number" class="input-score ${homeVal !== '' ? 'has-value' : ''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" aria-label="Goles ${m.home}" inputmode="numeric">
+                  <input type="number" class="input-score ${homeVal !== '' ? 'has-value' : ''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" aria-label="Goles ${m.home}" inputmode="numeric" ${locked ? 'disabled' : ''}>
                   <span class="match-divider">:</span>
-                  <input type="number" class="input-score ${awayVal !== '' ? 'has-value' : ''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" aria-label="Goles ${m.away}" inputmode="numeric">
+                  <input type="number" class="input-score ${awayVal !== '' ? 'has-value' : ''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" aria-label="Goles ${m.away}" inputmode="numeric" ${locked ? 'disabled' : ''}>
                 </div>
                 <div class="match-team">
-                  <img src="${flagUrl(m.awayIso)}" class="team-flag" alt="${m.away}" onerror="this.style.display='none'">
-                  <span class="team-name">${m.away}</span>
+                  ${tappableTeamFlag(m.awayIso, m.away)}
+                  ${tappableTeamName(m.away)}
                 </div>
               </div>
               <div class="match-card-footer">
                 <div class="match-status">
                   <span class="match-status-indicator">${isSaved ? '🟢 Guardado' : '🟡 Pendiente'}</span>
                 </div>
-                <button class="match-save-btn ${isSaved ? 'saved' : ''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})">${isSaved ? '✅ Guardado' : '💾 Guardar'}</button>
+                <button class="match-save-btn ${isSaved ? 'saved' : ''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})" ${locked ? 'disabled' : ''}>${isSaved ? '✅ Guardado' : '💾 Guardar'}</button>
               </div>
             </div>`;
           }).join('')}
@@ -1472,11 +2130,11 @@
       renderPredictions();
     };
 
-    // Expose filter functions globally
     window.setPredFilter = function(f) { currentPredFilter = f; renderPredictions(); };
     window.setStatusFilter = function(f) { currentStatusFilter = f; renderPredictions(); };
 
     window.saveMatch = function(id) {
+      if (isLocked()) { showToast('Los pronósticos están bloqueados', 'error'); return; }
       const homeInput = document.getElementById('score-home-' + id);
       const awayInput = document.getElementById('score-away-' + id);
       const homeVal = homeInput.value;
@@ -1506,6 +2164,7 @@
     };
 
     window.saveAllPredictions = function() {
+      if (isLocked()) { showToast('Los pronósticos están bloqueados', 'error'); return; }
       let saved = 0;
       MATCHES.forEach(m => {
         const h = document.getElementById('score-home-' + m.id);
@@ -1533,7 +2192,6 @@
       const user = getUser();
       if (!user) return;
 
-      // Build ranking with demo + current user
       let ranking = DEMO_PARTICIPANTS.map(p => ({...p}));
       const preds = getPredictions();
       const userEntry = {
@@ -1552,7 +2210,6 @@
 
       let contentHtml = '';
 
-      // TABS
       contentHtml += `
         <div class="ranking-tabs-v2">
           <button class="ranking-tab-v2 ${currentRankingTab === 'general' ? 'active' : ''}" onclick="setRankingTab('general')">🏆 General</button>
@@ -1576,7 +2233,6 @@
       const top3 = ranking.slice(0, 3);
       let html = '';
 
-      // Podium
       html += `<div class="section-title"><h3>🏆 Podio</h3></div>
         <div class="podium">
           ${top3.length >= 2 ? `
@@ -1602,7 +2258,6 @@
           </div>` : ''}
         </div>`;
 
-      // Full table
       html += `<div class="section-title"><h3>📋 Tabla Completa</h3></div>
         <div class="card" style="padding:0;overflow:hidden;">
           ${ranking.map((p, i) => {
@@ -1643,7 +2298,6 @@
       const top3 = filtered.slice(0, 3);
       let html = `<div class="section-title"><h3>👨‍👩‍👧‍👦 ${user.grupo}</h3></div>`;
 
-      // Podium
       html += `<div class="podium">
           ${top3.length >= 2 ? `
           <div class="podium-place podium-second">
@@ -1668,7 +2322,6 @@
           </div>` : ''}
         </div>`;
 
-      // List
       html += `<div class="card" style="padding:0;overflow:hidden;">
           ${filtered.map((p, i) => {
             const pos = i + 1;
@@ -1692,7 +2345,6 @@
     }
 
     function renderFamiliesVsFamilies(ranking) {
-      // Aggregate by family
       const familyMap = {};
       ranking.forEach(p => {
         if (!familyMap[p.grupo]) {
@@ -1715,7 +2367,6 @@
       let html = `<div class="section-title"><h3>⚔️ Familias vs Familias</h3></div>
         <p class="text-muted" style="font-size:12px;margin-bottom:12px;">Ranking por promedio de puntos por miembro (comparación justa)</p>`;
 
-      // Family Podium
       if (top3.length >= 3) {
         html += `<div class="family-podium">
           <div class="family-podium-item">
@@ -1736,7 +2387,6 @@
         </div>`;
       }
 
-      // Family cards
       families.forEach((f, idx) => {
         html += `
         <div class="family-card">
@@ -1788,7 +2438,6 @@
           <div class="stat-card card"><span class="stat-label">Aciertos</span><span class="stat-value">${savedCount > 0 ? '45%' : '0%'}</span></div>
         </div>
 
-        <!-- Results Breakdown -->
         <div class="section-title mt-3"><h3>🎯 Desglose de Resultados</h3></div>
         <div class="card">
           <div class="stat-bar"><span class="stat-bar-label">Exactos (10pts)</span><div class="stat-bar-track"><div class="stat-bar-fill exact" style="width:${savedCount>0?'25':'0'}%"></div></div><span class="stat-bar-value">${savedCount>0?'2':'0'}</span></div>
@@ -1797,7 +2446,6 @@
           <div class="stat-bar"><span class="stat-bar-label">Error (0pts)</span><div class="stat-bar-track"><div class="stat-bar-fill error" style="width:${savedCount>0?'25':'0'}%"></div></div><span class="stat-bar-value">${savedCount>0?'2':'0'}</span></div>
         </div>
 
-        <!-- Recent Predictions -->
         <div class="section-title mt-3"><h3>📝 Pronósticos Recientes</h3></div>
         <div class="card" style="padding:0;">
           ${savedCount > 0 ? Object.entries(preds).slice(-5).reverse().map(([id, p]) => {
@@ -1829,7 +2477,7 @@
                 const rowClass = idx < 2 ? 'qualified' : idx === 2 ? 'possible' : '';
                 return `<tr class="${rowClass}">
                   <td>${idx + 1}</td>
-                  <td><div class="team-cell"><img src="${flagUrl(t.iso)}" alt="${t.name}" onerror="this.style.display='none'"><span>${t.name}</span></div></td>
+                  <td><div class="team-cell">${tappableTeamFlag(t.iso, t.name)}<span class="team-tappable" onclick="showTeamDetail('${t.name}')" style="cursor:pointer;">${t.name}</span></div></td>
                   <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
                 </tr>`;
               }).join('')}
@@ -1847,7 +2495,6 @@
         </div>`;
       } else {
         html += `
-        <!-- EXPERT MODE CONTENT -->
         <div class="section-title mt-4"><h3>⚽ Estadísticas de Partidos <span class="badge badge-gold">🧠 PRO</span></h3></div>
         <div class="card">
           <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
@@ -1903,7 +2550,6 @@
       const totalMatches = MATCHES.length;
       const accuracy = totalMatches > 0 ? Math.round((savedCount / totalMatches) * 100) : 0;
 
-      // Format phone for WhatsApp
       const phoneClean = (user.telefono || '').replace(/[\s\-\(\)]/g, '').replace(/^\+/, '');
       const registrationDate = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString('es-AR', { year:'numeric', month:'long', day:'numeric' }) : 'N/A';
 
@@ -1926,7 +2572,7 @@
               <span class="profile-link-icon">✉️</span>
               <span>${user.email}</span>
             </a>` : ''}
-            ${favTeam ? `<div class="profile-link">
+            ${favTeam ? `<div class="profile-link" onclick="showTeamDetail('${favTeam.name}')" style="cursor:pointer;">
               <span class="profile-link-icon"><img src="${flagUrl(favTeam.iso)}" style="width:22px;height:15px;border-radius:2px;" alt="${favTeam.name}"></span>
               <span>Equipo favorito: <strong>${favTeam.name}</strong></span>
             </div>` : ''}
@@ -2026,7 +2672,7 @@
           <p style="font-size:13px;color:var(--text-muted);line-height:1.8;">
             <strong>PRODE Familiar</strong><br>
             Mundial de Fútbol 2026<br>
-            Versión 2.0.0<br>
+            Versión 3.0.0<br>
             Hecho con ❤️ para la familia
           </p>
         </div>
@@ -2061,6 +2707,415 @@
       }
     }
 
+    // ============================================
+    // ADMIN VIEW
+    // ============================================
+    function renderAdmin() {
+      if (!isAdmin()) return;
+      const allUsers = getAllUsers();
+      const total = allUsers.length;
+      const aprobados = allUsers.filter(u => u.status === 'aprobado').length;
+      const pendientes = allUsers.filter(u => u.status === 'pendiente').length;
+      const rechazados = allUsers.filter(u => u.status === 'rechazado').length;
+      const locked = isLocked();
+
+      const ejsEnabled = EMAILJS_CONFIG.enabled;
+      const ejsServiceId = localStorage.getItem('prode-emailjs-service') || '';
+      const ejsTemplateId = localStorage.getItem('prode-emailjs-template') || '';
+      const ejsKey = localStorage.getItem('prode-emailjs-key') || '';
+      const ejsOn = localStorage.getItem('prode-emailjs-enabled') === 'true';
+
+      let filteredUsers = allUsers;
+      if (currentAdminTab === 'pendientes') filteredUsers = allUsers.filter(u => u.status === 'pendiente');
+      else if (currentAdminTab === 'aprobados') filteredUsers = allUsers.filter(u => u.status === 'aprobado');
+      else if (currentAdminTab === 'rechazados') filteredUsers = allUsers.filter(u => u.status === 'rechazado');
+
+      if (adminSearchQuery) {
+        const q = adminSearchQuery.toLowerCase();
+        filteredUsers = filteredUsers.filter(u =>
+          (u.nombre + ' ' + u.apellido + ' ' + u.apodo + ' ' + u.email).toLowerCase().includes(q)
+        );
+      }
+
+      let html = `
+        <div class="section-title"><h3>🔑 Panel de Administración <span class="badge badge-gold">ADMIN</span></h3></div>
+
+        <!-- Stats Cards -->
+        <div class="admin-stats-row">
+          <div class="admin-stat-card">
+            <div class="admin-stat-value gold">${total}</div>
+            <div class="admin-stat-label">Total Registrados</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-value green">${aprobados}</div>
+            <div class="admin-stat-label">Aprobados</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-value orange">${pendientes}</div>
+            <div class="admin-stat-label">Pendientes</div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-value red">${rechazados}</div>
+            <div class="admin-stat-label">Rechazados</div>
+          </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+          <button class="admin-tab ${currentAdminTab==='pendientes'?'active':''}" onclick="setAdminTab('pendientes')">⏳ Pendientes (${pendientes})</button>
+          <button class="admin-tab ${currentAdminTab==='aprobados'?'active':''}" onclick="setAdminTab('aprobados')">✅ Aprobados</button>
+          <button class="admin-tab ${currentAdminTab==='rechazados'?'active':''}" onclick="setAdminTab('rechazados')">❌ Rechazados</button>
+          <button class="admin-tab ${currentAdminTab==='todos'?'active':''}" onclick="setAdminTab('todos')">📋 Todos</button>
+        </div>
+
+        <!-- Search -->
+        <input type="text" class="admin-search" placeholder="🔍 Buscar por nombre, apodo o email..." value="${adminSearchQuery}" oninput="adminSearch(this.value)">
+
+        <!-- User Cards -->
+        ${filteredUsers.length === 0 ? `
+          <div class="card" style="text-align:center;padding:24px;">
+            <span style="font-size:40px;">📭</span>
+            <p class="text-muted" style="margin-top:12px;">No hay usuarios ${currentAdminTab === 'pendientes' ? 'pendientes' : currentAdminTab === 'aprobados' ? 'aprobados' : currentAdminTab === 'rechazados' ? 'rechazados' : ''}</p>
+          </div>
+        ` : filteredUsers.map(u => {
+          const regDate = u.fechaRegistro ? new Date(u.fechaRegistro).toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : 'N/A';
+          return `
+          <div class="admin-user-card">
+            <div class="admin-user-header">
+              <span class="admin-user-avatar">${u.avatar || '⚽'}</span>
+              <div class="admin-user-info">
+                <div class="admin-user-name">${u.nombre} ${u.apellido}</div>
+                <div class="admin-user-apodo">@${u.apodo}</div>
+              </div>
+              <span class="status-badge ${u.status}">${u.status}</span>
+            </div>
+            <div class="admin-user-details">
+              <div class="admin-user-detail">👥 ${u.grupo}</div>
+              <div class="admin-user-detail">⚽ ${u.equipoFavorito}</div>
+              <div class="admin-user-detail">📱 ${u.telefono || '-'}</div>
+              <div class="admin-user-detail">✉️ ${u.email || '-'}</div>
+              <div class="admin-user-detail" style="grid-column:span 2;">📅 ${regDate}</div>
+            </div>
+            <div class="admin-user-actions">
+              ${u.status === 'pendiente' ? `
+                <button class="admin-btn admin-btn-approve" onclick="adminApprove('${u.id}')">✅ Aprobar</button>
+                <button class="admin-btn admin-btn-reject" onclick="adminReject('${u.id}')">❌ Rechazar</button>
+              ` : u.status === 'aprobado' ? `
+                <button class="admin-btn admin-btn-revoke" onclick="adminRevoke('${u.id}')">🚫 Revocar acceso</button>
+                <button class="admin-btn admin-btn-outline admin-btn-sm" onclick="adminSendWelcome('${u.id}')">📨 Reenviar bienvenida</button>
+              ` : `
+                <button class="admin-btn admin-btn-approve" onclick="adminApprove('${u.id}')">✅ Re-aprobar</button>
+              `}
+            </div>
+          </div>`;
+        }).join('')}
+
+        <!-- Admin Shortcuts -->
+        <div class="section-title mt-3"><h3>⚡ Acciones Rápidas</h3></div>
+        <div class="card">
+          <div class="admin-toggle-row">
+            <div class="admin-toggle-info">
+              <div class="admin-toggle-label">🔒 Bloquear pronósticos</div>
+              <div class="admin-toggle-desc">Impide que los usuarios carguen nuevos pronósticos</div>
+            </div>
+            <label class="toggle"><input type="checkbox" ${locked?'checked':''} onchange="toggleLockPredictions(this.checked)"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="admin-shortcuts">
+          <div class="admin-shortcut-card" onclick="adminResetRanking()">
+            <div class="admin-shortcut-icon">🔄</div>
+            <div class="admin-shortcut-label">Resetear Ranking</div>
+          </div>
+          <div class="admin-shortcut-card" onclick="adminExportData()">
+            <div class="admin-shortcut-icon">📋</div>
+            <div class="admin-shortcut-label">Exportar Datos</div>
+          </div>
+          <div class="admin-shortcut-card" onclick="adminSendReminder()">
+            <div class="admin-shortcut-icon">📲</div>
+            <div class="admin-shortcut-label">Enviar Recordatorio</div>
+          </div>
+          <div class="admin-shortcut-card" onclick="adminApproveAll()">
+            <div class="admin-shortcut-icon">✅</div>
+            <div class="admin-shortcut-label">Aprobar Todos</div>
+          </div>
+        </div>
+
+        <!-- EmailJS Configuration -->
+        <div class="section-title mt-3"><h3>📧 Configurar Email (EmailJS)</h3></div>
+        <div class="emailjs-config">
+          <div class="form-group">
+            <label class="form-label">Service ID</label>
+            <input type="text" class="form-input" id="ejs-service" value="${ejsServiceId}" placeholder="service_xxxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Template ID</label>
+            <input type="text" class="form-input" id="ejs-template" value="${ejsTemplateId}" placeholder="template_xxxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Public Key</label>
+            <input type="text" class="form-input" id="ejs-key" value="${ejsKey}" placeholder="tu_public_key">
+          </div>
+          <div class="admin-toggle-row" style="border:none;padding-top:0;">
+            <div class="admin-toggle-info">
+              <div class="admin-toggle-label">Habilitar envío de emails</div>
+              <div class="admin-toggle-desc">${ejsEnabled ? '✅ EmailJS configurado y activo' : '⚠️ Configurá los campos para activar'}</div>
+            </div>
+            <label class="toggle"><input type="checkbox" ${ejsOn?'checked':''} id="ejs-enabled-toggle"><span class="toggle-slider"></span></label>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="admin-btn admin-btn-gold" style="flex:1;" onclick="saveEmailJSConfig()">💾 Guardar Config</button>
+            <button class="admin-btn admin-btn-outline" style="flex:1;" onclick="testEmailJS()">🧪 Test</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('admin-content').innerHTML = html;
+    }
+
+    window.setAdminTab = function(tab) {
+      currentAdminTab = tab;
+      renderAdmin();
+    };
+
+    window.adminSearch = function(query) {
+      adminSearchQuery = query;
+      renderAdmin();
+    };
+
+    window.adminApprove = function(userId) {
+      const allUsers = getAllUsers();
+      const idx = allUsers.findIndex(u => u.id === userId);
+      if (idx === -1) return;
+      allUsers[idx].status = 'aprobado';
+      saveAllUsers(allUsers);
+
+      // Update current user if it's the same
+      const currentUser = getUser();
+      if (currentUser && currentUser.id === userId) {
+        currentUser.status = 'aprobado';
+        saveUser(currentUser);
+      }
+
+      showToast(`✅ ${allUsers[idx].apodo} aprobado`, 'success');
+      adminSendWelcome(userId);
+      renderAdmin();
+    };
+
+    window.adminReject = function(userId) {
+      const allUsers = getAllUsers();
+      const idx = allUsers.findIndex(u => u.id === userId);
+      if (idx === -1) return;
+      allUsers[idx].status = 'rechazado';
+      saveAllUsers(allUsers);
+
+      const currentUser = getUser();
+      if (currentUser && currentUser.id === userId) {
+        currentUser.status = 'rechazado';
+        saveUser(currentUser);
+      }
+
+      showToast(`❌ ${allUsers[idx].apodo} rechazado`, 'info');
+      renderAdmin();
+    };
+
+    window.adminRevoke = function(userId) {
+      if (!confirm('¿Seguro que querés revocar el acceso de este usuario?')) return;
+      const allUsers = getAllUsers();
+      const idx = allUsers.findIndex(u => u.id === userId);
+      if (idx === -1) return;
+      allUsers[idx].status = 'rechazado';
+      saveAllUsers(allUsers);
+      showToast(`🚫 Acceso revocado`, 'warning');
+      renderAdmin();
+    };
+
+    window.adminSendWelcome = function(userId) {
+      const allUsers = getAllUsers();
+      const user = allUsers.find(u => u.id === userId);
+      if (!user) return;
+
+      const welcomeMsg = `🏆 ¡Bienvenido al PRODE Mundial 2026!\n\nHola ${user.nombre}! Tu registro fue aprobado.\n\n📋 Tu apodo es: ${user.apodo}\n👥 Tu grupo: ${user.grupo}\n⚽ Equipo favorito: ${user.equipoFavorito}\n\n🔗 Ingresá a la app y empezá a cargar tus pronósticos.\n\n¡Buena suerte! 🍀`;
+
+      // Try EmailJS
+      if (EMAILJS_CONFIG.enabled && user.email) {
+        try {
+          emailjs.init(EMAILJS_CONFIG.publicKey);
+          emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, {
+            to_email: user.email,
+            to_name: user.nombre,
+            user_apodo: user.apodo,
+            user_grupo: user.grupo,
+            message: welcomeMsg
+          }).then(() => {
+            showToast(`📧 Email enviado a ${user.email}`, 'success');
+          }).catch(err => {
+            showToast('Error al enviar email: ' + err.text, 'error');
+          });
+        } catch(e) {
+          showToast('Error de EmailJS', 'error');
+        }
+      } else {
+        // Show copy/whatsapp options
+        openModal('Enviar Bienvenida', `
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">EmailJS no configurado. Usá estas opciones:</p>
+          <div style="background:var(--bg-elevated);border-radius:8px;padding:12px;font-size:12px;white-space:pre-wrap;margin-bottom:12px;max-height:200px;overflow-y:auto;color:var(--text-secondary);">${welcomeMsg}</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-gold btn-block" onclick="copyToClipboard(\`${welcomeMsg.replace(/`/g, '\\`')}\`);closeModal();">📋 Copiar mensaje</button>
+            <a href="https://wa.me/${(user.telefono||'').replace(/[\s\-\(\)]/g,'').replace(/^\+/,'')}?text=${encodeURIComponent(welcomeMsg)}" target="_blank" class="btn btn-block" style="background:#25d366;color:#fff;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;font-weight:700;">📲 Enviar por WhatsApp</a>
+            ${user.email ? `<a href="mailto:${user.email}?subject=${encodeURIComponent('🏆 ¡Bienvenido al PRODE Mundial 2026!')}&body=${encodeURIComponent(welcomeMsg)}" class="btn btn-outline btn-block" style="text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;min-height:52px;">✉️ Enviar por Email</a>` : ''}
+          </div>
+        `);
+      }
+    };
+
+    window.toggleLockPredictions = function(locked) {
+      localStorage.setItem('prode-locked', locked ? 'true' : 'false');
+      showToast(locked ? '🔒 Pronósticos bloqueados' : '🔓 Pronósticos desbloqueados', locked ? 'warning' : 'success');
+    };
+
+    window.adminResetRanking = function() {
+      if (!confirm('⚠️ ¿Estás seguro de que querés resetear todo el ranking? Esta acción no se puede deshacer.')) return;
+      if (!confirm('🔴 CONFIRMACIÓN FINAL: Se borrarán TODOS los pronósticos de TODOS los usuarios.')) return;
+      // In localStorage mode, we can only reset current user
+      localStorage.removeItem('prode-predictions');
+      localStorage.removeItem('prode-bracket');
+      localStorage.removeItem('prode-group-predictions');
+      showToast('🔄 Ranking reseteado', 'success');
+    };
+
+    window.adminExportData = function() {
+      const allUsers = getAllUsers();
+      if (allUsers.length === 0) {
+        showToast('No hay usuarios para exportar', 'warning');
+        return;
+      }
+
+      const emails = allUsers.map(u => u.email).filter(Boolean).join(', ');
+      const phones = allUsers.map(u => u.telefono).filter(Boolean).join(', ');
+      const csvLines = ['Nombre,Apellido,Apodo,Email,Teléfono,Grupo,Equipo,Estado,Fecha'];
+      allUsers.forEach(u => {
+        csvLines.push(`${u.nombre},${u.apellido},${u.apodo},${u.email},${u.telefono},${u.grupo},${u.equipoFavorito},${u.status},${u.fechaRegistro}`);
+      });
+
+      openModal('Exportar Datos', `
+        <div class="form-group">
+          <label class="form-label">📧 Emails (${allUsers.filter(u=>u.email).length})</label>
+          <textarea class="form-input" rows="3" style="font-size:12px;" readonly>${emails}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">📱 Teléfonos (${allUsers.filter(u=>u.telefono).length})</label>
+          <textarea class="form-input" rows="3" style="font-size:12px;" readonly>${phones}</textarea>
+        </div>
+        <button class="btn btn-gold btn-block" onclick="copyToClipboard('${emails.replace(/'/g,"\\'")}');closeModal();">📋 Copiar Emails</button>
+        <button class="btn btn-outline btn-block mt-2" onclick="copyToClipboard('${csvLines.join('\\n').replace(/'/g,"\\'")}');closeModal();">📊 Copiar CSV</button>
+      `);
+    };
+
+    window.adminSendReminder = function() {
+      const msg = `⚽ ¡Recordatorio del PRODE Mundial 2026!\n\n¡No te olvides de cargar tus pronósticos antes de que empiecen los partidos!\n\n🔗 Entrá a la app ahora.`;
+      const allUsers = getAllUsers();
+      const approved = allUsers.filter(u => u.status === 'aprobado');
+
+      if (approved.length === 0) {
+        showToast('No hay usuarios aprobados', 'warning');
+        return;
+      }
+
+      const phones = approved.map(u => (u.telefono||'').replace(/[\s\-\(\)]/g,'').replace(/^\+/,'')).filter(Boolean);
+      const firstPhone = phones[0] || '';
+
+      openModal('Enviar Recordatorio', `
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">${approved.length} usuarios aprobados</p>
+        <div style="background:var(--bg-elevated);border-radius:8px;padding:12px;font-size:12px;white-space:pre-wrap;margin-bottom:12px;">${msg}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-gold btn-block" onclick="copyToClipboard(\`${msg.replace(/`/g,'\\`')}\`);closeModal();">📋 Copiar mensaje</button>
+          ${firstPhone ? `<a href="https://wa.me/${firstPhone}?text=${encodeURIComponent(msg)}" target="_blank" class="btn btn-block" style="background:#25d366;color:#fff;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:12px;font-weight:700;">📲 Enviar por WhatsApp</a>` : ''}
+        </div>
+      `);
+    };
+
+    window.adminApproveAll = function() {
+      const allUsers = getAllUsers();
+      const pending = allUsers.filter(u => u.status === 'pendiente');
+      if (pending.length === 0) { showToast('No hay usuarios pendientes', 'info'); return; }
+      if (!confirm(`¿Aprobar a los ${pending.length} usuarios pendientes?`)) return;
+
+      pending.forEach(u => {
+        const idx = allUsers.findIndex(x => x.id === u.id);
+        if (idx !== -1) allUsers[idx].status = 'aprobado';
+      });
+      saveAllUsers(allUsers);
+
+      // Update current user if pending
+      const currentUser = getUser();
+      if (currentUser && currentUser.status === 'pendiente') {
+        currentUser.status = 'aprobado';
+        saveUser(currentUser);
+      }
+
+      showToast(`✅ ${pending.length} usuarios aprobados`, 'success');
+      renderAdmin();
+    };
+
+    window.saveEmailJSConfig = function() {
+      const serviceId = document.getElementById('ejs-service').value.trim();
+      const templateId = document.getElementById('ejs-template').value.trim();
+      const publicKey = document.getElementById('ejs-key').value.trim();
+      const enabled = document.getElementById('ejs-enabled-toggle').checked;
+
+      localStorage.setItem('prode-emailjs-service', serviceId);
+      localStorage.setItem('prode-emailjs-template', templateId);
+      localStorage.setItem('prode-emailjs-key', publicKey);
+      localStorage.setItem('prode-emailjs-enabled', enabled ? 'true' : 'false');
+
+      // Update runtime config
+      EMAILJS_CONFIG.serviceId = serviceId;
+      EMAILJS_CONFIG.templateId = templateId;
+      EMAILJS_CONFIG.publicKey = publicKey;
+
+      showToast('📧 Configuración de EmailJS guardada', 'success');
+      renderAdmin();
+    };
+
+    window.testEmailJS = function() {
+      const serviceId = document.getElementById('ejs-service').value.trim();
+      const templateId = document.getElementById('ejs-template').value.trim();
+      const publicKey = document.getElementById('ejs-key').value.trim();
+
+      if (!serviceId || !templateId || !publicKey) {
+        showToast('Completá todos los campos de EmailJS primero', 'error');
+        return;
+      }
+
+      const user = getUser();
+      try {
+        emailjs.init(publicKey);
+        emailjs.send(serviceId, templateId, {
+          to_email: user.email || 'test@test.com',
+          to_name: user.nombre || 'Test',
+          user_apodo: user.apodo || 'Test',
+          user_grupo: user.grupo || 'Test',
+          message: '🧪 Este es un email de prueba del PRODE Mundial 2026'
+        }).then(() => {
+          showToast('✅ Email de prueba enviado correctamente', 'success');
+        }).catch(err => {
+          showToast('❌ Error: ' + (err.text || err.message || 'desconocido'), 'error');
+        });
+      } catch(e) {
+        showToast('❌ Error al inicializar EmailJS', 'error');
+      }
+    };
+
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('📋 Copiado al portapapeles', 'success'))
+        .catch(() => showToast('No se pudo copiar', 'error'));
+    };
+
+    // ============================================
+    // GLOBAL FUNCTIONS
+    // ============================================
     window.saveGroupPreds = function() {
       const data = {
         champion: document.getElementById('gp-champion').value,
@@ -2113,6 +3168,7 @@
         localStorage.removeItem('prode-api-url');
         localStorage.removeItem('prode-notifs');
         localStorage.removeItem('prode-sounds');
+        localStorage.removeItem('prode-admin');
         location.reload();
       }
     };
@@ -2214,6 +3270,15 @@
     // NOTIFICATION BELL
     // ============================================
     document.getElementById('notification-bell').addEventListener('click', () => {
+      if (isAdmin()) {
+        const allUsers = getAllUsers();
+        const pending = allUsers.filter(u => u.status === 'pendiente');
+        if (pending.length > 0) {
+          showToast(`${pending.length} usuario(s) pendiente(s) de aprobación`, 'info');
+          navigateTo('admin');
+          return;
+        }
+      }
       showToast('No hay notificaciones nuevas', 'info');
     });
 
