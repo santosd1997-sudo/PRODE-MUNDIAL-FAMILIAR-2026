@@ -1612,7 +1612,7 @@
 
     function renderView(view) {
       switch(view) {
-        case 'inicio': renderHome(); break;
+        case 'inicio': renderHome(); startTriviaAutoRotate(); break;
         case 'pronosticos': renderPredictions(); break;
         case 'ranking': renderRanking(); break;
         case 'stats': renderStats(); break;
@@ -1626,16 +1626,39 @@
     // ============================================
     function renderTriviaCard() {
       const t = SABIAS_QUE[currentTriviaIdx];
-      return `<div class="trivia-card" style="animation:fadeIn .4s ease;">
+      return `<div class="trivia-card" id="trivia-card" style="animation:fadeIn .4s ease; transition:opacity 0.4s ease;">
         <div class="trivia-header"><span style="font-weight:700;color:var(--gold);">¿Sabías que?</span><span class="trivia-badge">${t.cat}</span></div>
         <div><span class="trivia-emoji">${t.emoji}</span><p class="trivia-text">${t.fact}</p></div>
-        <div style="text-align:right;clear:both;"><button class="trivia-next-btn" onclick="nextTrivia()">Otro dato →</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;clear:both;">
+          <span style="font-size:11px;color:var(--text-muted);">${currentTriviaIdx + 1}/${SABIAS_QUE.length}</span>
+          <button class="trivia-next-btn" onclick="nextTrivia()">Otro dato →</button>
+        </div>
       </div>`;
     }
+
+    let triviaAutoInterval = null;
+    function startTriviaAutoRotate() {
+      if (triviaAutoInterval) clearInterval(triviaAutoInterval);
+      triviaAutoInterval = setInterval(() => {
+        const card = document.getElementById('trivia-card');
+        if (!card) { clearInterval(triviaAutoInterval); return; }
+        card.style.opacity = '0';
+        setTimeout(() => {
+          currentTriviaIdx = Math.floor(Math.random() * SABIAS_QUE.length);
+          card.outerHTML = renderTriviaCard();
+        }, 400);
+      }, 8000);
+    }
+
     window.nextTrivia = function() {
-      currentTriviaIdx = (currentTriviaIdx + 1) % SABIAS_QUE.length;
-      const card = document.querySelector('.trivia-card');
-      if (card) { card.outerHTML = renderTriviaCard(); }
+      currentTriviaIdx = Math.floor(Math.random() * SABIAS_QUE.length);
+      const card = document.getElementById('trivia-card');
+      if (card) {
+        card.style.opacity = '0';
+        setTimeout(() => { card.outerHTML = renderTriviaCard(); }, 300);
+      }
+      // Reset timer on manual click
+      startTriviaAutoRotate();
     };
 
     function getTodayMatches() {
