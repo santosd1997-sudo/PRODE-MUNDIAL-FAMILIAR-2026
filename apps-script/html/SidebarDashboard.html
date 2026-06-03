@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root {
+      --primary: #003087;
+      --gold: #C5A55A;
+      --success: #00A651;
+      --danger: #ED1C24;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: #333;
+      padding: 12px;
+    }
+    h2 {
+      background: linear-gradient(135deg, var(--primary), #001a4d);
+      color: var(--white);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .card-title {
+      font-size: 11px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .big-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .sub-text {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+    .kpi-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .kpi {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .kpi .value { font-size: 20px; font-weight: bold; color: var(--primary); }
+    .kpi .label { font-size: 10px; color: #999; margin-top: 2px; }
+    .podium {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 6px;
+      padding: 20px 0 10px;
+    }
+    .podium-spot {
+      text-align: center;
+      border-radius: 8px;
+      padding: 10px 8px 6px;
+      min-width: 70px;
+    }
+    .podium-spot.first {
+      background: linear-gradient(to bottom, #FFD700, #FFA500);
+      height: 100px;
+      color: #333;
+    }
+    .podium-spot.second {
+      background: linear-gradient(to bottom, #C0C0C0, #A0A0A0);
+      height: 80px;
+      color: #333;
+    }
+    .podium-spot.third {
+      background: linear-gradient(to bottom, #CD7F32, #8B4513);
+      height: 65px;
+      color: #fff;
+    }
+    .podium-spot .pos { font-size: 20px; font-weight: bold; }
+    .podium-spot .name { font-size: 11px; font-weight: 600; }
+    .podium-spot .pts { font-size: 10px; }
+    .ranking-list {
+      list-style: none;
+    }
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+    }
+    .ranking-item:last-child { border-bottom: none; }
+    .ranking-pos {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 12px;
+      margin-right: 10px;
+    }
+    .ranking-pos.top3 { background: var(--gold); color: #fff; }
+    .ranking-name { flex: 1; font-weight: 500; }
+    .ranking-pts { font-weight: bold; color: var(--primary); }
+    .ranking-var {
+      width: 30px;
+      text-align: center;
+      font-size: 11px;
+      margin-left: 6px;
+    }
+    .ranking-var.up { color: var(--success); }
+    .ranking-var.down { color: var(--danger); }
+    .ranking-var.eq { color: #999; }
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge.gold { background: #FFF3CD; color: #856404; }
+    .badge.silver { background: #E2E3E5; color: #41464B; }
+    .badge.bronze { background: #F8D7DA; color: #721C24; }
+    .badge.special { background: #D1E7DD; color: #0F5132; }
+    .progress-bar {
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    .progress-fill.green { background: var(--success); }
+    .progress-fill.blue { background: var(--primary); }
+    .progress-fill.gold { background: var(--gold); }
+    .chart-placeholder {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+      border: 2px dashed #ddd;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 16px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .btn-refresh {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary), #001a4d);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📊 Dashboard PRODE</h2>
+
+  <div id="dashContent">
+    <div style="text-align:center;padding:30px;color:#999;">
+      <div style="font-size:40px;margin-bottom:10px;">⏳</div>
+      Cargando dashboard...
+    </div>
+  </div>
+
+  <button class="btn-refresh" onclick="cargarDashboard()">🔄 Actualizar Dashboard</button>
+
+  <script>
+    cargarDashboard();
+
+    function cargarDashboard() {
+      document.getElementById('dashContent').innerHTML = 
+        '<div style="text-align:center;padding:30px;color:#999;">⏳ Cargando...</div>';
+      
+      google.script.run
+        .withSuccessHandler(renderDashboard)
+        .withFailureHandler(function(e) {
+          document.getElementById('dashContent').innerHTML = 
+            '<div style="text-align:center;padding:30px;color:red;">❌ ' + e.message + '</div>';
+        })
+        .obtenerDatosDashboard();
+    }
+
+    function renderDashboard(data) {
+      var html = '';
+
+      // Tournament progress
+      html += '<div class="card">' +
+        '<div class="card-title">📅 Progreso del Torneo</div>' +
+        '<div class="big-number">' + data.partidosJugados + '/' + data.totalPartidos + '</div>' +
+        '<div class="sub-text">partidos jugados</div>' +
+        '<div class="progress-bar"><div class="progress-fill blue" style="width:' + 
+          (data.partidosJugados / data.totalPartidos * 100) + '%"></div></div>' +
+      '</div>';
+
+      // KPIs
+      html += '<div class="kpi-row">' +
+        '<div class="kpi"><div class="value">' + data.participantes + '</div><div class="label">Participantes</div></div>' +
+        '<div class="kpi"><div class="value">' + data.totalPronosticos + '</div><div class="label">Pronósticos</div></div>' +
+        '<div class="kpi"><div class="value">' + data.promedioAciertos + '%</div><div class="label">Aciertos Promedio</div></div>' +
+        '<div class="kpi"><div class="value">' + data.exactosTotal + '</div><div class="label">Exactos Totales</div></div>' +
+      '</div>';
+
+      // Podium
+      if (data.ranking && data.ranking.length >= 3) {
+        html += '<div class="section-title">🏆 Podio Actual</div>' +
+          '<div class="podium">' +
+            '<div class="podium-spot second">' +
+              '<div class="pos">🥈</div><div class="name">' + data.ranking[1].nombre + '</div><div class="pts">' + data.ranking[1].puntos + ' pts</div>' +
+            '</div>' +
+            '<div class="podium-spot first">' +
+              '<div class="pos">🥇</div><div class="name">' + data.ranking[0].nombre + '</div><div class="pts">' + data.ranking[0].puntos + ' pts</div>' +
+            '</div>' +
+            '<div class="podium-spot third">' +
+              '<div class="pos">🥉</div><div class="name">' + data.ranking[2].nombre + '</div><div class="pts">' + data.ranking[2].puntos + ' pts</div>' +
+            '</div>' +
+          '</div>';
+      }
+
+      // Full ranking
+      if (data.ranking && data.ranking.length > 3) {
+        html += '<div class="section-title">📊 Ranking Completo</div><div class="card"><ul class="ranking-list">';
+        data.ranking.forEach(function(r, i) {
+          var varClass = r.variacion > 0 ? 'up' : (r.variacion < 0 ? 'down' : 'eq');
+          var varText = r.variacion > 0 ? '▲' + r.variacion : (r.variacion < 0 ? '▼' + Math.abs(r.variacion) : '=');
+          html += '<li class="ranking-item">' +
+            '<span class="ranking-pos ' + (i < 3 ? 'top3' : '') + '">' + (i + 1) + '</span>' +
+            '<span class="ranking-name">' + r.nombre + '</span>' +
+            '<span class="ranking-pts">' + r.puntos + '</span>' +
+            '<span class="ranking-var ' + varClass + '">' + varText + '</span>' +
+          '</li>';
+        });
+        html += '</ul></div>';
+      }
+
+      // Gamification awards
+      if (data.premios) {
+        html += '<div class="section-title">🎖️ Premios y Medallas</div><div class="card"><div class="badge-row">';
+        data.premios.forEach(function(p) {
+          html += '<span class="badge ' + p.tipo + '">' + p.emoji + ' ' + p.nombre + ': ' + p.ganador + '</span>';
+        });
+        html += '</div></div>';
+      }
+
+      // Next matches
+      if (data.proximosPartidos && data.proximosPartidos.length) {
+        html += '<div class="section-title">⏰ Próximos Partidos</div>';
+        data.proximosPartidos.forEach(function(p) {
+          html += '<div class="card" style="padding:10px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+              '<span style="font-size:12px;font-weight:600;">' + p.equipoLocal + ' vs ' + p.equipoVisitante + '</span>' +
+              '<span style="font-size:11px;color:#999;">' + p.fecha + ' ' + p.hora + '</span>' +
+            '</div>' +
+          '</div>';
+        });
+      }
+
+      document.getElementById('dashContent').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

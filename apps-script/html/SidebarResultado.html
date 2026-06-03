@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root {
+      --primary: #003087;
+      --gold: #C5A55A;
+      --success: #00A651;
+      --danger: #ED1C24;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: #333;
+      padding: 12px;
+    }
+    h2 {
+      background: linear-gradient(135deg, var(--primary), #001a4d);
+      color: var(--white);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,48,135,0.3);
+    }
+    .match-select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      background: var(--white);
+    }
+    .form-group {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .result-team {
+      flex: 1;
+      text-align: center;
+    }
+    .result-team img { width: 48px; height: 32px; border-radius: 3px; margin-bottom: 4px; }
+    .result-team .name { font-size: 12px; font-weight: 600; }
+    .result-input {
+      width: 56px;
+      height: 48px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      background: var(--bg);
+    }
+    .result-sep { font-size: 24px; font-weight: bold; color: #999; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .stat-input {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .stat-input label {
+      display: block;
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .stat-input input {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--success), #007a3a);
+      color: var(--white);
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-stats {
+      background: linear-gradient(135deg, var(--primary), #001a4d);
+      color: var(--white);
+      font-size: 13px;
+      padding: 10px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 14px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+      font-size: 13px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-size: 13px;
+      z-index: 1000;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+  </style>
+</head>
+<body>
+  <h2>📝 Cargar Resultado Oficial</h2>
+
+  <select id="partido" class="match-select" onchange="seleccionarPartido()">
+    <option value="">— Seleccioná el partido —</option>
+  </select>
+
+  <div id="resultForm" style="display:none;">
+    <div class="result-row">
+      <div class="result-team">
+        <img id="flagLocal" src="" onerror="this.style.display='none'">
+        <div class="name" id="nameLocal">Local</div>
+      </div>
+      <input type="number" class="result-input" id="golLocal" min="0" max="20" value="">
+      <span class="result-sep">-</span>
+      <input type="number" class="result-input" id="golVisitante" min="0" max="20" value="">
+      <div class="result-team">
+        <img id="flagVisitante" src="" onerror="this.style.display='none'">
+        <div class="name" id="nameVisitante">Visitante</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>⭐ Figura del Partido</label>
+      <input type="text" id="figuraPartido" placeholder="Nombre del jugador">
+    </div>
+
+    <button class="btn btn-primary" onclick="guardarResultado()">
+      ✅ Guardar Resultado
+    </button>
+
+    <div class="toggle">
+      <input type="checkbox" id="toggleStats" onchange="toggleEstadisticas()">
+      <label for="toggleStats">📊 Cargar estadísticas avanzadas (Modo Experto)</label>
+    </div>
+
+    <div id="statsSection" style="display:none;">
+      <div class="section-title">📊 Estadísticas del Partido</div>
+      <div class="stats-grid">
+        <div class="stat-input"><label>Posesión Local (%)</label><input type="number" id="posesionLocal" min="0" max="100"></div>
+        <div class="stat-input"><label>Posesión Visitante (%)</label><input type="number" id="posesionVisit" min="0" max="100"></div>
+        <div class="stat-input"><label>Remates Local</label><input type="number" id="rematesLocal" min="0"></div>
+        <div class="stat-input"><label>Remates Visitante</label><input type="number" id="rematesVisit" min="0"></div>
+        <div class="stat-input"><label>Al arco Local</label><input type="number" id="alArcoLocal" min="0"></div>
+        <div class="stat-input"><label>Al arco Visitante</label><input type="number" id="alArcoVisit" min="0"></div>
+        <div class="stat-input"><label>Córners Local</label><input type="number" id="cornersLocal" min="0"></div>
+        <div class="stat-input"><label>Córners Visitante</label><input type="number" id="cornersVisit" min="0"></div>
+        <div class="stat-input"><label>Faltas Local</label><input type="number" id="faltasLocal" min="0"></div>
+        <div class="stat-input"><label>Faltas Visitante</label><input type="number" id="faltasVisit" min="0"></div>
+        <div class="stat-input"><label>🟨 Amarillas Local</label><input type="number" id="amarillasLocal" min="0"></div>
+        <div class="stat-input"><label>🟨 Amarillas Visitante</label><input type="number" id="amarillasVisit" min="0"></div>
+        <div class="stat-input"><label>🟥 Rojas Local</label><input type="number" id="rojasLocal" min="0"></div>
+        <div class="stat-input"><label>🟥 Rojas Visitante</label><input type="number" id="rojasVisit" min="0"></div>
+        <div class="stat-input"><label>Penales Local</label><input type="number" id="penalesLocal" min="0"></div>
+        <div class="stat-input"><label>Penales Visitante</label><input type="number" id="penalesVisit" min="0"></div>
+        <div class="stat-input"><label>xG Local</label><input type="number" id="xgLocal" min="0" step="0.1"></div>
+        <div class="stat-input"><label>xG Visitante</label><input type="number" id="xgVisit" min="0" step="0.1"></div>
+      </div>
+      <button class="btn btn-stats" onclick="guardarEstadisticas()">
+        📊 Guardar Estadísticas Avanzadas
+      </button>
+    </div>
+  </div>
+
+  <script>
+    var partidoSeleccionado = null;
+
+    // Load pending matches
+    google.script.run
+      .withSuccessHandler(function(lista) {
+        var select = document.getElementById('partido');
+        lista.forEach(function(p) {
+          var opt = document.createElement('option');
+          opt.value = JSON.stringify(p);
+          opt.textContent = p.equipoLocal + ' vs ' + p.equipoVisitante + ' (' + p.fecha + ')';
+          select.appendChild(opt);
+        });
+      })
+      .obtenerPartidosSinResultado();
+
+    function seleccionarPartido() {
+      var val = document.getElementById('partido').value;
+      if (!val) { document.getElementById('resultForm').style.display = 'none'; return; }
+      
+      partidoSeleccionado = JSON.parse(val);
+      document.getElementById('resultForm').style.display = 'block';
+      document.getElementById('nameLocal').textContent = partidoSeleccionado.equipoLocal;
+      document.getElementById('nameVisitante').textContent = partidoSeleccionado.equipoVisitante;
+      document.getElementById('flagLocal').src = 'https://flagcdn.com/w80/' + (partidoSeleccionado.codigoLocal || '').toLowerCase() + '.png';
+      document.getElementById('flagVisitante').src = 'https://flagcdn.com/w80/' + (partidoSeleccionado.codigoVisitante || '').toLowerCase() + '.png';
+      document.getElementById('golLocal').value = '';
+      document.getElementById('golVisitante').value = '';
+    }
+
+    function guardarResultado() {
+      var gl = parseInt(document.getElementById('golLocal').value);
+      var gv = parseInt(document.getElementById('golVisitante').value);
+      
+      if (isNaN(gl) || isNaN(gv) || gl < 0 || gv < 0) {
+        showToast('Ingresá valores válidos', 'error');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function() {
+          showToast('✅ Resultado guardado correctamente', 'success');
+          // Remove from dropdown
+          var select = document.getElementById('partido');
+          select.options[select.selectedIndex].remove();
+          select.value = '';
+          document.getElementById('resultForm').style.display = 'none';
+        })
+        .withFailureHandler(function(e) { showToast('❌ ' + e.message, 'error'); })
+        .guardarResultado(partidoSeleccionado.id, gl, gv);
+    }
+
+    function toggleEstadisticas() {
+      var show = document.getElementById('toggleStats').checked;
+      document.getElementById('statsSection').style.display = show ? 'block' : 'none';
+    }
+
+    function guardarEstadisticas() {
+      var stats = {
+        posesionLocal: document.getElementById('posesionLocal').value,
+        posesionVisit: document.getElementById('posesionVisit').value,
+        rematesLocal: document.getElementById('rematesLocal').value,
+        rematesVisit: document.getElementById('rematesVisit').value,
+        alArcoLocal: document.getElementById('alArcoLocal').value,
+        alArcoVisit: document.getElementById('alArcoVisit').value,
+        cornersLocal: document.getElementById('cornersLocal').value,
+        cornersVisit: document.getElementById('cornersVisit').value,
+        faltasLocal: document.getElementById('faltasLocal').value,
+        faltasVisit: document.getElementById('faltasVisit').value,
+        amarillasLocal: document.getElementById('amarillasLocal').value,
+        amarillasVisit: document.getElementById('amarillasVisit').value,
+        rojasLocal: document.getElementById('rojasLocal').value,
+        rojasVisit: document.getElementById('rojasVisit').value,
+        penalesLocal: document.getElementById('penalesLocal').value,
+        penalesVisit: document.getElementById('penalesVisit').value,
+        xgLocal: document.getElementById('xgLocal').value,
+        xgVisit: document.getElementById('xgVisit').value,
+        figuraPartido: document.getElementById('figuraPartido').value
+      };
+
+      google.script.run
+        .withSuccessHandler(function() { showToast('📊 Estadísticas guardadas', 'success'); })
+        .withFailureHandler(function(e) { showToast('❌ ' + e.message, 'error'); })
+        .cargarEstadisticasPartido(partidoSeleccionado.id, stats);
+    }
+
+    function showToast(msg, type) {
+      var t = document.createElement('div');
+      t.className = 'toast ' + type;
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 3000);
+    }
+  </script>
+</body>
+</html>

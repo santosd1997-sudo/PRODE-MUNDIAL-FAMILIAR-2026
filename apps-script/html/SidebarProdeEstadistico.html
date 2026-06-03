@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root {
+      --primary: #003087;
+      --gold: #C5A55A;
+      --success: #00A651;
+      --danger: #ED1C24;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: #333;
+      padding: 12px;
+    }
+    h2 {
+      background: linear-gradient(135deg, #1a1a2e, var(--primary));
+      color: var(--gold);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 15px;
+      margin-bottom: 14px;
+      border: 1px solid var(--gold);
+    }
+    .info-banner {
+      background: linear-gradient(135deg, #FFF3CD, #FFF8E1);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      color: #856404;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+    .participant-select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      background: var(--white);
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 14px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--gold);
+    }
+    .prediction-card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    .pred-label {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .pred-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .pred-field {
+      flex: 1;
+    }
+    .pred-field label {
+      display: block;
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .pred-field select, .pred-field input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .jugador-pick {
+      background: var(--white);
+      border: 2px dashed #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .jugador-pick:hover { border-color: var(--primary); }
+    .jugador-pick.filled {
+      border-style: solid;
+      border-color: var(--success);
+      background: #f0fff0;
+    }
+    .jugador-pick .title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+    .jugador-pick .desc {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 6px;
+    }
+    .jugador-pick select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .puntos-ref {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .puntos-ref table {
+      width: 100%;
+      font-size: 11px;
+      border-collapse: collapse;
+    }
+    .puntos-ref th {
+      text-align: left;
+      padding: 4px 6px;
+      background: var(--primary);
+      color: var(--white);
+      font-size: 10px;
+    }
+    .puntos-ref td {
+      padding: 4px 6px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--success), #007a3a);
+      color: var(--white);
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+    .countdown {
+      text-align: center;
+      font-size: 12px;
+      color: var(--danger);
+      margin-bottom: 12px;
+      padding: 8px;
+      background: #fff0f0;
+      border-radius: 8px;
+    }
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      padding: 10px 20px; border-radius: 8px; color: white; font-size: 13px; z-index: 1000;
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+  </style>
+</head>
+<body>
+  <h2>📈 Prode Estadístico</h2>
+
+  <div class="info-banner">
+    ⚠️ Las predicciones estadísticas se bloquean al inicio del torneo.<br>
+    <strong>¡Completá todo antes del 11 de junio!</strong>
+  </div>
+
+  <div id="countdown" class="countdown"></div>
+
+  <select id="participante" class="participant-select" onchange="cargarPredicciones()">
+    <option value="">— Seleccioná tu nombre —</option>
+  </select>
+
+  <div id="predictionsContent" style="display:none;">
+    <!-- Tournament Predictions -->
+    <div class="section-title">🏆 Predicciones del Torneo</div>
+    
+    <div class="prediction-card">
+      <div class="pred-row">
+        <div class="pred-field">
+          <label>🥇 Campeón</label>
+          <select id="campeon" class="team-select"></select>
+        </div>
+        <div class="pred-field">
+          <label>🥈 Subcampeón</label>
+          <select id="subcampeon" class="team-select"></select>
+        </div>
+      </div>
+      <div class="pred-row">
+        <div class="pred-field">
+          <label>🥉 Tercer Puesto</label>
+          <select id="tercero" class="team-select"></select>
+        </div>
+        <div class="pred-field">
+          <label>4️⃣ Cuarto Puesto</label>
+          <select id="cuarto" class="team-select"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-card">
+      <div class="pred-row">
+        <div class="pred-field">
+          <label>🎯 Goleador del Torneo</label>
+          <input type="text" id="goleador" placeholder="Nombre del jugador">
+        </div>
+        <div class="pred-field">
+          <label>⚽ Goles del Goleador</label>
+          <input type="number" id="golesGoleador" min="1" max="20" placeholder="Cantidad">
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-card">
+      <div class="pred-row">
+        <div class="pred-field">
+          <label>🧤 Mejor Arquero</label>
+          <input type="text" id="mejorArquero" placeholder="Nombre del arquero">
+        </div>
+        <div class="pred-field">
+          <label>⭐ Mejor Jugador (MVP)</label>
+          <input type="text" id="mvp" placeholder="Nombre del jugador">
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-card">
+      <div class="pred-row">
+        <div class="pred-field">
+          <label>🌟 Mejor Jugador Joven</label>
+          <input type="text" id="mejorJoven" placeholder="Nombre del jugador">
+        </div>
+        <div class="pred-field">
+          <label>🏟️ Goles Totales del Torneo</label>
+          <input type="number" id="golesTotales" min="100" max="400" placeholder="Ej: 172">
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-card">
+      <div class="pred-field">
+        <label>😮 Sorpresa del Torneo (equipo que llega más lejos de lo esperado)</label>
+        <select id="sorpresa" class="team-select"></select>
+      </div>
+    </div>
+
+    <!-- Scoring Reference -->
+    <div class="section-title">📋 Puntaje de Referencia</div>
+    <div class="puntos-ref">
+      <table>
+        <tr><th>Predicción</th><th>Acierto</th><th>Puntos</th></tr>
+        <tr><td>🥇 Campeón</td><td>Exacto</td><td>50</td></tr>
+        <tr><td>🥈 Subcampeón</td><td>Exacto</td><td>30</td></tr>
+        <tr><td>🥉 Tercer Puesto</td><td>Exacto</td><td>20</td></tr>
+        <tr><td>⚽ Goleador</td><td>Exacto</td><td>40</td></tr>
+        <tr><td>⚽ Goleador</td><td>Solo goles (±1)</td><td>15</td></tr>
+        <tr><td>⭐ MVP</td><td>Exacto</td><td>35</td></tr>
+        <tr><td>🧤 Mejor Arquero</td><td>Exacto</td><td>25</td></tr>
+        <tr><td>🌟 Mejor Joven</td><td>Exacto</td><td>25</td></tr>
+        <tr><td>🏟️ Goles Totales</td><td>±5 goles</td><td>20</td></tr>
+        <tr><td>🏟️ Goles Totales</td><td>±10 goles</td><td>10</td></tr>
+        <tr><td>😮 Sorpresa</td><td>Pasa de fase</td><td>15-30</td></tr>
+      </table>
+    </div>
+
+    <button class="btn btn-primary" id="btnGuardar" onclick="guardarPredicciones()">
+      💾 Guardar Predicciones Estadísticas
+    </button>
+  </div>
+
+  <script>
+    var equipos = [];
+
+    // Load participants
+    google.script.run
+      .withSuccessHandler(function(lista) {
+        var select = document.getElementById('participante');
+        lista.forEach(function(nombre) {
+          var opt = document.createElement('option');
+          opt.value = nombre; opt.textContent = nombre;
+          select.appendChild(opt);
+        });
+      })
+      .obtenerListaParticipantes();
+
+    // Load teams
+    google.script.run
+      .withSuccessHandler(function(teams) {
+        equipos = teams;
+        document.querySelectorAll('.team-select').forEach(function(sel) {
+          sel.innerHTML = '<option value="">— Seleccionar —</option>';
+          teams.forEach(function(t) {
+            var opt = document.createElement('option');
+            opt.value = t.nombre; opt.textContent = t.nombre;
+            sel.appendChild(opt);
+          });
+        });
+      })
+      .obtenerListaEquipos();
+
+    // Countdown
+    function updateCountdown() {
+      var target = new Date('2026-06-11T00:00:00-03:00');
+      var now = new Date();
+      var diff = target - now;
+      if (diff <= 0) {
+        document.getElementById('countdown').innerHTML = '🔒 Las predicciones están bloqueadas';
+        document.getElementById('btnGuardar').disabled = true;
+        return;
+      }
+      var days = Math.floor(diff / 86400000);
+      var hours = Math.floor((diff % 86400000) / 3600000);
+      var mins = Math.floor((diff % 3600000) / 60000);
+      document.getElementById('countdown').innerHTML = 
+        '⏰ Quedan <b>' + days + 'd ' + hours + 'h ' + mins + 'm</b> para cerrar predicciones';
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 60000);
+
+    function cargarPredicciones() {
+      var participante = document.getElementById('participante').value;
+      if (!participante) return;
+      document.getElementById('predictionsContent').style.display = 'block';
+      
+      google.script.run
+        .withSuccessHandler(function(pred) {
+          if (!pred) return;
+          if (pred.campeon) document.getElementById('campeon').value = pred.campeon;
+          if (pred.subcampeon) document.getElementById('subcampeon').value = pred.subcampeon;
+          if (pred.tercero) document.getElementById('tercero').value = pred.tercero;
+          if (pred.cuarto) document.getElementById('cuarto').value = pred.cuarto;
+          if (pred.goleador) document.getElementById('goleador').value = pred.goleador;
+          if (pred.golesGoleador) document.getElementById('golesGoleador').value = pred.golesGoleador;
+          if (pred.mejorArquero) document.getElementById('mejorArquero').value = pred.mejorArquero;
+          if (pred.mvp) document.getElementById('mvp').value = pred.mvp;
+          if (pred.mejorJoven) document.getElementById('mejorJoven').value = pred.mejorJoven;
+          if (pred.golesTotales) document.getElementById('golesTotales').value = pred.golesTotales;
+          if (pred.sorpresa) document.getElementById('sorpresa').value = pred.sorpresa;
+        })
+        .obtenerPrediccionesEstadisticas(participante);
+    }
+
+    function guardarPredicciones() {
+      var participante = document.getElementById('participante').value;
+      if (!participante) { showToast('Seleccioná un participante', 'error'); return; }
+
+      var predicciones = {
+        campeon: document.getElementById('campeon').value,
+        subcampeon: document.getElementById('subcampeon').value,
+        tercero: document.getElementById('tercero').value,
+        cuarto: document.getElementById('cuarto').value,
+        goleador: document.getElementById('goleador').value,
+        golesGoleador: document.getElementById('golesGoleador').value,
+        mejorArquero: document.getElementById('mejorArquero').value,
+        mvp: document.getElementById('mvp').value,
+        mejorJoven: document.getElementById('mejorJoven').value,
+        golesTotales: document.getElementById('golesTotales').value,
+        sorpresa: document.getElementById('sorpresa').value
+      };
+
+      google.script.run
+        .withSuccessHandler(function() {
+          showToast('✅ Predicciones estadísticas guardadas', 'success');
+        })
+        .withFailureHandler(function(e) {
+          showToast('❌ ' + e.message, 'error');
+        })
+        .guardarPrediccionesEstadisticas(participante, predicciones);
+    }
+
+    function showToast(msg, type) {
+      var t = document.createElement('div');
+      t.className = 'toast ' + type;
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(function() { t.remove(); }, 3000);
+    }
+  </script>
+</body>
+</html>

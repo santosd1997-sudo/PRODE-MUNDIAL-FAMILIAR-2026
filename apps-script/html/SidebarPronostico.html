@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root {
+      --primary: #003087;
+      --gold: #C5A55A;
+      --success: #00A651;
+      --danger: #ED1C24;
+      --bg: #F5F5F5;
+      --white: #FFFFFF;
+      --gray: #808080;
+      --blue-light: #4FC3F7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: #333;
+      padding: 12px;
+    }
+    h2 {
+      background: linear-gradient(135deg, var(--primary), #001a4d);
+      color: var(--white);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,48,135,0.3);
+    }
+    .participant-select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 14px;
+      background: var(--white);
+    }
+    .match-card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      border-left: 4px solid var(--primary);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .match-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+    .match-card.locked {
+      opacity: 0.5;
+      border-left-color: var(--gray);
+      pointer-events: none;
+    }
+    .match-card.saved {
+      border-left-color: var(--success);
+    }
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: var(--gray);
+    }
+    .match-phase {
+      background: var(--primary);
+      color: var(--white);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+    .match-teams {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      min-width: 0;
+    }
+    .team img {
+      width: 36px;
+      height: 24px;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      object-fit: cover;
+      margin-bottom: 4px;
+    }
+    .team-name {
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 80px;
+    }
+    .score-input {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .score-input input {
+      width: 42px;
+      height: 38px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: var(--bg);
+      transition: border-color 0.2s;
+    }
+    .score-input input:focus {
+      border-color: var(--primary);
+      outline: none;
+      background: var(--white);
+    }
+    .score-input input.error {
+      border-color: var(--danger);
+      background: #fff0f0;
+    }
+    .score-separator {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--gray);
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 6px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #001a4d);
+      color: var(--white);
+    }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-save {
+      background: linear-gradient(135deg, var(--success), #007a3a);
+      color: var(--white);
+      padding: 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    .status-bar {
+      background: var(--white);
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 13px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .status-bar .count {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--gray);
+    }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 1000;
+      animation: slideUp 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--danger); }
+    @keyframes slideUp {
+      from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    .filter-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 5px 12px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      background: var(--white);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <h2>⚽ Cargar Pronósticos</h2>
+  
+  <select id="participante" class="participant-select" onchange="cargarPartidos()">
+    <option value="">— Seleccioná tu nombre —</option>
+  </select>
+
+  <div class="status-bar" id="statusBar" style="display:none;">
+    <div class="count" id="completedCount">0/0</div>
+    <div>pronósticos cargados</div>
+  </div>
+
+  <div class="filter-bar" id="filterBar" style="display:none;">
+    <button class="filter-btn active" onclick="filtrar('todos')">Todos</button>
+    <button class="filter-btn" onclick="filtrar('pendientes')">Pendientes</button>
+    <button class="filter-btn" onclick="filtrar('cargados')">Cargados</button>
+    <button class="filter-btn" onclick="filtrar('bloqueados')">Bloqueados</button>
+  </div>
+
+  <div id="matchesContainer">
+    <div class="loading">
+      <div class="spinner"></div>
+      Seleccioná un participante para comenzar
+    </div>
+  </div>
+
+  <script>
+    var partidos = [];
+    var pronosticos = {};
+
+    // Load participants on sidebar open
+    google.script.run
+      .withSuccessHandler(function(lista) {
+        var select = document.getElementById('participante');
+        lista.forEach(function(nombre) {
+          var opt = document.createElement('option');
+          opt.value = nombre;
+          opt.textContent = nombre;
+          select.appendChild(opt);
+        });
+      })
+      .obtenerListaParticipantes();
+
+    function cargarPartidos() {
+      var participante = document.getElementById('participante').value;
+      if (!participante) return;
+      
+      var container = document.getElementById('matchesContainer');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div>Cargando partidos...</div>';
+      
+      google.script.run
+        .withSuccessHandler(function(data) {
+          partidos = data.partidos;
+          pronosticos = data.pronosticos || {};
+          renderPartidos();
+          actualizarContador();
+          document.getElementById('statusBar').style.display = 'block';
+          document.getElementById('filterBar').style.display = 'flex';
+        })
+        .withFailureHandler(function(error) {
+          container.innerHTML = '<div class="loading" style="color:red;">Error: ' + error.message + '</div>';
+        })
+        .obtenerPartidosConPronosticos(participante);
+    }
+
+    function renderPartidos(filtro) {
+      var container = document.getElementById('matchesContainer');
+      container.innerHTML = '';
+      
+      var filtered = partidos;
+      if (filtro === 'pendientes') filtered = partidos.filter(p => !pronosticos[p.id] && p.estado !== 'Bloqueado');
+      if (filtro === 'cargados') filtered = partidos.filter(p => pronosticos[p.id]);
+      if (filtro === 'bloqueados') filtered = partidos.filter(p => p.estado === 'Bloqueado');
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="loading">No hay partidos en esta categoría</div>';
+        return;
+      }
+
+      filtered.forEach(function(p) {
+        var pron = pronosticos[p.id];
+        var locked = p.estado === 'Bloqueado' || p.estado === 'Jugado';
+        var card = document.createElement('div');
+        card.className = 'match-card' + (locked ? ' locked' : '') + (pron ? ' saved' : '');
+        
+        card.innerHTML = 
+          '<div class="match-header">' +
+            '<span>' + p.fecha + ' ' + p.hora + '</span>' +
+            '<span class="match-phase">' + p.fase + (p.grupo ? ' - ' + p.grupo : '') + '</span>' +
+          '</div>' +
+          '<div class="match-teams">' +
+            '<div class="team">' +
+              '<img src="https://flagcdn.com/w80/' + (p.codigoLocal || '').toLowerCase() + '.png" onerror="this.src=\'https://via.placeholder.com/36x24?text=' + p.equipoLocal.substring(0,3) + '\'">' +
+              '<span class="team-name">' + p.equipoLocal + '</span>' +
+            '</div>' +
+            '<div class="score-input">' +
+              '<input type="number" min="0" max="20" id="gl_' + p.id + '" value="' + (pron ? pron.golLocal : '') + '" ' + (locked ? 'disabled' : '') + ' onchange="validarInput(this)">' +
+              '<span class="score-separator">-</span>' +
+              '<input type="number" min="0" max="20" id="gv_' + p.id + '" value="' + (pron ? pron.golVisitante : '') + '" ' + (locked ? 'disabled' : '') + ' onchange="validarInput(this)">' +
+            '</div>' +
+            '<div class="team">' +
+              '<img src="https://flagcdn.com/w80/' + (p.codigoVisitante || '').toLowerCase() + '.png" onerror="this.src=\'https://via.placeholder.com/36x24?text=' + p.equipoVisitante.substring(0,3) + '\'">' +
+              '<span class="team-name">' + p.equipoVisitante + '</span>' +
+            '</div>' +
+          '</div>' +
+          (locked ? '<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--gray);">🔒 Bloqueado</div>' : 
+            '<button class="btn btn-save" onclick="guardar(' + p.id + ')">💾 Guardar</button>');
+        
+        container.appendChild(card);
+      });
+    }
+
+    function validarInput(input) {
+      var val = parseInt(input.value);
+      if (isNaN(val) || val < 0 || val > 20) {
+        input.classList.add('error');
+      } else {
+        input.classList.remove('error');
+      }
+    }
+
+    function guardar(partidoId) {
+      var gl = document.getElementById('gl_' + partidoId);
+      var gv = document.getElementById('gv_' + partidoId);
+      var golLocal = parseInt(gl.value);
+      var golVisitante = parseInt(gv.value);
+      var participante = document.getElementById('participante').value;
+      
+      if (isNaN(golLocal) || isNaN(golVisitante) || golLocal < 0 || golVisitante < 0) {
+        showToast('Ingresá valores válidos (0 o más)', 'error');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function() {
+          pronosticos[partidoId] = { golLocal: golLocal, golVisitante: golVisitante };
+          var card = gl.closest('.match-card');
+          card.classList.add('saved');
+          actualizarContador();
+          showToast('✅ Pronóstico guardado', 'success');
+        })
+        .withFailureHandler(function(error) {
+          showToast('❌ ' + error.message, 'error');
+        })
+        .guardarPronostico(partidoId, golLocal, golVisitante, participante);
+    }
+
+    function actualizarContador() {
+      var total = partidos.length;
+      var cargados = Object.keys(pronosticos).length;
+      document.getElementById('completedCount').textContent = cargados + '/' + total;
+    }
+
+    function filtrar(tipo) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      renderPartidos(tipo === 'todos' ? null : tipo);
+    }
+
+    function showToast(msg, type) {
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 3000);
+    }
+  </script>
+</body>
+</html>
