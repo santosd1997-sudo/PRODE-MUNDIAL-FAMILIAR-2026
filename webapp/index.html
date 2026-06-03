@@ -326,6 +326,26 @@
     /* Share ranking button */
     .share-ranking-btn { width:100%; min-height:52px; font-size:16px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); color:#1a1a2e; border:none; border-radius:12px; cursor:pointer; transition:all .2s; box-shadow:0 4px 20px rgba(197,165,90,0.25); }
     .share-ranking-btn:hover { box-shadow:0 8px 32px rgba(197,165,90,0.4); transform:translateY(-2px); }
+
+    /* Complete Team Detail View Page */
+    .player-stat-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      transition: all 0.2s ease;
+    }
+    .player-stat-card:hover {
+      border-color: rgba(197, 165, 90, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .status-badge-inline {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -510,6 +530,7 @@
     <section id="view-stats" class="view-section"><div id="stats-content"></div></section>
     <section id="view-mas" class="view-section"><div id="mas-content"></div></section>
     <section id="view-admin" class="view-section"><div id="admin-content"></div></section>
+    <section id="view-team" class="view-section"><div id="team-content"></div></section>
   </main>
 
   <!-- BOTTOM NAV -->
@@ -1253,6 +1274,13 @@
       });
     });
 
+    // Simulate finished matches for demonstration
+    if (MATCHES.length > 3) {
+      MATCHES[0].homeScore = 2; MATCHES[0].awayScore = 1;
+      MATCHES[1].homeScore = 0; MATCHES[1].awayScore = 0;
+      MATCHES[2].homeScore = 3; MATCHES[2].awayScore = 1;
+    }
+
     // ============================================
     // KNOCKOUT BRACKET
     // ============================================
@@ -1361,6 +1389,10 @@
     let bracketExpanded = false;
     let currentAdminTab = 'pendientes';
     let adminSearchQuery = '';
+    let expandedStatsGroups = {};
+    let currentTeamDetailName = '';
+    let previousViewForTeam = 'stats';
+    let teamActiveTab = 'stats';
 
     // ============================================
     // HELPERS
@@ -1421,73 +1453,519 @@
     // ============================================
     // TEAM DETAIL MODAL
     // ============================================
+    // ============================================
+    // TEAM DETAILS DATA MASTER API
+    // ============================================
+    function getHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return Math.abs(hash);
+    }
+
+    function getDeterministicPlayerName(country, idx, pos) {
+      const firstNames = ['John', 'Carlos', 'Pierre', 'Hans', 'Andrej', 'Mohamed', 'Luca', 'Kenji', 'David', 'Mateo', 'Ivan', 'Ali', 'Erik', 'Tom', 'Luis'];
+      const lastNames = ['Smith', 'Rodriguez', 'Dubois', 'Müller', 'Silva', 'Hassan', 'Rossi', 'Tanaka', 'Jones', 'Kovacic', 'Petrov', 'Khan', 'Larsson', 'Novak', 'García'];
+      const seed = getHash(country + '-' + idx);
+      const fn = firstNames[seed % firstNames.length];
+      const ln = lastNames[(seed >> 2) % lastNames.length];
+      return `${fn} ${ln}`;
+    }
+
+    window.getTeamDetails = function(teamName) {
+      let detail = TEAM_DETAILS[teamName];
+      if (!detail) {
+        const hash = getHash(teamName);
+        const rank = 15 + (hash % 150);
+        const confederations = ['UEFA', 'CONMEBOL', 'CONCACAF', 'CAF', 'AFC', 'OFC'];
+        const conf = confederations[hash % confederations.length];
+        
+        const coaches = ['Roberto Silva', 'Jean-Pierre Dupont', 'Hans Müller', 'Alex Ferguson Jr', 'Marco Rossi', 'Sven Lindqvist', 'Kenji Sato', 'Guillermo Barros'];
+        const stars = ['Lucas Martínez', 'Antoine Dubois', 'Kevin Schmidt', 'David Jones', 'Andrea Costa', 'Lars Eriksson', 'Kenji Tanaka', 'Santiago Flores'];
+        
+        detail = {
+          rank: rank,
+          coach: coaches[hash % coaches.length],
+          star: stars[hash % stars.length],
+          confederation: conf,
+          titles: hash % 15 === 0 ? 1 : 0,
+          titleYears: hash % 15 === 0 ? [1998] : [],
+          bestFinish: hash % 8 === 0 ? 'Semifinal' : hash % 4 === 0 ? 'Cuartos' : 'Fase de Grupos',
+          wcMatches: 10 + (hash % 40),
+          wcGoals: 15 + (hash % 80),
+          wcRecord: `${5 + (hash % 15)}-${3 + (hash % 10)}-${4 + (hash % 12)}`,
+          lastWC: hash % 2 === 0 ? 'Fase de Grupos' : 'No clasificado',
+          recentForm: [
+            { opponent: 'Rival A', opIso: 'un', score: `${1 + (hash % 3)}-${hash % 2}`, result: 'W', date: '2026-03' },
+            { opponent: 'Rival B', opIso: 'un', score: `${hash % 2}-${1 + (hash % 2)}`, result: 'L', date: '2026-03' },
+            { opponent: 'Rival C', opIso: 'un', score: `${2 + (hash % 2)}-${hash % 2}`, result: 'W', date: '2025-11' },
+            { opponent: 'Rival D', opIso: 'un', score: `0-0`, result: 'D', date: '2025-10' },
+            { opponent: 'Rival E', opIso: 'un', score: `${hash % 2}-${2 + (hash % 2)}`, result: 'L', date: '2025-09' }
+          ]
+        };
+        
+        detail.recentForm.forEach(r => {
+          const scores = r.score.split('-').map(x => parseInt(x));
+          if (scores[0] > scores[1]) r.result = 'W';
+          else if (scores[0] < scores[1]) r.result = 'L';
+          else r.result = 'D';
+        });
+      }
+      return detail;
+    };
+
+    window.getTeamSquad = function(teamName) {
+      const positions = ['GK', 'DEF', 'DEF', 'DEF', 'DEF', 'MID', 'MID', 'MID', 'MID', 'FWD', 'FWD', 'FWD', 'FWD', 'MID', 'DEF'];
+      const playerNamesByCountry = {
+        'Argentina': [
+          { name: 'Emiliano Martínez', pos: 'GK', status: 'Disponible' },
+          { name: 'Nahuel Molina', pos: 'DEF', status: 'Disponible' },
+          { name: 'Cristian Romero', pos: 'DEF', status: 'Disponible' },
+          { name: 'Nicolás Otamendi', pos: 'DEF', status: 'Disponible' },
+          { name: 'Nicolás Tagliafico', pos: 'DEF', status: 'Lesionado (Desgarro)' },
+          { name: 'Rodrigo De Paul', pos: 'MID', status: 'Disponible' },
+          { name: 'Enzo Fernández', pos: 'MID', status: 'Disponible' },
+          { name: 'Alexis Mac Allister', pos: 'MID', status: 'Disponible' },
+          { name: 'Lionel Messi', pos: 'FWD', status: 'Disponible' },
+          { name: 'Julián Álvarez', pos: 'FWD', status: 'Disponible' },
+          { name: 'Lautaro Martínez', pos: 'FWD', status: 'Disponible' },
+          { name: 'Ángel Di María', pos: 'FWD', status: 'Suspendido (Tarjetas)' },
+          { name: 'Leandro Paredes', pos: 'MID', status: 'Disponible' },
+          { name: 'Giovani Lo Celso', pos: 'MID', status: 'Disponible' },
+          { name: 'Lisandro Martínez', pos: 'DEF', status: 'Disponible' }
+        ],
+        'Brazil': [
+          { name: 'Alisson Becker', pos: 'GK', status: 'Disponible' },
+          { name: 'Danilo Luiz', pos: 'DEF', status: 'Disponible' },
+          { name: 'Marquinhos Correa', pos: 'DEF', status: 'Disponible' },
+          { name: 'Gabriel Magalhães', pos: 'DEF', status: 'Disponible' },
+          { name: 'Guilherme Arana', pos: 'DEF', status: 'Disponible' },
+          { name: 'Bruno Guimarães', pos: 'MID', status: 'Disponible' },
+          { name: 'Lucas Paquetá', pos: 'MID', status: 'Disponible' },
+          { name: 'Rodrygo Goes', pos: 'FWD', status: 'Disponible' },
+          { name: 'Vinícius Júnior', pos: 'FWD', status: 'Disponible' },
+          { name: 'Raphinha Dias', pos: 'FWD', status: 'Disponible' },
+          { name: 'Endrick Felipe', pos: 'FWD', status: 'Disponible' },
+          { name: 'Neymar Jr', pos: 'FWD', status: 'Lesionado (Ligamento)' },
+          { name: 'Casemiro Henrique', pos: 'MID', status: 'Disponible' },
+          { name: 'Éder Militão', pos: 'DEF', status: 'Disponible' },
+          { name: 'Andreas Pereira', pos: 'MID', status: 'Disponible' }
+        ],
+        'Mexico': [
+          { name: 'Guillermo Ochoa', pos: 'GK', status: 'Disponible' },
+          { name: 'César Montes', pos: 'DEF', status: 'Disponible' },
+          { name: 'Johan Vásquez', pos: 'DEF', status: 'Disponible' },
+          { name: 'Jorge Sánchez', pos: 'DEF', status: 'Disponible' },
+          { name: 'Jesús Gallardo', pos: 'DEF', status: 'Disponible' },
+          { name: 'Edson Álvarez', pos: 'MID', status: 'Lesionado (Muscular)' },
+          { name: 'Luis Chávez', pos: 'MID', status: 'Disponible' },
+          { name: 'Erick Sánchez', pos: 'MID', status: 'Disponible' },
+          { name: 'Santiago Giménez', pos: 'FWD', status: 'Disponible' },
+          { name: 'Uriel Antuna', pos: 'FWD', status: 'Disponible' },
+          { name: 'Hirving Lozano', pos: 'FWD', status: 'Disponible' },
+          { name: 'Orbelín Pineda', pos: 'MID', status: 'Disponible' },
+          { name: 'Luis Romo', pos: 'MID', status: 'Disponible' },
+          { name: 'Gerardo Arteaga', pos: 'DEF', status: 'Disponible' },
+          { name: 'Henry Martín', pos: 'FWD', status: 'Disponible' }
+        ],
+        'Spain': [
+          { name: 'Unai Simón', pos: 'GK', status: 'Disponible' },
+          { name: 'Dani Carvajal', pos: 'DEF', status: 'Disponible' },
+          { name: 'Robin Le Normand', pos: 'DEF', status: 'Disponible' },
+          { name: 'Aymeric Laporte', pos: 'DEF', status: 'Disponible' },
+          { name: 'Marc Cucurella', pos: 'DEF', status: 'Disponible' },
+          { name: 'Rodri Hernández', pos: 'MID', status: 'Disponible' },
+          { name: 'Fabián Ruiz', pos: 'MID', status: 'Disponible' },
+          { name: 'Pedri González', pos: 'MID', status: 'Disponible' },
+          { name: 'Lamine Yamal', pos: 'FWD', status: 'Disponible' },
+          { name: 'Álvaro Morata', pos: 'FWD', status: 'Disponible' },
+          { name: 'Nico Williams', pos: 'FWD', status: 'Disponible' },
+          { name: 'Dani Olmo', pos: 'MID', status: 'Disponible' },
+          { name: 'Mikel Merino', pos: 'MID', status: 'Disponible' },
+          { name: 'Alejandro Grimaldo', pos: 'DEF', status: 'Disponible' },
+          { name: 'Ferran Torres', pos: 'FWD', status: 'Lesionado (Tobillo)' }
+        ],
+        'France': [
+          { name: 'Mike Maignan', pos: 'GK', status: 'Disponible' },
+          { name: 'Jules Koundé', pos: 'DEF', status: 'Disponible' },
+          { name: 'Dayot Upamecano', pos: 'DEF', status: 'Disponible' },
+          { name: 'William Saliba', pos: 'DEF', status: 'Disponible' },
+          { name: 'Theo Hernández', pos: 'DEF', status: 'Disponible' },
+          { name: 'Aurélien Tchouaméni', pos: 'MID', status: 'Disponible' },
+          { name: 'N\'Golo Kanté', pos: 'MID', status: 'Disponible' },
+          { name: 'Adrien Rabiot', pos: 'MID', status: 'Disponible' },
+          { name: 'Kylian Mbappé', pos: 'FWD', status: 'Disponible' },
+          { name: 'Antoine Griezmann', pos: 'FWD', status: 'Disponible' },
+          { name: 'Ousmane Dembélé', pos: 'FWD', status: 'Disponible' },
+          { name: 'Marcus Thuram', pos: 'FWD', status: 'Disponible' },
+          { name: 'Eduardo Camavinga', pos: 'MID', status: 'Disponible' },
+          { name: 'Kingsley Coman', pos: 'FWD', status: 'Lesionado (Rodilla)' },
+          { name: 'Ibrahima Konaté', pos: 'DEF', status: 'Disponible' }
+        ],
+        'USA': [
+          { name: 'Matt Turner', pos: 'GK', status: 'Disponible' },
+          { name: 'Sergiño Dest', pos: 'DEF', status: 'Lesionado (Ligamento)' },
+          { name: 'Chris Richards', pos: 'DEF', status: 'Disponible' },
+          { name: 'Tim Ream', pos: 'DEF', status: 'Disponible' },
+          { name: 'Antonee Robinson', pos: 'DEF', status: 'Disponible' },
+          { name: 'Weston McKennie', pos: 'MID', status: 'Disponible' },
+          { name: 'Tyler Adams', pos: 'MID', status: 'Disponible' },
+          { name: 'Yunus Musah', pos: 'MID', status: 'Disponible' },
+          { name: 'Christian Pulisic', pos: 'FWD', status: 'Disponible' },
+          { name: 'Folarin Balogun', pos: 'FWD', status: 'Disponible' },
+          { name: 'Timothy Weah', pos: 'FWD', status: 'Disponible' },
+          { name: 'Gio Reyna', pos: 'MID', status: 'Disponible' },
+          { name: 'Ricardo Pepi', pos: 'FWD', status: 'Disponible' },
+          { name: 'Johnny Cardoso', pos: 'MID', status: 'Disponible' },
+          { name: 'Cameron Carter-Vickers', pos: 'DEF', status: 'Disponible' }
+        ]
+      };
+
+      let squad = playerNamesByCountry[teamName];
+      if (!squad) {
+        squad = positions.map((pos, idx) => {
+          const name = getDeterministicPlayerName(teamName, idx, pos);
+          const status = (idx === 4 && (getHash(teamName) % 3 === 0)) ? 'Lesionado (Muscular)' : 'Disponible';
+          return { name, pos, status };
+        });
+      }
+
+      return squad.map((p, idx) => {
+        const hash = getHash(teamName + '-' + p.name);
+        const pj = p.status.startsWith('Lesionado') ? Math.min(hash % 3, 2) : 5 + (hash % 10);
+        
+        let goles = 0;
+        let asistencias = 0;
+        if (p.pos === 'FWD') {
+          goles = hash % 5;
+          asistencias = hash % 3;
+        } else if (p.pos === 'MID') {
+          goles = hash % 2;
+          asistencias = hash % 4;
+        } else if (p.pos === 'DEF') {
+          goles = hash % 10 === 0 ? 1 : 0;
+          asistencias = hash % 5 === 0 ? 1 : 0;
+        }
+
+        const amarillas = hash % 4 === 0 ? 1 : hash % 7 === 0 ? 2 : 0;
+        const rojas = hash % 15 === 0 ? 1 : 0;
+        const faltasCometidas = 2 + (hash % 12);
+        const faltasRecibidas = 1 + (hash % 15);
+
+        return {
+          ...p,
+          pj,
+          goles,
+          asistencias,
+          amarillas,
+          rojas,
+          faltasCometidas,
+          faltasRecibidas
+        };
+      });
+    };
+
     window.showTeamDetail = function(teamName) {
       const team = findTeam(teamName);
       if (!team) return;
-      const detail = TEAM_DETAILS[teamName];
-      const teamGroup = findTeamGroup(teamName);
+      currentTeamDetailName = teamName;
+      previousViewForTeam = currentView !== 'team' ? currentView : previousViewForTeam;
+      teamActiveTab = 'stats';
+      navigateTo('team');
+    };
 
-      let html = `<div class="team-detail-header">
-        <img src="${flagUrlLg(team.iso)}" class="team-detail-flag" alt="${team.name}" onerror="this.style.display='none'">
-        <div class="team-detail-name">${team.name}</div>
-        <div class="team-detail-badges">`;
-      if (detail) html += `<span class="team-detail-badge rank">🏅 #${detail.rank} FIFA</span>`;
-      if (teamGroup) html += `<span class="team-detail-badge group">⚽ ${teamGroup}</span>`;
-      if (detail) html += `<span class="team-detail-badge conf">${detail.confederation}</span>`;
-      html += `</div></div>`;
+    window.setTeamActiveTab = function(tab) {
+      teamActiveTab = tab;
+      renderTeamDetailView();
+    };
 
-      if (detail) {
-        html += `<div class="team-detail-coach"><span class="team-detail-coach-icon">👔</span><div class="team-detail-coach-info"><div class="team-detail-coach-name">${detail.coach}</div><div class="team-detail-coach-role">Director Técnico</div></div></div>`;
-        html += `<div class="team-detail-coach" style="margin-top:6px;"><span class="team-detail-coach-icon">⭐</span><div class="team-detail-coach-info"><div class="team-detail-coach-name">${detail.star}</div><div class="team-detail-coach-role">Jugador Estrella</div></div></div>`;
-        html += `<div class="team-detail-section"><div class="team-detail-section-title">🏆 Historial en Mundiales</div><div class="team-detail-titles">`;
-        for (let i = 0; i < detail.titles; i++) html += `<span style="font-size:20px;">⭐</span>`;
-        if (detail.titles === 0) html += `<span style="font-size:13px;color:var(--text-muted);">Sin títulos mundialistas</span>`;
-        html += `</div>`;
-        if (detail.titleYears.length > 0) html += `<p style="text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:10px;">${detail.titleYears.join(', ')}</p>`;
-        html += `<div class="team-detail-grid">
-          <div class="team-detail-stat"><div class="team-detail-stat-value">${detail.titles}</div><div class="team-detail-stat-label">Títulos</div></div>
-          <div class="team-detail-stat"><div class="team-detail-stat-value">${detail.wcMatches}</div><div class="team-detail-stat-label">Partidos</div></div>
-          <div class="team-detail-stat"><div class="team-detail-stat-value">${detail.wcRecord}</div><div class="team-detail-stat-label">G-E-P</div></div>
-          <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:11px;">${detail.lastWC}</div><div class="team-detail-stat-label">Qatar 2022</div></div>
-        </div></div>`;
-        html += `<div class="team-detail-section"><div class="team-detail-section-title">📊 Forma Reciente</div>
-          <div class="team-form-dots">${detail.recentForm.map(r => `<div class="team-form-dot ${r.result}">${r.result}</div>`).join('')}</div>
-          <div style="margin-top:10px;">${detail.recentForm.map(r => `<div class="team-recent-match">
-            <span class="team-recent-result ${r.result}">${r.result === 'W' ? 'VIC' : r.result === 'D' ? 'EMP' : 'DER'}</span>
-            <div class="team-recent-opponent"><img src="${flagUrl(r.opIso)}" alt="${r.opponent}" onerror="this.style.display='none'"><span>${r.opponent}</span></div>
-            <span class="team-recent-score">${r.score}</span>
-          </div>`).join('')}</div></div>`;
-        html += `<div class="team-detail-section"><div class="team-detail-section-title">📈 Datos Clave</div>
-          <div class="team-detail-grid">
-            <div class="team-detail-stat"><div class="team-detail-stat-value">#${detail.rank}</div><div class="team-detail-stat-label">Ranking FIFA</div></div>
-            <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:12px;">${detail.bestFinish}</div><div class="team-detail-stat-label">Mejor resultado</div></div>
-          </div></div>`;
+    window.showMatchPredictionsModal = function(matchId) {
+      const match = MATCHES.find(m => m.id === matchId);
+      if (!match) return;
+      
+      const user = getUser();
+      const userPred = getPredictions()[matchId];
+      const list = [];
+      
+      if (userPred) {
+        list.push({
+          apodo: user.apodo + ' (vos)',
+          avatar: user.avatar,
+          grupo: user.grupo,
+          home: userPred.home,
+          away: userPred.away,
+          isMe: true
+        });
       } else {
-        // Show group matches for this team
-        const teamMatches = MATCHES.filter(m => m.home === team.name || m.away === team.name);
-        let matchesHTML = teamMatches.map(m => {
-          const opponent = m.home === team.name ? m.away : m.home;
-          const oppTeam = ALL_TEAMS.find(t => t.name === opponent);
-          const oppIso = oppTeam ? oppTeam.iso : '';
-          return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
-            <span style="font-size:12px;color:var(--text-muted);min-width:70px;">${formatMatchDate(m.date, m.time)}</span>
-            <span style="font-weight:700;">vs</span>
-            ${oppIso ? `<img src="${flagUrl(oppIso)}" style="height:16px;border-radius:2px;" alt="${opponent}">` : ''}
-            <span style="font-weight:600;">${opponent}</span>
-          </div>`;
-        }).join('');
-        html += `<div class="team-detail-section"><div class="team-detail-section-title">ℹ️ Información</div>
-          <div class="team-detail-grid">
-            ${teamGroup ? `<div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:14px;">${teamGroup}</div><div class="team-detail-stat-label">Grupo</div></div>` : ''}
-            <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:30px;">${team.emoji}</div><div class="team-detail-stat-label">Bandera</div></div>
+        list.push({
+          apodo: user.apodo + ' (vos)',
+          avatar: user.avatar,
+          grupo: user.grupo,
+          home: '-',
+          away: '-',
+          isMe: true,
+          noPred: true
+        });
+      }
+      
+      DEMO_PARTICIPANTS.forEach(p => {
+        const pred = getDeterministicPrediction(p.apodo, match);
+        list.push({
+          apodo: p.apodo,
+          avatar: p.avatar,
+          grupo: p.grupo,
+          home: pred.home,
+          away: pred.away
+        });
+      });
+      
+      const hasResult = match.homeScore !== undefined && match.awayScore !== undefined;
+      let minDistance = 999;
+      let maxDistance = -1;
+      
+      if (hasResult) {
+        const actualHome = match.homeScore;
+        const actualAway = match.awayScore;
+        const actualOutcome = actualHome > actualAway ? 'home' : actualHome < actualAway ? 'away' : 'draw';
+        
+        list.forEach(item => {
+          if (item.noPred) {
+            item.distance = 999;
+            return;
+          }
+          const predHome = parseInt(item.home);
+          const predAway = parseInt(item.away);
+          const predOutcome = predHome > predAway ? 'home' : predHome < predAway ? 'away' : 'draw';
+          
+          let dist = Math.abs(predHome - actualHome) + Math.abs(predAway - actualAway);
+          if (predOutcome !== actualOutcome) {
+            dist += 5;
+          }
+          
+          item.distance = dist;
+          item.isExact = predHome === actualHome && predAway === actualAway;
+          
+          if (dist < minDistance) minDistance = dist;
+          if (dist > maxDistance && dist < 999) maxDistance = dist;
+        });
+        
+        list.sort((a,b) => {
+          if (a.distance !== b.distance) return a.distance - b.distance;
+          return a.apodo.localeCompare(b.apodo);
+        });
+      } else {
+        list.sort((a,b) => a.apodo.localeCompare(b.apodo));
+      }
+      
+      let modalHTML = `<div style="text-align:center; margin-bottom:16px;">
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">Resultados del Resto</div>
+        <div style="display:flex; justify-content:center; align-items:center; gap:8px;">
+          ${tappableTeamFlag(match.homeIso, match.home)}
+          <span style="font-weight:700; font-size:14px;">${match.home}</span>
+          <span style="font-size:18px; font-weight:900; color:var(--gold); padding:4px 10px; background:rgba(197, 165, 90, 0.1); border-radius:6px;">
+            ${hasResult ? `${match.homeScore} - ${match.awayScore}` : 'vs'}
+          </span>
+          <span style="font-weight:700; font-size:14px;">${match.away}</span>
+          ${tappableTeamFlag(match.awayIso, match.away)}
+        </div>
+        ${hasResult ? '' : '<p class="text-muted" style="font-size:11px; margin-top:6px;">El partido aún no ha terminado. Podés ver las predicciones de todos.</p>'}
+      </div>`;
+      
+      modalHTML += `<div style="max-height:400px; overflow-y:auto; padding-right:4px; display:flex; flex-direction:column; gap:8px;">`;
+      
+      list.forEach((item, idx) => {
+        let badge = '';
+        let rowStyle = '';
+        
+        if (hasResult && !item.noPred) {
+          if (item.isExact) {
+            badge = `<span class="badge" style="background:rgba(34,197,94,0.15); color:#22c55e; font-size:10px;">🎯 ¡Le embocó!</span>`;
+            rowStyle = 'border-left: 3px solid #22c55e; background:rgba(34,197,94,0.02);';
+          } else if (item.distance === minDistance) {
+            badge = `<span class="badge" style="background:rgba(234,179,8,0.15); color:#f59e0b; font-size:10px;">🥈 Más cerca</span>`;
+            rowStyle = 'border-left: 3px solid #f59e0b;';
+          } else if (item.distance === maxDistance) {
+            badge = `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; font-size:10px;">💩 Más lejos / Perro</span>`;
+            rowStyle = 'border-left: 3px solid #ef4444;';
+          }
+        }
+        
+        if (item.isMe) {
+          rowStyle += ' background:rgba(197,165,90,0.1) !important;';
+        }
+        
+        modalHTML += `<div class="card" style="margin:0; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; ${rowStyle}">
+          <div style="display:flex; align-items:center; gap:8px; flex:1;">
+            <span style="font-size:18px;">${item.avatar}</span>
+            <div>
+              <div style="font-weight:700; font-size:13px; color:${item.isMe?'var(--gold)':'var(--text)'};">${item.apodo}</div>
+              <div style="font-size:10px; color:var(--text-muted);">${item.grupo}</div>
+            </div>
+            <div style="margin-left:8px;">${badge}</div>
+          </div>
+          <div style="text-align:right; font-weight:700; font-size:15px; font-family:monospace;">
+            ${item.home} - ${item.away}
           </div>
         </div>`;
-        if (teamMatches.length > 0) {
-          html += `<div class="team-detail-section"><div class="team-detail-section-title">⚽ Partidos en el Mundial 2026</div>${matchesHTML}</div>`;
-        }
-      }
-      openModal(team.name, html);
+      });
+      
+      modalHTML += `</div>`;
+      
+      openModal('Pronósticos de la Familia', modalHTML);
     };
+
+    function getDeterministicPrediction(apodo, match) {
+      const str = apodo + '-' + match.id + '-' + match.home + '-' + match.away;
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const seed = Math.abs(hash);
+      const scores = [1, 2, 0, 0, 1, 2, 3, 1, 2, 0, 1, 0];
+      const homeScore = scores[seed % scores.length];
+      const awayScore = scores[(seed >> 3) % scores.length];
+      return { home: homeScore, away: awayScore };
+    }
+
+    function renderTeamDetailView() {
+      const teamName = currentTeamDetailName || 'Argentina';
+      const team = findTeam(teamName);
+      if (!team) {
+        document.getElementById('team-content').innerHTML = `<div class="card"><p>País no encontrado</p></div>`;
+        return;
+      }
+      const detail = getTeamDetails(teamName);
+      const teamGroup = findTeamGroup(teamName);
+      const squad = getTeamSquad(teamName);
+
+      let html = `<button onclick="navigateTo('${previousViewForTeam}')" class="btn btn-outline" style="margin-bottom:12px; padding:6px 12px; min-height:36px; font-size:13px; width:auto; display:inline-flex; align-items:center; gap:4px;">
+        ← Volver
+      </button>`;
+
+      html += `<div class="card" style="padding:16px; margin-bottom:16px;">
+        <div class="team-detail-header" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+          <img src="${flagUrlLg(team.iso)}" class="team-detail-flag" alt="${team.name}" style="width:120px; height:80px; border-radius:8px; border:1px solid var(--border); object-fit:cover; margin-bottom:12px; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+          <div class="team-detail-name" style="font-family:'Outfit',sans-serif; font-size:26px; font-weight:800; color:var(--text);">${team.name}</div>
+          <div class="team-detail-badges" style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; justify-content:center;">`;
+      if (detail) html += `<span class="badge badge-gold" style="font-size:11px;">🏅 #${detail.rank} FIFA</span>`;
+      if (teamGroup) html += `<span class="badge" style="background:rgba(255,255,255,0.06); color:var(--text-muted); font-size:11px;">⚽ ${teamGroup}</span>`;
+      if (detail) html += `<span class="badge" style="background:rgba(255,255,255,0.06); color:var(--text-muted); font-size:11px;">🌍 ${detail.confederation}</span>`;
+      html += `</div></div></div>`;
+
+      // Tabs: Info vs Plantel
+      html += `<div class="ranking-tabs-v2" style="margin-bottom:16px;">
+        <button class="ranking-tab-v2 ${teamActiveTab==='stats'?'active':''}" onclick="setTeamActiveTab('stats')">📊 Información y Forma</button>
+        <button class="ranking-tab-v2 ${teamActiveTab==='roster'?'active':''}" onclick="setTeamActiveTab('roster')">👥 Plantel y Estadísticas</button>
+      </div>`;
+
+      if (teamActiveTab === 'stats') {
+        if (detail) {
+          html += `<div class="card" style="margin-bottom:16px;">
+            <div class="team-detail-coach" style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.06);">
+              <span class="team-detail-coach-icon" style="font-size:24px;">👔</span>
+              <div class="team-detail-coach-info">
+                <div class="team-detail-coach-name" style="font-weight:700; font-size:14px;">${detail.coach}</div>
+                <div class="team-detail-coach-role" style="font-size:11px; color:var(--text-muted);">Director Técnico</div>
+              </div>
+            </div>
+            <div class="team-detail-coach" style="display:flex; align-items:center; gap:12px; padding:12px 0;">
+              <span class="team-detail-coach-icon" style="font-size:24px;">⭐</span>
+              <div class="team-detail-coach-info">
+                <div class="team-detail-coach-name" style="font-weight:700; font-size:14px;">${detail.star}</div>
+                <div class="team-detail-coach-role" style="font-size:11px; color:var(--text-muted);">Jugador Estrella</div>
+              </div>
+            </div>
+          </div>`;
+
+          html += `<div class="card" style="margin-bottom:16px;">
+            <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">🏆 Historial en Mundiales</div>
+            <div class="team-detail-titles" style="text-align:center; margin-bottom:8px;">`;
+          for (let i = 0; i < detail.titles; i++) html += `<span style="font-size:22px; color:var(--gold); margin:0 2px;">⭐</span>`;
+          if (detail.titles === 0) html += `<span style="font-size:13px; color:var(--text-muted);">Sin títulos mundialistas</span>`;
+          html += `</div>`;
+          if (detail.titleYears.length > 0) html += `<p style="text-align:center; font-size:12px; color:var(--text-muted); margin-bottom:12px;">Años: ${detail.titleYears.join(', ')}</p>`;
+          html += `<div class="team-detail-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; text-align:center; margin-top:12px;">
+            <div class="team-detail-stat" style="background:rgba(255,255,255,0.03); padding:8px; border-radius:8px;"><div class="team-detail-stat-value" style="font-weight:700; font-size:16px; color:var(--text);">${detail.titles}</div><div class="team-detail-stat-label" style="font-size:9px; color:var(--text-muted); text-transform:uppercase; margin-top:2px;">Títulos</div></div>
+            <div class="team-detail-stat" style="background:rgba(255,255,255,0.03); padding:8px; border-radius:8px;"><div class="team-detail-stat-value" style="font-weight:700; font-size:16px; color:var(--text);">${detail.wcMatches}</div><div class="team-detail-stat-label" style="font-size:9px; color:var(--text-muted); text-transform:uppercase; margin-top:2px;">Partidos</div></div>
+            <div class="team-detail-stat" style="background:rgba(255,255,255,0.03); padding:8px; border-radius:8px;"><div class="team-detail-stat-value" style="font-weight:700; font-size:15px; color:var(--text);">${detail.wcRecord}</div><div class="team-detail-stat-label" style="font-size:9px; color:var(--text-muted); text-transform:uppercase; margin-top:2px;">G-E-P</div></div>
+            <div class="team-detail-stat" style="background:rgba(255,255,255,0.03); padding:8px; border-radius:8px;"><div class="team-detail-stat-value" style="font-weight:700; font-size:13px; color:var(--text);">${detail.lastWC}</div><div class="team-detail-stat-label" style="font-size:9px; color:var(--text-muted); text-transform:uppercase; margin-top:2px;">Último WC</div></div>
+          </div></div>`;
+
+          html += `<div class="card" style="margin-bottom:16px;">
+            <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">📈 Forma Reciente</div>
+            <div class="team-form-dots" style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">
+              ${detail.recentForm.map(r => `<div class="team-form-dot ${r.result}" style="width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; color:#fff;
+                background:${r.result==='W'?'#22c55e':r.result==='D'?'#f59e0b':'#ef4444'};">${r.result}</div>`).join('')}
+            </div>
+            <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+              ${detail.recentForm.map(r => `<div class="team-recent-match" style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                <span class="team-recent-result" style="font-size:11px; font-weight:700; padding:2px 6px; border-radius:4px; color:#fff;
+                  background:${r.result==='W'?'#22c55e':r.result==='D'?'#f59e0b':'#ef4444'};">${r.result === 'W' ? 'VIC' : r.result === 'D' ? 'EMP' : 'DER'}</span>
+                <div class="team-recent-opponent" style="display:flex; align-items:center; gap:6px; font-size:13px;">
+                  <img src="${flagUrl(r.opIso)}" alt="${r.opponent}" style="width:20px; height:14px; border-radius:2px; object-fit:cover;" onerror="this.style.display='none'">
+                  <span>${r.opponent}</span>
+                </div>
+                <span class="team-recent-score" style="font-weight:700; color:var(--text); font-size:13px;">${r.score}</span>
+              </div>`).join('')}
+            </div></div>`;
+        }
+
+        const teamMatches = MATCHES.filter(m => m.home === team.name || m.away === team.name);
+        if (teamMatches.length > 0) {
+          html += `<div class="card">
+            <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">📅 Partidos Grupo 2026</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              ${teamMatches.map(m => {
+                const isHome = m.home === team.name;
+                const opponent = isHome ? m.away : m.home;
+                const opponentIso = isHome ? m.awayIso : m.homeIso;
+                return `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+                  <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column;">
+                    <strong>${formatMatchDate(m.date, m.time)}</strong>
+                    <span style="font-size:10px;">${m.venue.split(',')[0]}</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px; font-weight:600; font-size:13px;">
+                    <span>vs</span>
+                    <img src="${flagUrl(opponentIso)}" style="width:20px; height:14px; border-radius:2px; object-fit:cover;" alt="${opponent}">
+                    <span class="team-tappable" onclick="showTeamDetail('${opponent.replace(/'/g,"\\'")}')">${opponent}</span>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div></div>`;
+        }
+      } else {
+        html += `<div class="card" style="padding:16px;">
+          <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">👥 Estadísticas del Plantel</div>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Rendimiento acumulado en partidos oficiales recientes y proyectado</p>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            ${squad.map(p => `
+              <div class="player-stat-card" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; transition: border-color 0.2s;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <div>
+                    <span class="badge" style="background:${p.pos==='GK'?'rgba(234,179,8,0.1)':p.pos==='DEF'?'rgba(59,130,246,0.1)':p.pos==='MID'?'rgba(168,85,247,0.1)':'rgba(239,68,68,0.1)'}; color:${p.pos==='GK'?'#f59e0b':p.pos==='DEF'?'#3b82f6':p.pos==='MID'?'#a855f7':'#ef4444'}; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin-right:8px;">${p.pos}</span>
+                    <strong style="font-size:14px; color:var(--text);">${p.name}</strong>
+                  </div>
+                  <span style="font-size:11px; padding:2px 8px; border-radius:12px; font-weight:600;
+                    background:${p.status === 'Disponible' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'};
+                    color:${p.status === 'Disponible' ? '#22c55e' : '#ef4444'};">
+                    ${p.status}
+                  </span>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:4px; text-align:center; font-size:11px; color:var(--text-muted); padding-top:4px; border-top:1px dashed rgba(255,255,255,0.04);">
+                  <div><strong style="color:var(--text);">${p.pj}</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">PJ</div></div>
+                  <div><strong style="color:${p.goles > 0 ? 'var(--gold)' : 'var(--text)'};">${p.goles} ⚽</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Goles</div></div>
+                  <div><strong style="color:var(--text);">${p.asistencias} 🅰️</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Asist</div></div>
+                  <div><strong style="color:var(--text);">${p.faltasCometidas}/${p.faltasRecibidas}</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Faltas C/R</div></div>
+                  <div><span style="color:#f59e0b;">🟨${p.amarillas}</span> <span style="color:#ef4444;">🟥${p.rojas}</span><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Tarj.</div></div>
+                </div>
+              </div>
+            `).join('')}
+          </div></div>`;
+      }
+
+      document.getElementById('team-content').innerHTML = html;
+    }
 
     // ============================================
     // TAPPABLE TEAM HELPERS
@@ -1761,7 +2239,7 @@
     // ============================================
     // HASH ROUTER
     // ============================================
-    const validViews = ['inicio','pronosticos','ranking','stats','mas','admin'];
+    const validViews = ['inicio','pronosticos','ranking','stats','mas','admin','team'];
     function navigateTo(view) {
       if (!validViews.includes(view)) view = 'inicio';
       if (view === 'admin' && !isAdmin()) view = 'inicio';
@@ -1785,6 +2263,7 @@
         case 'stats': renderStats(); break;
         case 'mas': renderMas(); break;
         case 'admin': renderAdmin(); break;
+        case 'team': renderTeamDetailView(); break;
       }
     }
 
@@ -2241,20 +2720,78 @@
       </div>`;
       html += `<div class="match-cards-grid">${filtered.map((m,idx) => {
         const p = preds[m.id]; const homeVal = p ? p.home : ''; const awayVal = p ? p.away : ''; const isSaved = !!p;
-        return `<div class="match-card card stagger" style="animation-delay:${idx*0.06}s">
+        const hasResult = m.homeScore !== undefined && m.awayScore !== undefined;
+        
+        let scoreAreaHTML = '';
+        let footerHTML = '';
+        let cardClass = '';
+        
+        if (hasResult) {
+          scoreAreaHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:4px; flex:1;">
+              <span class="score-final" style="font-family:'Outfit',sans-serif; font-size:24px; font-weight:900; color:var(--gold); letter-spacing:2px; text-shadow:0 0 8px rgba(197,165,90,0.3);">${m.homeScore} - ${m.awayScore}</span>
+              <span style="font-size:11px; color:var(--text-muted);">Tu pronóstico: ${homeVal!==''?homeVal:'-'} - ${awayVal!==''?awayVal:'-'}</span>
+            </div>`;
+            
+          let ptsText = '+0 pts';
+          let ptsClass = 'rgba(239,68,68,0.15)';
+          let ptsColor = '#ef4444';
+          let label = '❌ Errado';
+          
+          if (isSaved) {
+            const isExact = p.home === m.homeScore && p.away === m.awayScore;
+            const predOutcome = p.home > p.away ? 'home' : p.home < p.away ? 'away' : 'draw';
+            const actualOutcome = m.homeScore > m.awayScore ? 'home' : m.homeScore < m.awayScore ? 'away' : 'draw';
+            
+            if (isExact) {
+              ptsText = '+3 pts';
+              ptsClass = 'rgba(34,197,94,0.15)';
+              ptsColor = '#22c55e';
+              label = '🎯 Exacto';
+              cardClass = 'match-card--exact';
+            } else if (predOutcome === actualOutcome) {
+              ptsText = '+1 pt';
+              ptsClass = 'rgba(234,179,8,0.15)';
+              ptsColor = '#f59e0b';
+              label = '🟡 Acierto';
+              cardClass = 'match-card--correct';
+            } else {
+              cardClass = 'match-card--wrong';
+            }
+          }
+          
+          footerHTML = `
+            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="status-badge" style="background:${ptsClass}; color:${ptsColor}; padding:3px 8px; font-weight:700; font-size:11px; margin:0;">${ptsText} ${label}</span>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="showMatchPredictionsModal(${m.id})" style="padding:6px 12px; min-height:36px; font-size:12px; width:auto; border-color:var(--gold); color:var(--gold);">📊 Ver qué puso el resto</button>
+            </div>`;
+        } else {
+          scoreAreaHTML = `
+            <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" ${locked?'disabled':''}>
+            <span class="match-divider">:</span>
+            <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" ${locked?'disabled':''}>`;
+            
+          footerHTML = `
+            <div class="match-status"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button class="match-save-btn ${isSaved?'saved':''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
+              <button class="btn btn-outline" onclick="showMatchPredictionsModal(${m.id})" style="padding:0; min-height:38px; width:38px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Ver qué puso el resto">📊</button>
+            </div>`;
+        }
+
+        return `<div class="match-card card stagger ${cardClass}" style="animation-delay:${idx*0.06}s">
           <div class="match-card-header"><span class="badge badge-gold">${m.group}</span><div class="match-meta"><span class="match-date">${formatMatchDate(m.date,m.time)}</span><span class="match-venue">${m.venue}</span></div></div>
           <div class="match-card-body">
             <div class="match-team">${tappableTeamFlag(m.homeIso,m.home)}${tappableTeamName(m.home)}</div>
             <div class="match-score-area">
-              <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" ${locked?'disabled':''}>
-              <span class="match-divider">:</span>
-              <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" ${locked?'disabled':''}>
+              ${scoreAreaHTML}
             </div>
             <div class="match-team">${tappableTeamFlag(m.awayIso,m.away)}${tappableTeamName(m.away)}</div>
           </div>
-          <div class="match-card-footer">
-            <div class="match-status"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
-            <button class="match-save-btn ${isSaved?'saved':''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
+          <div class="match-card-footer" style="padding-top:10px; border-top:1px solid rgba(255,255,255,0.04);">
+            ${footerHTML}
           </div>
         </div>`;
       }).join('')}</div>`;
@@ -2459,15 +2996,24 @@
         const pos = idx + 1;
         const emoji = getFamilyRankEmoji(pos, totalFamilies);
         const isLast = pos === totalFamilies;
-        html += `<div class="family-card" style="border-left:4px solid ${c};">
-          <div class="family-card-header"><div class="family-card-name">${familyBadgeHTML(f.name)} ${emoji ? `<span class="${isLast?'rank-last':''}" style="font-size:${isLast?'20px':'16px'}">${emoji}</span>` : ''}</div><div class="family-card-rank">#${pos}</div></div>
-          <div class="family-card-stats">
-            <div class="family-stat"><div class="family-stat-value">${f.members.length}</div><div class="family-stat-label">Integrantes</div></div>
-            <div class="family-stat"><div class="family-stat-value" style="color:${c};font-size:18px;font-weight:800;">${f.avgPoints.toFixed(1)}</div><div class="family-stat-label">Promedio</div></div>
-            <div class="family-stat"><div class="family-stat-value">${f.totalPoints}</div><div class="family-stat-label">Total</div></div>
+        const posClass = pos === 1 ? 'gold' : pos === 2 ? 'silver' : pos === 3 ? 'bronze' : '';
+        html += `<div class="ranking-item" style="border-left: 4px solid ${c}; padding: 10px 12px; margin-bottom: 8px; background: rgba(255,255,255,0.01); display: flex; align-items: center; justify-content: space-between; border-radius: 8px; border-top: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02);">
+          <span class="ranking-position ${posClass}" style="width:30px; font-weight:800; font-size:16px; text-align:center;">${pos}${emoji ? ` <span class="${isLast?'rank-last':''}" style="font-size:14px">${emoji}</span>` : ''}</span>
+          <div class="ranking-info" style="margin-left: 10px; flex: 1; display: flex; flex-direction: column; gap: 2px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              ${familyBadgeHTML(f.name)}
+              <span style="font-size:11px; color:var(--text-muted); font-weight:600;">${f.members.length} 👥</span>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px; display:flex; gap:6px; flex-wrap:wrap;">
+              <span>⭐ Mejor: <strong>${f.bestMember.apodo}</strong> (${f.bestMember.points})</span>
+              <span style="opacity:0.4;">|</span>
+              <span>📉 Peor: <strong>${f.worstMember.apodo}</strong> (${f.worstMember.points})</span>
+            </div>
           </div>
-          <div class="family-card-best">⭐ Mejor: <strong>${f.bestMember.apodo}</strong> (${f.bestMember.points} pts)</div>
-          <div class="family-card-best">📉 Peor: <strong>${f.worstMember.apodo}</strong> (${f.worstMember.points} pts)</div>
+          <div class="ranking-stats" style="text-align:right; display:flex; flex-direction:column; gap:2px; justify-content:center;">
+            <span class="ranking-points" style="color:${c}; font-size:18px; font-weight:800; font-family:'Outfit',sans-serif;">${f.avgPoints.toFixed(1)}</span>
+            <span class="ranking-extra" style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Total: ${f.totalPoints} pts</span>
+          </div>
         </div>`;
       });
       // Shame for last family
@@ -2483,6 +3029,82 @@
     // ============================================
     // STATS VIEW
     // ============================================
+    function calculateGroupStandings(groupName, preds) {
+      const teams = GROUPS_DEF[groupName];
+      const stats = {};
+      teams.forEach(t => {
+        stats[t.name] = { name: t.name, iso: t.iso, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, dg: 0, pts: 0 };
+      });
+
+      const groupMatches = MATCHES.filter(m => m.group === groupName);
+      groupMatches.forEach(m => {
+        const p = preds[m.id];
+        if (p && p.home !== undefined && p.home !== null && p.home !== '' && p.away !== undefined && p.away !== null && p.away !== '') {
+          const homeScore = parseInt(p.home);
+          const awayScore = parseInt(p.away);
+          
+          stats[m.home].pj++;
+          stats[m.away].pj++;
+          
+          stats[m.home].gf += homeScore;
+          stats[m.home].gc += awayScore;
+          stats[m.away].gf += awayScore;
+          stats[m.away].gc += homeScore;
+          
+          if (homeScore > awayScore) {
+            stats[m.home].pg++;
+            stats[m.home].pts += 3;
+            stats[m.away].pp++;
+          } else if (homeScore < awayScore) {
+            stats[m.away].pg++;
+            stats[m.away].pts += 3;
+            stats[m.home].pp++;
+          } else {
+            stats[m.home].pe++;
+            stats[m.home].pts += 1;
+            stats[m.away].pe++;
+            stats[m.away].pts += 1;
+          }
+        }
+      });
+
+      Object.values(stats).forEach(t => {
+        t.dg = t.gf - t.gc;
+      });
+
+      return Object.values(stats).sort((a,b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    window.toggleStatsGroup = function(groupName) {
+      expandedStatsGroups[groupName] = !expandedStatsGroups[groupName];
+      renderStats();
+    };
+
+    window.saveStatsMatch = function(id) {
+      if (isLocked()) { showToast('Los pronósticos están bloqueados','error'); return; }
+      const h = document.getElementById('stats-home-'+id), a = document.getElementById('stats-away-'+id);
+      if (!h || !a) return;
+      if (h.value===''||a.value==='') { 
+        showToast('Completá ambos marcadores','error'); 
+        if(h.value==='') h.classList.add('error'); 
+        if(a.value==='') a.classList.add('error'); 
+        return; 
+      }
+      const preds = getPredictions();
+      preds[id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
+      savePredictions(preds);
+      const btn = document.getElementById('stats-save-btn-'+id); if(btn) { btn.textContent = '✅ Guardado'; btn.classList.add('saved'); }
+      h.classList.add('has-value'); a.classList.add('has-value'); h.classList.remove('error'); a.classList.remove('error');
+      renderStats();
+      const match = MATCHES.find(m => m.id === id);
+      showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+    };
+
     function renderStats() {
       const preds = getPredictions(); const savedCount = Object.keys(preds).length;
       let html = `<div class="section-title"><h3>📊 Tus Estadísticas</h3></div>
@@ -2493,17 +3115,82 @@
           <div class="stat-card card"><span class="stat-label">Aciertos</span><span class="stat-value">${savedCount>0?'45%':'0%'}</span></div>
         </div>`;
 
-      html += `<div class="section-title mt-3"><h3>🏟️ Tablas de Posiciones — Fase de Grupos</h3></div>`;
+      html += `<div class="section-title mt-3"><h3>🏟️ Tablas de Posiciones — Fase de Grupos</h3></div>
+        <p class="text-muted" style="font-size:12px; margin-bottom:16px;">Pulsá sobre cualquier grupo para desplegar sus partidos y completar tus pronósticos directamente desde aquí.</p>`;
+      
       Object.keys(GROUPS_DEF).forEach(groupName => {
-        const teams = GROUPS_DEF[groupName];
-        html += `<div class="standings-group card"><div class="standings-group-title">${groupName}</div>
-          <table class="standings-table"><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr></thead><tbody>
-          ${teams.map((t,idx) => {
-            const rowClass = idx < 2 ? 'qualified' : idx === 2 ? 'possible' : '';
-            return `<tr class="${rowClass}"><td>${idx+1}</td><td><div class="team-cell">${tappableTeamFlag(t.iso,t.name)}<span class="team-tappable" onclick="showTeamDetail('${t.name.replace(/'/g,"\\'")}')" style="cursor:pointer;">${t.name}</span></div></td>
-              <td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>`;
-          }).join('')}
-          </tbody></table></div>`;
+        const sortedTeams = calculateGroupStandings(groupName, preds);
+        const isExpanded = !!expandedStatsGroups[groupName];
+        html += `<div class="standings-group card" style="padding:12px 14px; margin-bottom:16px;">
+          <div class="standings-group-header" onclick="toggleStatsGroup('${groupName}')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div class="standings-group-title" style="margin:0; font-size:15px; display:flex; align-items:center; gap:8px; font-weight:700; color:var(--gold);">
+              ⚽ ${groupName}
+            </div>
+            <span style="font-size:12px; color:var(--gold); font-weight:600;">
+              ${isExpanded ? '▲ Ocultar Partidos' : '▼ Completar Pronósticos'}
+            </span>
+          </div>
+          <table class="standings-table">
+            <thead>
+              <tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr>
+            </thead>
+            <tbody>
+            ${sortedTeams.map((t,idx) => {
+              const rowClass = idx < 2 ? 'qualified' : idx === 2 ? 'possible' : '';
+              const dgSign = t.dg > 0 ? '+' : '';
+              return `<tr class="${rowClass}">
+                <td>${idx+1}</td>
+                <td><div class="team-cell">${tappableTeamFlag(t.iso,t.name)}<span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${t.name.replace(/'/g,"\\'")}')" style="cursor:pointer;">${t.name}</span></div></td>
+                <td>${t.pj}</td>
+                <td>${t.pg}</td>
+                <td>${t.pe}</td>
+                <td>${t.pp}</td>
+                <td>${t.gf}</td>
+                <td>${t.gc}</td>
+                <td>${dgSign}${t.dg}</td>
+                <td style="font-weight:700; color:var(--text);">${t.pts}</td>
+              </tr>`;
+            }).join('')}
+            </tbody>
+          </table>`;
+
+        if (isExpanded) {
+          const groupMatches = MATCHES.filter(m => m.group === groupName);
+          const locked = isLocked();
+          html += `<div class="group-matches-expand-area" style="margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:12px;">`;
+          groupMatches.forEach((m, idx) => {
+            const p = preds[m.id];
+            const homeVal = p ? p.home : '';
+            const awayVal = p ? p.away : '';
+            const isSaved = !!p;
+            html += `<div class="match-card card" style="background:rgba(255,255,255,0.02); margin:0; border:1px solid rgba(255,255,255,0.04); padding:12px;">
+              <div class="match-card-header" style="margin-bottom:8px; display:flex; justify-content:space-between; font-size:11px; align-items:center;">
+                <span class="match-date">${formatMatchDate(m.date,m.time)}</span>
+                <span class="match-venue" style="color:var(--text-muted); font-size:10px;">${m.venue.split(',')[0]}</span>
+              </div>
+              <div class="match-card-body" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div class="match-team" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end; font-size:13px; font-weight:500;">
+                  <span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${m.home.replace(/'/g,"\\'")}')">${m.home}</span>${tappableTeamFlag(m.homeIso,m.home)}
+                </div>
+                <div class="match-score-area" style="display:flex; align-items:center; gap:6px; margin:0 12px;">
+                  <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="stats-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" style="width:48px !important; height:48px !important; font-size:24px !important;" ${locked?'disabled':''}>
+                  <span class="match-divider" style="font-size:20px;">:</span>
+                  <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="stats-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" style="width:48px !important; height:48px !important; font-size:24px !important;" ${locked?'disabled':''}>
+                </div>
+                <div class="match-team" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-start; font-size:13px; font-weight:500;">
+                  ${tappableTeamFlag(m.awayIso,m.away)}<span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${m.away.replace(/'/g,"\\'")}')">${m.away}</span>
+                </div>
+              </div>
+              <div class="match-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="match-status" style="font-size:11px;"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
+                <button class="match-save-btn ${isSaved?'saved':''}" id="stats-save-btn-${m.id}" onclick="saveStatsMatch(${m.id})" style="padding:6px 12px; min-height:36px; font-size:13px;" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
+              </div>
+            </div>`;
+          });
+          html += `</div>`;
+        }
+
+        html += `</div>`;
       });
       document.getElementById('stats-content').innerHTML = html;
     }
