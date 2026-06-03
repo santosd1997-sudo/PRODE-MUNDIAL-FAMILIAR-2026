@@ -579,186 +579,321 @@
       return '';
     }
 
-    // ¿Sabías que? Trivia — 150 facts
+    // ¿Sabías que? Trivia — 300 facts
     const SABIAS_QUE = [
-      // PELOTAS (15)
-      {emoji:'⚽',fact:'La pelota del Mundial 1930 se llamaba "T-Model". En la final se usaron 2 pelotas: una argentina en el 1er tiempo y una uruguaya en el 2do.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La "Crack" fue usada en el Mundial 1962 de Chile. Era de cuero marrón y pesaba casi 500 gramos.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Telstar de México 1970 fue la primera pelota con paneles blancos y negros, diseñada para verse en TV blanco y negro.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Tango de Argentina 1978 revolucionó el diseño con 20 paneles idénticos. Fue tan icónica que se usó como base hasta 1998.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Azteca (México 1986) fue la primera pelota de Mundial hecha con material sintético en vez de cuero.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Etrusco Único de Italia 1990 tenía cabezas de león etrusco estampadas.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Questra de USA 1994 tenía espuma de polietileno para más velocidad. Su nombre viene de "quest for the stars".',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Tricolore de Francia 1998 fue la primera pelota multicolor en un Mundial.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Fevernova de Corea/Japón 2002 fue criticada por ser "demasiado liviana". Los arqueros la odiaban.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Teamgeist de Alemania 2006 tenía solo 14 paneles (vs 32 tradicionales), revolucionando la aerodinámica.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Jabulani de Sudáfrica 2010 fue la pelota más criticada de la historia. Los jugadores decían que "volaba como una pelota de playa".',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Brazuca de Brasil 2014 fue la primera pelota cuyo nombre fue elegido por votación popular.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La Telstar 18 de Rusia 2018 fue la primera con chip NFC integrado.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'Al Rihla (Qatar 2022) significa "El Viaje" en árabe. Fue la pelota más rápida de todos los mundiales.',cat:'Pelotas'},
-      {emoji:'⚽',fact:'La pelota del Mundial 2026 se llama "FLIGHT 26" y usa tecnología de sensores para el VAR automático.',cat:'Pelotas'},
-      // CAMPEONES (20)
-      {emoji:'🏆',fact:'Brasil es el mayor campeón con 5 títulos (1958, 1962, 1970, 1994, 2002) y el ÚNICO país en jugar TODOS los mundiales.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Alemania e Italia tienen 4 títulos cada uno. Argentina y Francia tienen 3.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Uruguay ganó los primeros 2 mundiales de la historia: 1930 (como local) y 1950 (el Maracanazo).',cat:'Campeones'},
-      {emoji:'🏆',fact:'Argentina ganó su 3er título en Qatar 2022, con Messi finalmente levantando la copa a los 35 años.',cat:'Campeones'},
-      {emoji:'🏆',fact:'España ganó su único Mundial en 2010 con el tiki-taka. Iniesta hizo el gol de la final en el minuto 116.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Inglaterra ganó su único título en 1966 como local. El "gol fantasma" de Hurst sigue siendo polémico.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Francia ganó en 1998 como local con Zidane y en 2018 en Rusia con Mbappé de solo 19 años.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Brasil 1970 es considerado el mejor equipo de la historia: Pelé, Jairzinho, Rivelino y Tostão.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Alemania ganó en 2014 con el gol de Götze en el minuto 113 vs Argentina. Primer europeo en ganar en América.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Italia ganó en 2006 con la polémica expulsión de Zidane por el cabezazo a Materazzi en la final.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Solo 8 países ganaron el Mundial: Brasil (5), Alemania (4), Italia (4), Argentina (3), Francia (3), Uruguay (2), España (1), Inglaterra (1).',cat:'Campeones'},
-      {emoji:'🏆',fact:'Ningún equipo africano ni asiático llegó nunca a una final de Mundial.',cat:'Campeones'},
-      {emoji:'🏆',fact:'El país anfitrión ganó 6 veces: Uruguay 1930, Italia 1934, Inglaterra 1966, Alemania 1974, Argentina 1978, Francia 1998.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Holanda es el mayor "perdedor": jugó 3 finales (1974, 1978, 2010) y perdió las 3.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Hungría llegó invicta a la final de 1954 tras 4 años sin perder... y perdió el "Milagro de Berna" ante Alemania.',cat:'Campeones'},
-      {emoji:'🏆',fact:'La final Argentina-Francia 2022 (3-3, 4-2 pen) es considerada la mejor final de la historia.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Brasil perdió 7-1 contra Alemania en su propia casa en las semifinales de 2014. Se llama el "Mineirazo".',cat:'Campeones'},
-      {emoji:'🏆',fact:'Italia no clasificó al Mundial 2018, 2022 ni 2026. Es la peor racha de un tetracampeón.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Corea del Sur llegó a semifinales en 2002 siendo local, el mejor resultado de un asiático.',cat:'Campeones'},
-      {emoji:'🏆',fact:'Marruecos llegó a semifinales en Qatar 2022, el primer africano en lograrlo.',cat:'Campeones'},
-      // JUGADORES (25)
-      {emoji:'👑',fact:'Pelé es el único en ganar 3 Mundiales (1958, 1962, 1970). En el primero tenía solo 17 años.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Miroslav Klose (Alemania) es el máximo goleador histórico con 16 goles en 4 mundiales (2002-2014).',cat:'Jugadores'},
-      {emoji:'👑',fact:'Messi jugó 5 Mundiales (2006-2022), marcó 13 goles y ganó el Balón de Oro en 2014 y 2022.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Mbappé tiene 12 goles en solo 2 mundiales. Hizo un hat-trick en la final de Qatar 2022 con 23 años.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Ronaldo Nazário hizo 15 goles en mundiales. En la final de 2002 le hizo 2 goles a Alemania.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Maradona marcó el "Gol del Siglo" y la "Mano de Dios" en el MISMO partido vs Inglaterra en 1986.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Just Fontaine (Francia) metió 13 goles en un SOLO mundial (1958). Nadie superó ese récord en 68 años.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Zidane hizo 2 cabezazos en la final de 1998 y fue expulsado por un cabezazo en la final de 2006.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Lothar Matthäus (Alemania) jugó 25 partidos de Mundial, récord absoluto. Participó en 5 mundiales.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Cafu (Brasil) jugó 3 finales consecutivas (1994, 1998, 2002) y ganó 2. Único en lograrlo.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Gerd Müller (Alemania) hizo 14 goles en solo 2 mundiales (1970, 1974). Era apodado "Der Bomber".',cat:'Jugadores'},
-      {emoji:'👑',fact:'Paolo Rossi pasó de estar suspendido por apuestas a ser campeón y goleador del Mundial 1982.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Ronaldinho fue expulsado vs Inglaterra en 2002 después de hacer un golazo de tiro libre "sin querer".',cat:'Jugadores'},
-      {emoji:'👑',fact:'Lev Yashin (URSS) es el único arquero en ganar el Balón de Oro (1963). Le decían "La Araña Negra".',cat:'Jugadores'},
-      {emoji:'👑',fact:'Cristiano Ronaldo jugó 5 mundiales (2006-2022) pero nunca pasó de semifinales.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Neymar empató el récord de goles de Pelé con Brasil (77) pero nunca ganó un Mundial.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Zidane hizo el mejor gol de una final: la volea contra Alemania en 2002... ¡de zurda siendo diestro!',cat:'Jugadores'},
-      {emoji:'👑',fact:'Dibu Martínez bailó y provocó a los rivales en los penales de Qatar 2022. Ganó el Guante de Oro.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Diego Forlán (Uruguay) ganó el Balón de Oro en 2010 con 31 años. Hizo 5 goles en el torneo.',cat:'Jugadores'},
-      {emoji:'👑',fact:'James Rodríguez ganó el Botín de Oro en 2014 con un golazo de volea contra Uruguay.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Rivaldo hizo una chilena espectacular vs Bélgica en 2002, uno de los mejores goles mundialistas.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Eusebio (Portugal) hizo 9 goles en Inglaterra 1966. Lloró al ser eliminado en semifinales.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Garrincha y Pelé nunca perdieron jugando juntos con Brasil. Ganaron 40 partidos consecutivos.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Bebeto hizo la celebración de "mecer al bebé" en 1994 dedicada a su hijo recién nacido.',cat:'Jugadores'},
-      {emoji:'👑',fact:'Iker Casillas atajó un mano a mano a Robben en la final de 2010. Sin esa atajada, España no era campeón.',cat:'Jugadores'},
-      // CURIOSIDADES (30)
-      {emoji:'🤯',fact:'El Mundial 2026 será el primero con 48 equipos y 104 partidos. Antes eran 32 y 64.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Es el primer Mundial con 3 países sede: México 🇲🇽, Estados Unidos 🇺🇸 y Canadá 🇨🇦.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Las mascotas del 2026 son Maple (alce 🇨🇦), Zayu (jaguar 🇲🇽) y Clutch (águila calva 🇺🇸).',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'México será sede por TERCERA vez (1970, 1986, 2026). Ningún otro país latinoamericano lo logró.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El MetLife Stadium de Nueva Jersey será la sede de la final. Capacidad: 82,500 personas.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'India, con 1.400 millones de habitantes, NUNCA clasificó a un Mundial masculino.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El gol más rápido en mundiales lo hizo Hakan Şükür a los 11 SEGUNDOS vs Corea del Sur (2002).',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'La mayor goleada en eliminatorias mundialistas fue Australia 31-0 Samoa Americana en 2001.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'En la historia de los mundiales se marcaron más de 2.700 goles.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El VAR se usó por primera vez en Rusia 2018. Cambió 29 decisiones en el torneo.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'La tarjeta roja más rápida fue a los 56 SEGUNDOS: José Batista (Uruguay) vs Escocia en 1986.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El primer Mundial televisado fue Suiza 1954, pero solo se vio en algunos países europeos.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'En el Mundial 1950 no hubo final. El campeón se decidió por un cuadrangular final.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El trofeo actual pesa 6.175 kg y está hecho de oro de 18 quilates.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'La Copa Jules Rimet fue robada DOS veces. La primera la encontró un perro llamado Pickles.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Desde 2006, los campeones solo reciben una réplica bañada en oro. Ya no se quedan con el original.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'"La Copa de la Vida" de Ricky Martin (1998) vendió 5 millones de copias.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Shakira cantó en 3 mundiales (2006, 2010, 2014). "Waka Waka" tiene 4 mil millones de views.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Indonesia jugó un Mundial en 1938... bajo el nombre de "Indias Orientales Neerlandesas".',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Pakistán fabrica el 70% de las pelotas de fútbol del mundo, pero nunca clasificó a un Mundial.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El jugador más joven en un Mundial fue Norman Whiteside con 17 años y 41 días en 1982.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Roger Milla jugó el Mundial 1994 con 42 AÑOS. Celebraba bailando junto al banderín.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Tim Howard (USA) hizo 16 atajadas vs Bélgica en 2014, récord para un solo partido mundialista.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El estadio Lusail de Qatar 2022 tenía aire acondicionado para 80,000 personas.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Arabia Saudita venció a Argentina 2-1 en Qatar 2022, una de las mayores sorpresas de la historia.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'Japón dejó el vestuario impecable después de cada partido en Qatar 2022.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El primer autogol en un Mundial lo hizo Ernst Loertscher (Suiza) en 1938.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'En 1966, el trofeo fue encontrado por el perro "Pickles" debajo de un arbusto en Londres.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'El árbitro que más mundiales dirigió fue Joel Quiniou (Francia) con 8 partidos en 3 mundiales.',cat:'Curiosidades'},
-      {emoji:'🤯',fact:'En Qatar 2022 se agregaron en promedio 12 minutos de tiempo añadido por partido.',cat:'Curiosidades'},
-      // ARGENTINA (20)
-      {emoji:'🇦🇷',fact:'Argentina jugó la primera final de la historia (1930) y perdió 4-2 contra Uruguay.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Argentina ganó su primer Mundial en 1978 como local, pero con la sombra de la dictadura militar.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'El "Gol del Siglo" de Maradona vs Inglaterra (1986) fue votado como el mejor gol de la historia.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Argentina perdió la final de Italia 1990 con un polémico penal para Alemania en el minuto 85.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'En 2002, Argentina fue eliminada en fase de grupos. Era favorita con Batistuta y Verón.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Messi debutó en mundiales en 2006 con 18 años y marcó gol vs Serbia.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Argentina perdió la final de 2014 contra Alemania con gol de Götze en el 113.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'En Rusia 2018, Argentina casi queda eliminada en grupos. Clasificó con gol de Rojo en el 86 vs Nigeria.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Messi NO hizo ningún gol de jugada en los Mundiales 2006, 2010 ni 2018.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Dibu Martínez atajó 2 penales en la final de Qatar 2022 y bailó con el premio.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Argentina tuvo 36 partidos invictos antes del Mundial 2022.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Enzo Fernández ganó el premio al Mejor Jugador Joven del Mundial 2022.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Julián Álvarez hizo 4 goles en Qatar 2022, incluyendo uno en semifinal vs Croacia.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'La Scaloneta ganó Copa América 2021, Finalísima 2022 y Mundial 2022 en 16 meses.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Scaloni fue suplente en 2006. Pasó de ayudante interino a campeón del mundo como DT.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Argentina tiene 3 estrellas en la camiseta. Solo Brasil (5) y Alemania/Italia (4) tienen más.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Kempes hizo 6 goles en Argentina 1978, incluyendo 2 en la final. Fue el héroe local.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Maradona fue capitán en 4 mundiales (1986-1994) pero le cortaron las piernas en el 94 por doping.',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'Batistuta es el único argentino en hacer hat-tricks en 2 mundiales diferentes (1994 y 1998).',cat:'Argentina'},
-      {emoji:'🇦🇷',fact:'El "Rodrigo De Paul abrazo a Messi" se convirtió en el meme más viral del Mundial 2022.',cat:'Argentina'},
-      // HISTORIA (20)
-      {emoji:'📜',fact:'Uruguay 1930: El primer Mundial de la historia. Solo 13 equipos. No hubo eliminatorias.',cat:'Historia'},
-      {emoji:'📜',fact:'Italia 1934: Mussolini usó el Mundial como propaganda fascista. Italia ganó como local.',cat:'Historia'},
-      {emoji:'📜',fact:'Francia 1938: El último antes de la Segunda Guerra Mundial. No se jugó en 1942 ni 1946.',cat:'Historia'},
-      {emoji:'📜',fact:'Brasil 1950: El "Maracanazo". 200,000 personas vieron a Brasil perder la final ante Uruguay.',cat:'Historia'},
-      {emoji:'📜',fact:'Suiza 1954: El "Milagro de Berna". Alemania venció a Hungría que llevaba 4 años invicta.',cat:'Historia'},
-      {emoji:'📜',fact:'Suecia 1958: Pelé apareció con 17 años y Brasil ganó su primer título.',cat:'Historia'},
-      {emoji:'📜',fact:'Chile 1962: La "Batalla de Santiago" es el partido más violento de la historia mundialista.',cat:'Historia'},
-      {emoji:'📜',fact:'Inglaterra 1966: El gol fantasma de Hurst. ¿Entró o no? 60 años después, sigue sin resolverse.',cat:'Historia'},
-      {emoji:'📜',fact:'México 1970: El primer Mundial a COLOR. Brasil jugó el fútbol más bello jamás visto.',cat:'Historia'},
-      {emoji:'📜',fact:'Alemania 1974: Holanda de Cruyff inventó el "Fútbol Total" pero perdió la final.',cat:'Historia'},
-      {emoji:'📜',fact:'Argentina 1978: Lluvia de papelitos en el Monumental. Kempes, Fillol y una selección inolvidable.',cat:'Historia'},
-      {emoji:'📜',fact:'España 1982: Italia venció a Brasil en un partido legendario. Rossi hizo 3 goles ("El Sarriá").',cat:'Historia'},
-      {emoji:'📜',fact:'México 1986: El Mundial de Maradona. Eliminó a Inglaterra, venció a Alemania. Argentina campeón.',cat:'Historia'},
-      {emoji:'📜',fact:'Italia 1990: El Mundial de las "Noches Mágicas". Tuvo el promedio de goles más bajo.',cat:'Historia'},
-      {emoji:'📜',fact:'USA 1994: Baggio falló el penal decisivo de la final. Brasil ganó su 4to título.',cat:'Historia'},
-      {emoji:'📜',fact:'Francia 1998: Zidane hizo 2 cabezazos en la final. Ronaldo "convulsionó" antes del partido.',cat:'Historia'},
-      {emoji:'📜',fact:'Corea/Japón 2002: El primer Mundial en Asia. Corea eliminó a España e Italia (polémica).',cat:'Historia'},
-      {emoji:'📜',fact:'Alemania 2006: Zidane le dio un cabezazo a Materazzi en su último partido. Italia campeón.',cat:'Historia'},
-      {emoji:'📜',fact:'Sudáfrica 2010: Las vuvuzelas enloquecieron al mundo. España ganó su primer y único título.',cat:'Historia'},
-      {emoji:'📜',fact:'Brasil 2014: Alemania 7-1 Brasil. El Mineirazo. Los hinchas brasileños lloraban en la tribuna.',cat:'Historia'},
-      // RÉCORDS (20)
-      {emoji:'📊',fact:'Se jugaron 22 mundiales en la historia (1930-2022). Solo no se jugó en 1942 y 1946.',cat:'Récords'},
-      {emoji:'📊',fact:'Brasil jugó 114 partidos mundialistas, más que cualquier otro país.',cat:'Récords'},
-      {emoji:'📊',fact:'El promedio de goles más alto fue en Suiza 1954: 5.38 goles por partido.',cat:'Récords'},
-      {emoji:'📊',fact:'El promedio más bajo fue Italia 1990: solo 2.21 goles por partido.',cat:'Récords'},
-      {emoji:'📊',fact:'Rusia 2018 fue el primer Mundial con cero 0-0 en fase de grupos.',cat:'Récords'},
-      {emoji:'📊',fact:'En Qatar 2022 hubo un promedio de 2.55 goles por partido y se usó el VAR 28 veces.',cat:'Récords'},
-      {emoji:'📊',fact:'El jugador con más partidos mundialistas es Lothar Matthäus con 25 en 5 mundiales.',cat:'Récords'},
-      {emoji:'📊',fact:'Antonio Carbajal y Gianluigi Buffon jugaron 5 mundiales como arqueros.',cat:'Récords'},
-      {emoji:'📊',fact:'Francia 1998 fue el primer Mundial con 32 equipos. Se mantuvo hasta 2022.',cat:'Récords'},
-      {emoji:'📊',fact:'El gol 2.500 de la historia mundialista lo marcó Neymar vs Croacia en Qatar 2022.',cat:'Récords'},
-      {emoji:'📊',fact:'El partido con más goles fue Austria 7-5 Suiza en 1954. ¡12 goles en un solo partido!',cat:'Récords'},
-      {emoji:'📊',fact:'Oleg Salenko hizo 5 goles en UN partido vs Camerún en 1994. Récord imbatible.',cat:'Récords'},
-      {emoji:'📊',fact:'Walter Zenga (Italia) tuvo 517 minutos sin recibir gol en el Mundial 1990.',cat:'Récords'},
-      {emoji:'📊',fact:'En 2014, Alemania hizo 18 goles en 7 partidos. 7 fueron contra Brasil.',cat:'Récords'},
-      {emoji:'📊',fact:'Hungría 1954 hizo 27 goles en 5 partidos... pero perdió la final.',cat:'Récords'},
-      {emoji:'📊',fact:'El penal más importante: Gonzalo Montiel vs Francia en la final de Qatar 2022.',cat:'Récords'},
-      {emoji:'📊',fact:'Pelé tiene 12 goles mundialistas en 4 mundiales (1958, 1962, 1966, 1970).',cat:'Récords'},
-      {emoji:'📊',fact:'El primer hat-trick mundialista lo hizo Bert Patenaude (USA) en 1930 vs Paraguay.',cat:'Récords'},
-      {emoji:'📊',fact:'En Qatar 2022 se agregaron en promedio 12 minutos de tiempo añadido por partido.',cat:'Récords'},
-      {emoji:'📊',fact:'El Mundial 2026 tendrá 104 partidos en 39 días. Es el mundial más largo de la historia.',cat:'Récords'},
-      // PAÍSES (20)
-      {emoji:'🌍',fact:'China solo clasificó a UN mundial (2002). Perdió los 3 partidos sin hacer goles.',cat:'Países'},
-      {emoji:'🌍',fact:'Islandia, con 370,000 habitantes, clasificó a Rusia 2018. Es el país más chico en ir a un Mundial.',cat:'Países'},
-      {emoji:'🌍',fact:'Camerún fue el primer equipo africano en llegar a cuartos de final, en Italia 1990.',cat:'Países'},
-      {emoji:'🌍',fact:'Haití clasificó al Mundial 2026. Solo habían ido una vez, en 1974.',cat:'Países'},
-      {emoji:'🌍',fact:'Curazao, con solo 150,000 habitantes, clasifica por primera vez al Mundial 2026.',cat:'Países'},
-      {emoji:'🌍',fact:'Canadá clasificó a su segundo Mundial (el primero fue México 1986). Ahora es local.',cat:'Países'},
-      {emoji:'🌍',fact:'Corea del Norte venció a Italia 1-0 en el Mundial 1966. La mayor sorpresa hasta entonces.',cat:'Países'},
-      {emoji:'🌍',fact:'Trinidad y Tobago clasificó a Alemania 2006 con solo 1.3 millones de habitantes.',cat:'Países'},
-      {emoji:'🌍',fact:'Togo jugó su único Mundial en 2006. Sus jugadores amenazaron con no jugar por falta de pagos.',cat:'Países'},
-      {emoji:'🌍',fact:'Zaire (hoy RD Congo) recibió 14 goles en 3 partidos en 1974.',cat:'Países'},
-      {emoji:'🌍',fact:'Australia jugó en Oceanía hasta 2006 cuando se pasó a Asia para tener más competencia.',cat:'Países'},
-      {emoji:'🌍',fact:'Senegal venció a Francia (campeón defensor) 1-0 en el primer partido del Mundial 2002.',cat:'Países'},
-      {emoji:'🌍',fact:'Costa Rica llegó a cuartos en 2014, eliminando a Uruguay e Italia en el grupo de la muerte.',cat:'Países'},
-      {emoji:'🌍',fact:'Gales volvió a un Mundial en 2022 después de 64 años de ausencia.',cat:'Países'},
-      {emoji:'🌍',fact:'Bolivia jugó UN mundial (1994). Clasificó gracias a jugar a 3,600m de altura.',cat:'Países'},
-      {emoji:'🌍',fact:'Jordania clasifica por primera vez al Mundial 2026. Hito histórico para el fútbol árabe.',cat:'Países'},
-      {emoji:'🌍',fact:'Uzbekistán clasifica por primera vez al Mundial 2026 tras décadas de intentos.',cat:'Países'},
-      {emoji:'🌍',fact:'Noruega vuelve al Mundial después de 28 años. En Francia 1998 venció a Brasil.',cat:'Países'},
-      {emoji:'🌍',fact:'Escocia no iba a un Mundial desde Francia 1998. En 2026 comparte grupo con Brasil.',cat:'Países'},
-      {emoji:'🌍',fact:'Cabo Verde, con 600,000 habitantes, clasifica al Mundial 2026 por primera vez.',cat:'Países'}
+      // ⚽ PELOTAS (20)
+      {emoji:'⚽',fact:'En la final de 1930 se usaron 2 pelotas distintas: una argentina ("Tiento") en el primer tiempo y una uruguaya ("T-Model") en el segundo. Argentina ganaba 2-1 al descanso; Uruguay ganó 4-2.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La "Allen" de Italia 1934 fue la primera pelota con paneles rectangulares. Pesaba 410 gramos, casi 100 menos que las anteriores.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'En Francia 1938 se utilizó la pelota "Allen" de 13 paneles. Fue la última antes de la pausa de 12 años por la Segunda Guerra Mundial.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La "Super Duplo T" del Mundial 1950 fue la primera con válvula inflable, eliminando el cordón de cuero que causaba dolor de cabeza a los jugadores al cabecear.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La "Swiss World Champion" de 1954 tenía 18 paneles y fue la primera en usar color amarillo. Se usaron 2 modelos distintos durante el torneo.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La "Top Star" de Suecia 1958 fue fabricada en cuero curtido de alta calidad. Fue la pelota con la que Pelé debutó en un Mundial con 17 años.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La "Crack" de Chile 1962 era de cuero marrón sin tratamiento impermeable. Bajo lluvia, podía absorber agua y llegar a pesar casi medio kilo.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La "Challenge 4-Star" de Inglaterra 1966 fue la primera pelota oficial seleccionada por la FIFA mediante pruebas de laboratorio.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Telstar de México 1970 fue la primera con paneles blancos y negros (12 pentágonos negros, 20 hexágonos blancos), diseñada para verse por TV en blanco y negro.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Telstar Durlast de 1974 mantuvo el diseño icónico pero con capas de poliéster impermeables. La usaron Cruyff y Beckenbauer.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Tango de Argentina 1978 introdujo las "tríadas" (diseño de 20 paneles que creaban círculos ópticos). Fue tan icónica que Adidas la usó como base hasta Italia 1990.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Tango España de 1982 fue la primera con costuras impermeables. Era la última pelota de cuero genuino en un Mundial.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Azteca de México 1986 fue la primera pelota 100% sintética en un Mundial. Con ella, Maradona hizo el "Gol del Siglo" y la "Mano de Dios".',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Etrusco Único de Italia 1990 tenía cabezas de león etrusco decorativas. Su capa interna de espuma de poliuretano mejoró la impermeabilidad.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Questra de USA 1994 incorporó malla de fibra trenzada y espuma de polietileno, aumentando la aceleración en los disparos. Su nombre combina "quest" y "star".',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Tricolore de Francia 1998 fue la primera pelota multicolor en un Mundial, con banderas de Francia impresas sobre espuma sintáctica.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Fevernova de 2002 rompió con 40 años de diseño Tango. Los arqueros la criticaron por su trayectoria impredecible debida a sus 32 paneles aerodinámicos refinados.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Teamgeist de Alemania 2006 tenía solo 14 paneles térmicamente adheridos (sin costuras), haciéndola más redonda y precisa que cualquier pelota anterior.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Jabulani de Sudáfrica 2010 tenía 8 paneles 3D moldeados y "grip and groove" superficial. Fue la más criticada: jugadores y arqueros decían que su vuelo era impredecible.',cat:'Pelotas'},
+      {emoji:'⚽',fact:'La Brazuca de 2014 fue nombrada por votación popular de un millón de brasileños. Tenía 6 paneles de poliuretano con textura rugosa para mejor control.',cat:'Pelotas'},
+      // 🏆 FINALES (25)
+      {emoji:'🏆',fact:'Final 1930: Uruguay 4-2 Argentina en el Estadio Centenario de Montevideo ante 68.346 espectadores. Pedro Cea, Santos Iriarte y Héctor Castro marcaron en el 2do tiempo.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1934: Italia 2-1 Checoslovaquia (prórroga) en Roma. Angelo Schiavio marcó el gol del título en el minuto 95. Mussolini presenció la victoria desde la tribuna.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1938: Italia 4-2 Hungría en el Stade Olympique de Colombes, París. Silvio Piola marcó 2 goles. Italia se convirtió en el primer bicampeón mundial.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1950: No hubo una "final" formal. Uruguay venció a Brasil 2-1 en el partido decisivo del grupo final ante 199.854 espectadores en el Maracanã, récord absoluto de asistencia.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1954: Alemania 3-2 Hungría en Berna ("El Milagro de Berna"). Hungría iba 2-0 a los 8 minutos, pero Helmut Rahn empató y marcó el 3-2 al minuto 84.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1958: Brasil 5-2 Suecia en Estocolmo. Pelé, de 17 años, marcó 2 goles. Es la única final que un equipo ganó como visitante en Europa hasta entonces.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1962: Brasil 3-1 Checoslovaquia en Santiago de Chile. Amarildo, Zito y Vavá marcaron. Brasil ganó sin Pelé, lesionado en fase de grupos.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1966: Inglaterra 4-2 Alemania (prórroga) en Wembley ante 96.924 personas. El tercer gol de Geoff Hurst ("gol fantasma") sigue debatiéndose.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1970: Brasil 4-1 Italia en el Azteca. Carlos Alberto marcó el cuarto gol tras una jugada colectiva que se considera la más bella de la historia mundialista.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1974: Alemania 2-1 Holanda en Múnich. Johan Neeskens convirtió un penal al minuto 1 sin que Alemania tocara la pelota. Gerd Müller dio vuelta el partido.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1978: Argentina 3-1 Holanda (prórroga) en el Monumental ante 71.483 personas y una lluvia de papelitos. Mario Kempes marcó 2 goles.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1982: Italia 3-1 Alemania en el Santiago Bernabéu de Madrid. Paolo Rossi abrió el marcador. Italia ganó su 3er título con el arquero Dino Zoff de 40 años como capitán.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1986: Argentina 3-2 Alemania en el Azteca. Jorge Burruchaga marcó el gol del triunfo al minuto 83 tras pase de Maradona.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1990: Alemania 1-0 Argentina en Roma. Andreas Brehme convirtió un penal al minuto 85. Fue la final con menos goles de jugada de la historia.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1994: Brasil 0-0 Italia (3-2 pen) en el Rose Bowl de Pasadena ante 94.194 espectadores. Roberto Baggio erró el penal decisivo, enviándolo por encima del travesaño.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 1998: Francia 3-0 Brasil en Saint-Denis. Zidane hizo 2 cabezazos en el 1er tiempo. Ronaldo fue titular pese a haber sufrido convulsiones horas antes.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 2002: Brasil 2-0 Alemania en Yokohama. Ronaldo marcó los 2 goles, redimiéndose del fantasma de la final de 1998. Oliver Kahn cometió un raro error en el primero.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 2006: Italia 1-1 Francia (5-3 pen) en Berlín. Zidane marcó un penal de "Panenka" y luego fue expulsado por el cabezazo a Materazzi en su último partido profesional.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 2010: España 1-0 Holanda (prórroga) en Johannesburgo. Andrés Iniesta marcó al minuto 116. Holanda perdió su tercera final mundialista.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 2014: Alemania 1-0 Argentina (prórroga) en el Maracanã. Mario Götze marcó al minuto 113 con una volea de pecho. Fue el primer europeo en ganar un Mundial en América.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 2018: Francia 4-2 Croacia en Moscú. Fue la primera final con uso de VAR: un penal fue otorgado tras revisión. Mbappé, de 19 años, marcó un gol.',cat:'Finales'},
+      {emoji:'🏆',fact:'Final 2022: Argentina 3-3 Francia (4-2 pen) en Lusail. Mbappé hizo un hat-trick en 97 minutos. Messi marcó 2 goles y un penal. Montiel convirtió el penal del título.',cat:'Finales'},
+      {emoji:'🏆',fact:'La final de 1950 (Uruguay vs Brasil) registró la mayor asistencia de la historia: 199.854 personas en el Maracanã. El silencio tras el gol de Ghiggia fue ensordecedor.',cat:'Finales'},
+      {emoji:'🏆',fact:'Solo 3 finales se definieron 0-0 en los 90 minutos: 1994 (Brasil vs Italia), 2006 (Italia vs Francia) y 2022 antes de la prórroga estaban 2-2.',cat:'Finales'},
+      {emoji:'🏆',fact:'Geoff Hurst (Inglaterra 1966) es el único jugador en marcar un hat-trick en una final de Mundial. Su tercer gol, ya con el partido sentenciado, generó la frase "Some people are on the pitch".',cat:'Finales'},
+      // 👑 GOLEADORES (30)
+      {emoji:'👑',fact:'Miroslav Klose (Alemania) es el máximo goleador histórico de Mundiales con 16 goles en 4 torneos (2002-2014). Superó a Ronaldo en Brasil 2014.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Ronaldo Nazário (Brasil) hizo 15 goles en 3 Mundiales. Marcó 8 goles en el torneo de 2002, incluyendo 2 en la final vs Alemania.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Gerd Müller (Alemania) anotó 14 goles en solo 13 partidos mundialistas (1970-1974). Su promedio de 1.08 goles por partido es el mejor entre goleadores top.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Just Fontaine (Francia) metió 13 goles en un solo Mundial (1958). Jugó solo 6 partidos. Nadie superó ese récord en más de 65 años.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Lionel Messi marcó 13 goles en 5 Mundiales (2006-2022). De esos, 7 fueron en Qatar 2022, su último torneo, donde fue elegido mejor jugador.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Pelé anotó 12 goles en 4 Mundiales (1958-1970). Marcó 6 en Suecia 1958 con solo 17 años, incluyendo 2 en la final.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Kylian Mbappé acumuló 12 goles en solo 2 Mundiales (2018-2022). Su hat-trick en la final de 2022 fue el primero desde Hurst en 1966.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Jürgen Klinsmann (Alemania) marcó 11 goles en 3 Mundiales (1990-1998). Hizo 5 goles en USA 1994, ganando el Botín de Oro compartido.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Sándor Kocsis (Hungría) hizo 11 goles en solo 5 partidos en Suiza 1954, incluyendo 2 hat-tricks. Su selección anotó 27 goles en el torneo.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Gabriel Batistuta (Argentina) marcó 10 goles en 3 Mundiales. Es el único argentino con hat-tricks en 2 mundiales distintos (1994 vs Grecia, 1998 vs Jamaica).',cat:'Goleadores'},
+      {emoji:'👑',fact:'Teófilo Cubillas (Perú) anotó 10 goles en 2 Mundiales (1970, 1978). Hizo 5 goles en cada torneo y es el máximo goleador mundialista sudamericano no brasileño ni argentino.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Thomas Müller (Alemania) tiene 10 goles en 4 Mundiales (2010-2022). En Sudáfrica 2010 ganó el Botín de Oro con 5 goles y 3 asistencias.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Oleg Salenko (Rusia) anotó 5 goles en UN solo partido vs Camerún en USA 1994. Es el récord absoluto de goles individuales en un partido de Mundial.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Helmut Rahn (Alemania) marcó el gol decisivo en la final de 1954 ("El Milagro de Berna") al minuto 84. Alemania remontó un 0-2.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Eusébio (Portugal) marcó 9 goles en Inglaterra 1966, incluyendo 4 vs Corea del Norte en cuartos cuando Portugal perdía 3-0. Ganó el Botín de Oro.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Guillermo Stábile (Argentina) fue el primer goleador de un Mundial con 8 goles en 1930. Debutó por una lesión de un compañero y terminó como estrella.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Mario Kempes (Argentina) hizo 6 goles en 1978, incluyendo 2 en la final vs Holanda. Llegó al torneo con una sequía de 19 partidos sin gol en la Selección.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Paolo Rossi (Italia) marcó 6 goles en España 1982. Había estado suspendido 2 años por un escándalo de apuestas y volvió justo para el Mundial.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Ademir (Brasil) fue goleador del Mundial 1950 con 9 tantos en 6 partidos. Hizo 4 goles en un solo partido vs Suecia.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Diego Maradona marcó 8 goles en 4 Mundiales (1982-1994). En México 1986 anotó 5 goles y dio 5 asistencias, dominando el torneo como ningún otro.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Leonidas da Silva (Brasil) fue goleador de Francia 1938 con 7 tantos. Inventó la "chilena" (bicicleta) y fue el primer crack negro del fútbol mundial.',cat:'Goleadores'},
+      {emoji:'👑',fact:'James Rodríguez (Colombia) ganó el Botín de Oro en 2014 con 6 goles y 2 asistencias. Su volea vs Uruguay fue elegida el mejor gol del torneo.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Lothar Matthäus (Alemania) participó en 5 Mundiales (1982-1998), jugó 25 partidos y anotó 6 goles. Es el jugador con más partidos mundialistas.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Davor Šuker (Croacia) ganó el Botín de Oro en Francia 1998 con 6 goles, llevando a Croacia al 3er puesto en su primer Mundial como nación independiente.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Salvatore Schillaci (Italia) ganó el Botín de Oro en Italia 1990 con 6 goles. Empezó como suplente y terminó siendo el héroe de las "Noches Mágicas".',cat:'Goleadores'},
+      {emoji:'👑',fact:'Harry Kane (Inglaterra) ganó el Botín de Oro en Rusia 2018 con 6 goles, 3 de ellos de penal. Inglaterra llegó a semifinales por primera vez desde 1990.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Diego Forlán (Uruguay) anotó 5 goles en Sudáfrica 2010 y ganó el Balón de Oro del torneo. Sus disparos con la Jabulani eran temidos por los arqueros.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Oldřich Nejedlý (Checoslovaquia) fue goleador de Italia 1934 con 5 tantos. Investigaciones de la FIFA en 2006 reasignaron un gol que antes se atribuía a otro jugador.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Rivaldo (Brasil) marcó 5 goles en Corea/Japón 2002, incluyendo una chilena espectacular vs Bélgica en octavos que es uno de los mejores goles mundialistas.',cat:'Goleadores'},
+      {emoji:'👑',fact:'Zinedine Zidane (Francia) anotó 5 goles mundialistas: 2 cabezazos en la final de 1998 vs Brasil y un penal de "Panenka" en la final de 2006 vs Italia.',cat:'Goleadores'},
+      // 🏟️ ESTADIOS (20)
+      {emoji:'🏟️',fact:'El Estadio Centenario de Montevideo fue construido en solo 8 meses para el Mundial 1930. Albergó la primera final de la historia y hoy es Monumento Histórico del Fútbol.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Maracanã de Río de Janeiro llegó a albergar 199.854 espectadores en la final de 1950. Fue remodelado para 2014 y su capacidad actual es de 78.838.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Estadio Azteca de México es el único que albergó 2 finales de Mundial (1970 y 1986). En 2026 será sede por tercera vez, con 87.523 de capacidad.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'Wembley original (1966) tenía las icónicas Torres Gemelas. Fue demolido en 2003 y reemplazado por el nuevo Wembley con su arco de 133 metros de altura.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Santiago Bernabéu de Madrid albergó la final de España 1982 con 90.000 espectadores. Italia venció 3-1 a Alemania.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Olímpico de Roma fue sede de la final de Italia 1990, donde Alemania venció 1-0 a Argentina. Fue construido originalmente para los Juegos Olímpicos de 1960.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Rose Bowl de Pasadena (USA 1994) albergó la final ante 94.194 espectadores. Es un estadio de fútbol americano universitario adaptado para soccer.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Stade de France en Saint-Denis fue construido para el Mundial 1998 con capacidad de 80.698. Francia venció 3-0 a Brasil en la final inaugural.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El International Stadium de Yokohama (final 2002) fue el primer estadio asiático en albergar una final mundialista. Brasil venció 2-0 a Alemania ante 69.029 personas.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Olympiastadion de Berlín (final 2006) fue originalmente construido para los Juegos Olímpicos de 1936 bajo el régimen nazi. Fue remodelado para el Mundial.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Soccer City de Johannesburgo (final 2010) tiene forma de calabaza africana (calabash) y capacidad para 94.736 personas. España venció 1-0 a Holanda.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Maracanã fue sede de la final de 2014 (Alemania 1-0 Argentina) 64 años después de la tragedia del Maracanazo de 1950.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Estadio Luzhniki de Moscú (final 2018) fue construido en 1956 y remodelado para el Mundial. Francia venció 4-2 a Croacia ante 78.011 espectadores.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Lusail Stadium de Qatar (final 2022) fue construido desde cero con capacidad para 88.966 personas y aire acondicionado exterior que enfriaba las tribunas a 24°C.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El MetLife Stadium de East Rutherford (Nueva Jersey) será sede de la final de 2026. Tiene capacidad para 82.500 personas y es el estadio más caro del mundo (1.600 millones USD).',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El AT&T Stadium de Arlington (Texas) tiene el videoboard más grande de un estadio: 49 metros de ancho. Será sede en 2026.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El SoFi Stadium de Los Ángeles costó 5.500 millones de dólares, haciéndolo el estadio más caro jamás construido. Albergará la semifinal de 2026.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El BC Place de Vancouver tiene un techo retráctil de 6 hectáreas. Fue sede de la ceremonia inaugural de los Juegos Olímpicos de Invierno 2010.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Estadio 974 de Qatar fue construido con 974 contenedores de barco reciclados. El nombre también es el código telefónico de Qatar (+974). Fue desmantelado tras el Mundial.',cat:'Estadios'},
+      {emoji:'🏟️',fact:'El Estadio Al Bayt de Qatar tenía forma de carpa beduina tradicional. Con 60.000 plazas, albergó el partido inaugural del Mundial 2022.',cat:'Estadios'},
+      // 📊 RÉCORDS (30)
+      {emoji:'📊',fact:'El gol más rápido en la historia de los Mundiales lo anotó Hakan Şükür (Turquía) a los 10.8 segundos vs Corea del Sur en el partido por el 3er puesto de 2002.',cat:'Récords'},
+      {emoji:'📊',fact:'El partido con más goles en un Mundial fue Austria 7-5 Suiza en 1954: 12 goles en 90 minutos. Austria iba perdiendo 3-0 al minuto 19.',cat:'Récords'},
+      {emoji:'📊',fact:'La mayor goleada en un Mundial fue Hungría 10-1 El Salvador en España 1982. László Kiss hizo el hat-trick más rápido: 3 goles en 7 minutos.',cat:'Récords'},
+      {emoji:'📊',fact:'Oleg Salenko (Rusia) marcó 5 goles en un solo partido vs Camerún en USA 1994. Rusia igualmente quedó eliminada en fase de grupos.',cat:'Récords'},
+      {emoji:'📊',fact:'Brasil es el país con más partidos mundialistas: 114 en total. Ha ganado 76, empatado 19 y perdido 19 hasta Qatar 2022.',cat:'Récords'},
+      {emoji:'📊',fact:'Alemania tiene la mayor cantidad de goles a favor en Mundiales con 232 tantos, seguido por Brasil con 229.',cat:'Récords'},
+      {emoji:'📊',fact:'Lothar Matthäus (Alemania) disputó 25 partidos mundialistas, récord absoluto. Participó en 5 Mundiales entre 1982 y 1998.',cat:'Récords'},
+      {emoji:'📊',fact:'La tarjeta roja más rápida en un Mundial fue para José Batista (Uruguay) a los 56 segundos vs Escocia en México 1986.',cat:'Récords'},
+      {emoji:'📊',fact:'Walter Zenga (Italia) mantuvo su arco invicto durante 517 minutos consecutivos en el Mundial 1990, récord de imbatibilidad mundialista.',cat:'Récords'},
+      {emoji:'📊',fact:'El promedio de goles más alto en un Mundial fue Suiza 1954: 5.38 goles por partido en 26 encuentros.',cat:'Récords'},
+      {emoji:'📊',fact:'El promedio de goles más bajo fue Italia 1990: solo 2.21 por partido. Las "Noches Mágicas" tuvieron pocos goles pero mucha tensión.',cat:'Récords'},
+      {emoji:'📊',fact:'El primer hat-trick mundialista lo hizo Bert Patenaude (USA) vs Paraguay el 17 de julio de 1930, en el primer Mundial de la historia.',cat:'Récords'},
+      {emoji:'📊',fact:'El gol de cabeza más lejano en un Mundial lo anotó Jared Borgetti (México) desde 10 metros vs Italia en 2002.',cat:'Récords'},
+      {emoji:'📊',fact:'Cafu (Brasil) disputó 3 finales consecutivas (1994, 1998, 2002), ganando 2 (1994 y 2002). Ningún otro jugador lo logró.',cat:'Récords'},
+      {emoji:'📊',fact:'En 2014, Alemania anotó 7 goles contra Brasil en 29 minutos (del minuto 11 al 79). Los primeros 5 cayeron en solo 18 minutos (del 11 al 29).',cat:'Récords'},
+      {emoji:'📊',fact:'Hungría 1954 anotó 27 goles en solo 5 partidos, el mejor promedio ofensivo por partido de un equipo en un Mundial. Aun así, perdió la final.',cat:'Récords'},
+      {emoji:'📊',fact:'La mayor goleada en eliminatorias mundialistas fue Australia 31-0 Samoa Americana el 11 de abril de 2001. Archie Thompson marcó 13 goles.',cat:'Récords'},
+      {emoji:'📊',fact:'Antonio Carbajal (México) y Gianluigi Buffon (Italia) son los únicos arqueros en disputar 5 Mundiales. Carbajal lo hizo entre 1950 y 1966.',cat:'Récords'},
+      {emoji:'📊',fact:'Rusia 2018 fue el primer Mundial sin empates 0-0 en fase de grupos. Los 48 partidos de la primera ronda tuvieron al menos un gol.',cat:'Récords'},
+      {emoji:'📊',fact:'El penal más rápido en un Mundial fue pitado a los 53 segundos: Francia vs Dinamarca en 2018.',cat:'Récords'},
+      {emoji:'📊',fact:'En la historia de los Mundiales se marcaron más de 2.700 goles en 900+ partidos, con un promedio general de 2.86 goles por encuentro.',cat:'Récords'},
+      {emoji:'📊',fact:'Norman Whiteside (Irlanda del Norte) se convirtió en el jugador más joven en un Mundial al debutar con 17 años y 41 días en España 1982.',cat:'Récords'},
+      {emoji:'📊',fact:'Roger Milla (Camerún) jugó en USA 1994 con 42 años y 39 días, convirtiéndose en el goleador más viejo de un Mundial al anotar vs Rusia.',cat:'Récords'},
+      {emoji:'📊',fact:'Tim Howard (USA) realizó 16 atajadas vs Bélgica en octavos de final de 2014, récord de paradas en un solo partido mundialista.',cat:'Récords'},
+      {emoji:'📊',fact:'En Qatar 2022, los árbitros agregaron un promedio de 12 minutos de tiempo añadido por partido, el más alto de la historia.',cat:'Récords'},
+      {emoji:'📊',fact:'El Mundial 2026 tendrá 104 partidos disputados en 39 días, siendo el torneo más largo y con más encuentros en la historia de la Copa del Mundo.',cat:'Récords'},
+      {emoji:'📊',fact:'Cristiano Ronaldo (Portugal) jugó 5 Mundiales (2006-2022) y marcó 8 goles. Nunca pasó de semifinales pese a ser el máximo goleador histórico de selecciones.',cat:'Récords'},
+      {emoji:'📊',fact:'La final de Qatar 2022 tuvo 6 goles en 120 minutos. La última final con tantos goles había sido en 1966 (Inglaterra 4-2 Alemania).',cat:'Récords'},
+      {emoji:'📊',fact:'Pelé es el único jugador en ganar 3 Mundiales como parte del plantel (1958, 1962, 1970). En 1962, se lesionó en el 2do partido y no jugó la final.',cat:'Récords'},
+      {emoji:'📊',fact:'El primer gol en la historia de los Mundiales lo marcó Lucien Laurent (Francia) vs México el 13 de julio de 1930, al minuto 19.',cat:'Récords'},
+      // 🌍 PAÍSES (30)
+      {emoji:'🌍',fact:'India se clasificó para el Mundial 1950 por abandono de otros equipos, pero se retiró porque la FIFA no les permitió jugar descalzos.',cat:'Países'},
+      {emoji:'🌍',fact:'China solo clasificó a un Mundial (Corea/Japón 2002). Perdió los 3 partidos de grupo sin marcar un solo gol y recibió 9.',cat:'Países'},
+      {emoji:'🌍',fact:'Islandia, con 370.000 habitantes, clasificó a Rusia 2018. Es la nación menos poblada en la historia en participar de un Mundial.',cat:'Países'},
+      {emoji:'🌍',fact:'Camerún fue el primer equipo africano en llegar a cuartos de final (Italia 1990). Roger Milla, de 38 años, fue la estrella del equipo.',cat:'Países'},
+      {emoji:'🌍',fact:'Corea del Norte venció a Italia 1-0 en el Mundial 1966 con gol de Pak Doo-ik. Fue una de las mayores sorpresas hasta ese momento.',cat:'Países'},
+      {emoji:'🌍',fact:'Trinidad y Tobago clasificó a Alemania 2006 con solo 1.3 millones de habitantes. Dwight Yorke era su estrella.',cat:'Países'},
+      {emoji:'🌍',fact:'Zaire (hoy RD Congo) recibió 14 goles en 3 partidos en 1974, incluyendo un 9-0 vs Yugoslavia. Un jugador sacó la pelota de la barrera en un tiro libre.',cat:'Países'},
+      {emoji:'🌍',fact:'Senegal venció a Francia (campeón defensor) 1-0 en el partido inaugural del Mundial 2002. Papa Bouba Diop marcó el gol y celebró bailando sobre su camiseta.',cat:'Países'},
+      {emoji:'🌍',fact:'Costa Rica llegó a cuartos de final en 2014, eliminando a Uruguay e Italia en el "Grupo de la Muerte". Su arquero Keylor Navas fue figura.',cat:'Países'},
+      {emoji:'🌍',fact:'Corea del Sur llegó a semifinales en 2002 como co-anfitrión, eliminando a España en penales e Italia en prórroga, ambas con polémicas arbitrales.',cat:'Países'},
+      {emoji:'🌍',fact:'Marruecos llegó a semifinales en Qatar 2022, el primer equipo africano en lograrlo. Venció a Bélgica, España y Portugal en el camino.',cat:'Países'},
+      {emoji:'🌍',fact:'Bolivia participó en un solo Mundial (USA 1994). Se clasificó gracias a la ventaja de jugar las eliminatorias a 3.600 metros de altura en La Paz.',cat:'Países'},
+      {emoji:'🌍',fact:'Gales volvió a un Mundial en 2022 después de 64 años de ausencia (no clasificaba desde Suecia 1958). Fue eliminado en fase de grupos.',cat:'Países'},
+      {emoji:'🌍',fact:'Indonesia (como Indias Orientales Neerlandesas) jugó un Mundial en 1938. Perdió 6-0 vs Hungría y fue eliminada en primera ronda.',cat:'Países'},
+      {emoji:'🌍',fact:'Togo jugó su único Mundial en 2006. Sus jugadores amenazaron con no jugar por falta de pagos de premios. Perdieron los 3 partidos.',cat:'Países'},
+      {emoji:'🌍',fact:'Australia cambió de la Confederación de Oceanía a la AFC (Asia) en 2006 para enfrentar rivales más competitivos en las eliminatorias.',cat:'Países'},
+      {emoji:'🌍',fact:'Pakistán fabrica más del 70% de las pelotas de fútbol del mundo en la ciudad de Sialkot, pero su selección jamás clasificó a un Mundial.',cat:'Países'},
+      {emoji:'🌍',fact:'Jamaica clasificó a su primer y único Mundial en Francia 1998 con su generación de los "Reggae Boyz". Perdieron los 3 partidos pero le hicieron 3 goles a Japón.',cat:'Países'},
+      {emoji:'🌍',fact:'Cuba llegó a cuartos de final en Francia 1938, su única participación mundialista. Venció a Rumania 2-1 en la repesca.',cat:'Países'},
+      {emoji:'🌍',fact:'Nueva Zelanda participó en 2 Mundiales (1982 y 2010). En 2010 empató los 3 partidos de grupo, siendo invicta sin pasar de ronda.',cat:'Países'},
+      {emoji:'🌍',fact:'Alemania Oriental y Alemania Occidental se enfrentaron en el Mundial 1974. Alemania Oriental ganó 1-0, pero Alemania Occidental terminó campeón.',cat:'Países'},
+      {emoji:'🌍',fact:'Arabia Saudita venció 2-1 a Argentina en el debut del Mundial 2022, una de las mayores sorpresas de la historia. El gobierno saudí declaró feriado nacional.',cat:'Países'},
+      {emoji:'🌍',fact:'Canadá clasificó a su primer Mundial en México 1986. No marcó goles en 3 partidos. En 2022 volvió después de 36 años con Alphonso Davies.',cat:'Países'},
+      {emoji:'🌍',fact:'Irán retuvo un 0-0 histórico vs Alemania en 2022, eliminando a los tetracampeones en fase de grupos.',cat:'Países'},
+      {emoji:'🌍',fact:'Japón dejó el vestuario impecable después de cada partido en Qatar 2022. Los hinchas japoneses también limpiaron las tribunas tras cada encuentro.',cat:'Países'},
+      {emoji:'🌍',fact:'Haití participó en un solo Mundial (1974) y volverá en 2026 por primera vez en 52 años.',cat:'Países'},
+      {emoji:'🌍',fact:'Jordania clasifica por primera vez al Mundial 2026. Es un hito histórico para el fútbol del oeste asiático.',cat:'Países'},
+      {emoji:'🌍',fact:'Uzbekistán clasifica por primera vez a un Mundial en 2026, tras décadas de intentos y varias eliminaciones dramáticas en repechajes.',cat:'Países'},
+      {emoji:'🌍',fact:'Cabo Verde, una nación insular de 600.000 habitantes en el Atlántico, clasifica por primera vez a un Mundial en 2026.',cat:'Países'},
+      {emoji:'🌍',fact:'Curazao, con apenas 150.000 habitantes, se clasifica para el Mundial 2026. Es una de las naciones más pequeñas en la historia mundialista.',cat:'Países'},
+      // 🇦🇷 ARGENTINA (25)
+      {emoji:'🇦🇷',fact:'Argentina jugó la primera final de la historia mundialista en 1930 y perdió 4-2 contra Uruguay en Montevideo. Guillermo Stábile fue goleador del torneo con 8 goles.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Argentina no participó en los Mundiales de 1934 y 1938 en protesta porque la sede no volvió a Sudamérica. Regresó recién en Brasil 1950.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'En el Mundial 1966, Argentina fue eliminada en cuartos vs Inglaterra. El capitán Antonio Rattín fue expulsado y se negó a salir durante 8 minutos.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Mario Kempes llegó al Mundial 78 con una sequía de 19 partidos sin gol en la Selección. Terminó como goleador del torneo con 6 tantos, incluyendo 2 en la final.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Argentina ganó su primer Mundial en 1978 como local en el Estadio Monumental ante 71.483 personas. Venció 3-1 a Holanda en la prórroga.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Ubaldo Fillol fue clave en el título de 1978. Muchos lo consideran el mejor arquero argentino de la historia. Hizo atajadas decisivas en la final.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'El "Gol del Siglo" de Maradona vs Inglaterra en 1986 recorrió 60 metros en 10.6 segundos, eludiendo a 6 jugadores ingleses. Fue votado el mejor gol de la historia mundialista.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'En el mismo partido vs Inglaterra (1986), Maradona anotó la "Mano de Dios" al minuto 51. Declaró que el gol fue "un poco con la cabeza de Maradona y un poco con la mano de Dios".',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Argentina perdió la final de Italia 1990 contra Alemania con un penal convertido por Andreas Brehme al minuto 85. Dos argentinos fueron expulsados en esa final.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Diego Maradona fue sacado del Mundial 1994 tras dar positivo en un control antidoping por efedrina. Argentina venía de golear 4-0 a Grecia en su debut.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'En 2002, Argentina fue eliminada en primera ronda pese a ser favorita. El equipo tenía a Batistuta, Verón, Zanetti, Crespo y un joven Maxi Rodríguez.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Messi debutó en Mundiales en 2006 con 18 años y marcó gol vs Serbia (6-0). Se convirtió en el 6to argentino más joven en anotar en un Mundial.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Argentina perdió la final de 2014 contra Alemania con gol de Götze en el minuto 113. Higuaín había fallado un mano a mano claro en el primer tiempo.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'En Rusia 2018, Argentina estuvo al borde de la eliminación en grupos. Un gol de Marcos Rojo al minuto 86 vs Nigeria (2-1) les dio la clasificación a octavos.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Argentina llevaba 36 partidos invictos antes del Mundial 2022 (25 victorias y 11 empates). Perdió el primer partido vs Arabia Saudita 2-1.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Enzo Fernández ganó el premio al Mejor Jugador Joven del Mundial 2022 con solo 21 años. Marcó un golazo vs México que fue clave para la clasificación.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Julián Álvarez anotó 4 goles en Qatar 2022, incluyendo un doblete en semifinales vs Croacia. Pasó de jugar en River a ser titular mundialista en 2 años.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Ángel Di María marcó el 2-0 en la final vs Francia en 2022 con una jugada que comenzó en campo propio. 36 segundos de contraataque perfecto.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Emiliano "Dibu" Martínez fue elegido Mejor Arquero (Guante de Oro) del Mundial 2022. Atajó un mano a mano a Kolo Muani en el último minuto de la prórroga.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Gonzalo Montiel convirtió el penal del título vs Francia en la final de 2022. Era el lateral derecho, no un delantero: el último en la lista de pateadores.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Scaloni fue convocado de emergencia como jugador suplente al Mundial 2006. No jugó ni un minuto. 16 años después volvió como DT campeón del mundo.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'La "Scaloneta" ganó la Copa América 2021, la Finalísima 2022 vs Italia y el Mundial 2022 en un lapso de solo 16 meses.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Batistuta es el único argentino en hacer hat-tricks en 2 Mundiales distintos: vs Grecia en 1994 (4-0) y vs Jamaica en 1998 (5-0).',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'Argentina tiene 3 estrellas en la camiseta (1978, 1986, 2022). Solo Brasil (5) y Alemania e Italia (4 cada uno) tienen más.',cat:'Argentina'},
+      {emoji:'🇦🇷',fact:'En total, Argentina jugó 88 partidos de Mundial, ganando 47, empatando 17 y perdiendo 24. Marcó 159 goles y recibió 105.',cat:'Argentina'},
+      // 📜 HISTORIA (25)
+      {emoji:'📜',fact:'Uruguay 1930: La FIFA eligió a Uruguay como sede por ser campeón olímpico en 1924 y 1928. Solo 13 equipos participaron porque el viaje en barco duraba 15 días.',cat:'Historia'},
+      {emoji:'📜',fact:'Italia 1934: Mussolini usó el Mundial como propaganda fascista. El árbitro de la final fue sueco y años después admitió presiones.',cat:'Historia'},
+      {emoji:'📜',fact:'Francia 1938: Fue el último Mundial antes de la Segunda Guerra Mundial. Austria se retiró tras ser anexada por Alemania. No se jugó en 1942 ni 1946.',cat:'Historia'},
+      {emoji:'📜',fact:'Brasil 1950: El periodista brasileño Nelson Rodrigues llamó al Maracanazo "la mayor tragedia de la historia del Brasil". Tres hinchas murieron de infarto en la tribuna.',cat:'Historia'},
+      {emoji:'📜',fact:'Suiza 1954: La Selección de Alemania Federal ganó su primer título solo 9 años después del fin de la Segunda Guerra Mundial, simbolizando la reconstrucción del país.',cat:'Historia'},
+      {emoji:'📜',fact:'Suecia 1958: Pelé debutó a los 17 años y marcó 6 goles en el torneo, incluyendo 2 en la final. Brasil jugó con su icónica camiseta amarilla por primera vez.',cat:'Historia'},
+      {emoji:'📜',fact:'Chile 1962: La "Batalla de Santiago" (Chile vs Italia) fue tan violenta que los carabineros entraron a la cancha. Hubo 2 expulsiones, fracturas y golpes de puño.',cat:'Historia'},
+      {emoji:'📜',fact:'Inglaterra 1966: La Copa Jules Rimet fue robada 4 meses antes del torneo. Un perro llamado Pickles la encontró envuelta en papel de diario debajo de un arbusto.',cat:'Historia'},
+      {emoji:'📜',fact:'México 1970: Fue el primer Mundial transmitido en color. La final Brasil 4-1 Italia fue vista por 600 millones de televidentes, récord hasta entonces.',cat:'Historia'},
+      {emoji:'📜',fact:'Alemania 1974: Holanda de Johan Cruyff introdujo el "Fútbol Total" donde todos los jugadores podían ocupar cualquier posición. Revolucionó la táctica, pero perdió la final.',cat:'Historia'},
+      {emoji:'📜',fact:'Argentina 1978: El partido Argentina 6-0 Perú generó sospechas de arreglo, ya que Argentina necesitaba ganar por 4 goles de diferencia para pasar a la final.',cat:'Historia'},
+      {emoji:'📜',fact:'España 1982: Italia venció 3-2 a Brasil en el Sarriá con hat-trick de Paolo Rossi. Brasil solo necesitaba empatar. Es considerado uno de los mejores partidos de la historia.',cat:'Historia'},
+      {emoji:'📜',fact:'México 1986: La "Mano de Dios" de Maradona generó tanta polémica que el árbitro tunecino Ali Bin Nasser admitió décadas después que no vio la falta.',cat:'Historia'},
+      {emoji:'📜',fact:'Italia 1990: Fue apodado el "Anti-Mundial" por la cantidad de partidos aburridos. Sin embargo, Camerún y Roger Milla le dieron vida al torneo.',cat:'Historia'},
+      {emoji:'📜',fact:'USA 1994: Fue el primer Mundial en Norteamérica. A pesar del escepticismo, batió récords de asistencia con un promedio de 68.991 espectadores por partido.',cat:'Historia'},
+      {emoji:'📜',fact:'Francia 1998: El misterio de Ronaldo en la final nunca se aclaró del todo. Tuvo convulsiones horas antes, fue sacado de la alineación, luego reincluido, y jugó como un fantasma.',cat:'Historia'},
+      {emoji:'📜',fact:'Corea/Japón 2002: Fue el primer Mundial en Asia y el primero con 2 sedes. Los horarios matutinos en Europa generaron récords de audiencia en bares y plazas.',cat:'Historia'},
+      {emoji:'📜',fact:'Alemania 2006: Fue la primera Copa del Mundo organizada en la Alemania reunificada. Se invirtieron 4.000 millones de euros en infraestructura.',cat:'Historia'},
+      {emoji:'📜',fact:'Sudáfrica 2010: Fue el primer Mundial en África. Las vuvuzelas (trompetas plásticas) generaron 127 decibelios, más que un motor a reacción.',cat:'Historia'},
+      {emoji:'📜',fact:'Brasil 2014: El 7-1 de Alemania vs Brasil en semifinales (Mineirazo) fue el resultado más inesperado. Alemania metió 5 goles en 18 minutos del 1er tiempo.',cat:'Historia'},
+      {emoji:'📜',fact:'Rusia 2018: Fue la primera Copa del Mundo con tecnología VAR. Alemania, campeón defensor, fue eliminada en fase de grupos con derrotas ante México y Corea del Sur.',cat:'Historia'},
+      {emoji:'📜',fact:'Qatar 2022: Fue el primer Mundial disputado en noviembre-diciembre por el calor extremo. Los estadios tenían aire acondicionado que enfriaba el campo y las tribunas.',cat:'Historia'},
+      {emoji:'📜',fact:'La Copa Jules Rimet original fue ganada definitivamente por Brasil en 1970 (3 títulos). Fue robada en Río de Janeiro en 1983 y nunca fue recuperada.',cat:'Historia'},
+      {emoji:'📜',fact:'El trofeo actual de la Copa del Mundo fue diseñado por el italiano Silvio Gazzaniga en 1974. Pesa 6.175 kg, mide 36.8 cm y es de oro de 18 quilates.',cat:'Historia'},
+      {emoji:'📜',fact:'Desde el año 2006, los campeones ya no se quedan con el trofeo original. Reciben una réplica bañada en oro. El original vuelve a la sede de la FIFA en Zúrich.',cat:'Historia'},
+      // 🤯 INSÓLITOS (25)
+      {emoji:'🤯',fact:'En el Mundial 1930, el arquero argentino Juan Botasso dejó pasar un gol porque pensó que el balón se había ido afuera. No había redes en los arcos.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En 1938, el brasileño Leônidas da Silva intentó jugar descalzo vs Polonia porque la cancha estaba embarrada. El árbitro lo obligó a ponerse los botines.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En la final de 1950, el locutor de radio brasileño Ary Barroso abandonó la cabina llorando después del gol de Ghiggia. No pudo narrar el final del partido.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Chile 1962, un perro invadió la cancha durante Brasil vs Inglaterra. El defensor Garrincha lo atrapó y lo adoptó. Fue la mascota de su familia.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En 1966, el delantero norcoreano Pak Doo-ik trabajaba como dentista en su país. Marcó el gol que eliminó a Italia y se convirtió en héroe nacional.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En el partido Chile vs Italia de 1962 ("Batalla de Santiago"), un jugador italiano le rompió la nariz a un chileno y el árbitro no lo vio. El policía sí.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En el Mundial 1974, Zaire enfrentó un tiro libre de Brasil y el defensor Mwepu Ilunga salió corriendo a patear la pelota antes del silbato. Recibió tarjeta amarilla.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En España 1982, Kuwait amenazó con retirarse del Mundial porque un espectador con corneta hizo que los jugadores dejaran de jugar creyendo que era el silbato del árbitro.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En 1990, el camerunés Benjamin Massing le hizo una falta tan brutal a Caniggia en cuartos de final que se convirtió en una de las entradas más violentas de la historia.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'Andrés Escobar (Colombia) marcó un autogol vs USA en 1994. Diez días después fue asesinado en Medellín. El asesino gritó "¡gol!" con cada disparo.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Francia 1998, el referee expulsó a David Beckham por patear a Diego Simeone. Beckham fue villano en Inglaterra; Simeone admitió años después que había exagerado.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En el Mundial 2002, Ronaldinho hizo un tiro libre con efecto que entró al arco de David Seaman (Inglaterra). Declaró después que no apuntó al arco sino a un compañero.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En 2002, Turquía llegó a semifinales en su debut como país independiente, acabando tercero. Era su primera participación desde 1954.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Alemania 2006, el entrenador de Trinidad y Tobago, el holandés Leo Beenhakker, usó una pizarra táctica con imanes de Bob Esponja para explicar las jugadas.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Sudáfrica 2010, el pulpo Paul predijo correctamente los resultados de los 7 partidos de Alemania y la final. Se convirtió en fenómeno mundial.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En 2010, el gol fantasma de Lampard vs Alemania (la pelota cruzó claramente la línea) fue clave para la posterior implementación de la tecnología de línea de gol.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'Luis Suárez (Uruguay) paró un gol con la mano en el último minuto vs Ghana en cuartos de 2010. Fue expulsado, pero Gyan erró el penal y Uruguay clasificó.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Brasil 2014, el colombiano James Rodríguez bailó salsa en el vestuario antes de cada partido. Colombia jugó el mejor fútbol del primer tiempo del torneo.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En la final de 2014, un hincha invadió el campo con una camiseta de Messi. Los guardias tardaron 20 segundos en atraparlo mientras las cámaras lo ignoraban.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Rusia 2018, Panamá celebró su primer gol mundialista (vs Inglaterra, perdiendo 6-1) como si hubieran ganado el título. El relator panameño lloró.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'Bebeto (Brasil) inventó la celebración de "mecer al bebé" en USA 1994, dedicada a su hijo Mattheus, que había nacido días antes. Mattheus fue futbolista profesional.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En Qatar 2022, el árbitro argentino Facundo Tello sacó 15 tarjetas amarillas y 1 roja en Holanda vs Argentina, convirtiéndolo en el partido con más tarjetas del torneo.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En el partido inaugural de Qatar 2022, la FIFA reveló en tiempo real que el segundo gol de Ecuador fue anulado por un offside de 1.02 metros gracias al VAR semiautomático.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'El estadio 974 de Qatar fue construido con 974 contenedores de barco. Es el primer estadio mundialista totalmente desmontable, desarmado tras el torneo.',cat:'Insólitos'},
+      {emoji:'🤯',fact:'En la tanda de penales de la final 2022, Dibu Martínez retrasó cada disparo francés hablándoles a los rivales. El reglamento aún no limitaba esa conducta.',cat:'Insólitos'},
+      // ⭐ LEYENDAS (25)
+      {emoji:'⭐',fact:'Pelé (Brasil) marcó 1.283 goles en su carrera, 77 con la Selección. Ganó 3 Mundiales (1958, 1962, 1970). Es el único jugador en lograrlo.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Diego Maradona (Argentina) fue elegido "Jugador del Siglo" por la FIFA en 2000 compartido con Pelé. Hizo la mejor actuación individual en un Mundial en México 1986.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Lionel Messi (Argentina) ganó 8 Balones de Oro y el Mundial 2022 a los 35 años. Su gol en la final vs Francia fue su 13° en Mundiales.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Johan Cruyff (Holanda) inventó el "giro de Cruyff" en el Mundial 1974 vs Suecia. Revolucionó el fútbol total pero nunca ganó un Mundial.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Franz Beckenbauer (Alemania) ganó el Mundial como capitán (1974) y como entrenador (1990). Es el único en lograrlo. Inventó la posición de "líbero".',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Zinedine Zidane (Francia) hizo 2 cabezazos en la final de 1998 y un penal de "Panenka" en la final de 2006. Su último acto profesional fue el cabezazo a Materazzi.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Ronaldo Nazário (Brasil) marcó 15 goles en Mundiales pese a sufrir graves lesiones de rodilla. En 2002, su peinado triangular se convirtió en fenómeno cultural.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Garrincha (Brasil) ganó los Mundiales de 1958 y 1962. Con una pierna 6 cm más corta que la otra, sus dribles eran impredecibles.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Bobby Charlton (Inglaterra) sobrevivió al desastre aéreo de Múnich (1958) y luego ganó el Mundial 1966 marcando 2 goles en semifinales vs Portugal.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Gerd Müller (Alemania) anotó 14 goles mundialistas en solo 13 partidos (1970-1974). En 1972, marcó 85 goles en el año calendario, récord que duró hasta Messi en 2012.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Lev Yashin (URSS) es el único arquero en ganar el Balón de Oro (1963). Atajó más de 150 penales en su carrera y participó en 4 Mundiales.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Eusébio (Portugal) marcó 9 goles en su único Mundial (1966). Nació en Mozambique y fue apodado "La Pantera Negra". Lloró al ser eliminado en semifinales.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Alfredo Di Stéfano, considerado uno de los mejores de la historia, NUNCA jugó un Mundial. Argentina no fue en 1950/1954, y España no clasificó en 1958.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Cafu (Brasil) disputó 3 finales consecutivas (1994, 1998, 2002), ganando 2. Es el único jugador en la historia en jugar 3 finales seguidas.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Zico (Brasil) es considerado el "Pelé blanco". Jugó 3 Mundiales (1978-1986) pero nunca ganó uno. Marcó un gol de tiro libre legendario vs Escocia en 1982.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Michel Platini (Francia) dominó la Eurocopa 1984 con 9 goles, pero en Mundiales nunca pasó de semifinales (3er puesto en 1986, con 1 gol en el torneo).',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Paolo Maldini (Italia) jugó 4 Mundiales (1990-2002) como uno de los mejores defensores de la historia. Nunca ganó la Copa del Mundo.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Romário (Brasil) fue el mejor jugador del Mundial 1994 con 5 goles y jugadas decisivas. Declaró haber marcado más de 1.000 goles en su carrera.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'George Best (Irlanda del Norte) es considerado uno de los jugadores más talentosos de la historia, pero Irlanda del Norte no clasificó durante su mejor época.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Kylian Mbappé (Francia) marcó 4 goles en la final de 2018 y la final de 2022 combinadas. A los 19 años en 2018, fue el 2do adolescente en anotar en una final, después de Pelé.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Didi (Brasil) inventó la "hoja seca" (tiro libre con efecto descendente). Fue campeón en 1958 y 1962 y elegido mejor jugador de Suecia 1958.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Sócrates (Brasil) era médico y capitán del "Jogo Bonito" de 1982. Fumaba un paquete de cigarrillos por día y aun así era uno de los mejores del mundo.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Roberto Carlos (Brasil) marcó un tiro libre que desafió la física vs Francia en 1997 (Tournoi). En Mundiales jugó 3 torneos y ganó en 2002.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Luka Modrić (Croacia) fue elegido mejor jugador de Rusia 2018 a los 32 años, llevando a Croacia a su primera final mundialista.',cat:'Leyendas'},
+      {emoji:'⭐',fact:'Ferenc Puskás (Hungría/España) lideró al "Equipo de Oro" húngaro que llegó invicto a la final de 1954 tras 4 años sin perder. Perdió la final estando lesionado.',cat:'Leyendas'},
+      // 🧤 ARQUEROS (15)
+      {emoji:'🧤',fact:'Emiliano "Dibu" Martínez (Argentina) ganó el Guante de Oro en Qatar 2022. Atajó penales decisivos vs Holanda y vs Francia en la final.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Gordon Banks (Inglaterra) hizo "la atajada del siglo" vs Pelé en el Mundial 1970. Pelé cabeceó al ángulo y Banks la sacó con una mano desde el piso.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Gianluigi Buffon (Italia) disputó 5 Mundiales (1998-2014) pero ganó solo 1 (2006). En la final, no recibió goles de jugada. El único fue el penal de Zidane.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Toni Schumacher (Alemania) protagonizó una de las faltas más brutales de la historia al chocar con Patrick Battiston (Francia) en semifinales de 1982. Battiston perdió 2 dientes.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Dino Zoff (Italia) es el capitán y arquero más viejo en ganar un Mundial: tenía 40 años y 133 días cuando Italia ganó en España 1982.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Oliver Kahn (Alemania) es el único arquero en ganar el Balón de Oro de un Mundial (2002). Fue figura pese a cometer un error en el primer gol de Ronaldo en la final.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Antonio Carbajal (México) participó en 5 Mundiales consecutivos (1950-1966), récord que solo igualó Buffon. Jugó 11 partidos y recibió 25 goles.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Lev Yashin (URSS) jugó 4 Mundiales (1958-1970). Atajó más de 150 penales en su carrera. Siempre vestía de negro, por eso lo apodaron "La Araña Negra".',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Iker Casillas (España) atajó un mano a mano decisivo a Arjen Robben en la final de 2010. Sin esa parada, España posiblemente no hubiera ganado su único Mundial.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Ubaldo Fillol (Argentina) fue clave en el título de 1978. Hizo 3 atajadas decisivas en la final vs Holanda. Muchos lo consideran el mejor arquero argentino.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Manuel Neuer (Alemania) popularizó el arquero-líbero en el Mundial 2014. Salía tan lejos del arco que contra Argelia jugó casi como defensor central.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Sergio Goycochea (Argentina) atajó 4 penales en el Mundial 1990 (2 vs Yugoslavia, 2 vs Italia). Tenía un ritual supersticioso: orinaba en la cancha antes de cada tanda.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Thomas N\'Kono (Camerún) fue la inspiración de un joven Gianluigi Buffon. En Italia 1990, a sus 34 años, fue clave para que Camerún llegara a cuartos.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'Thibaut Courtois (Bélgica) ganó el Guante de Oro en Rusia 2018 con 27 atajadas, la cifra más alta del torneo. Bélgica terminó 3ra.',cat:'Arqueros'},
+      {emoji:'🧤',fact:'René Higuita (Colombia) intentó su famosa "escorpión" en un amistoso, pero en el Mundial 1990 le costó la eliminación: una salida arriesgada le permitió a Roger Milla robar el balón y marcar.',cat:'Arqueros'},
+      // 📺 CULTURA (15)
+      {emoji:'📺',fact:'La canción "La Copa de la Vida" de Ricky Martin fue el himno oficial de Francia 1998. Vendió más de 5 millones de copias y lanzó su carrera internacional.',cat:'Cultura'},
+      {emoji:'📺',fact:'\"Waka Waka\" de Shakira (Sudáfrica 2010) tiene más de 4.000 millones de reproducciones en YouTube, convirtiéndola en la canción mundialista más escuchada de la historia.',cat:'Cultura'},
+      {emoji:'📺',fact:'La audiencia de la final de 2022 (Argentina vs Francia) fue estimada en 1.500 millones de televidentes, la más alta para un evento deportivo individual.',cat:'Cultura'},
+      {emoji:'📺',fact:'El videojuego FIFA de EA Sports lanzó su primera edición mundialista en 1998 (World Cup 98). Vendió más de 4 millones de copias.',cat:'Cultura'},
+      {emoji:'📺',fact:'El álbum Panini de figuritas mundialistas se publica desde México 1970. Para completar el de Qatar 2022 (670 figuritas) se necesitaban en promedio 4.832 paquetes.',cat:'Cultura'},
+      {emoji:'📺',fact:'Durante el Mundial 2014, Twitter registró 672 millones de tuits relacionados. El hashtag #WorldCup fue el más usado del año.',cat:'Cultura'},
+      {emoji:'📺',fact:'La primera mascota oficial de un Mundial fue "World Cup Willie" (un león) en Inglaterra 1966. Desde entonces, cada Mundial tiene su mascota.',cat:'Cultura'},
+      {emoji:'📺',fact:'El documental "Pelé" de Netflix (2021) reveló que durante el Mundial 1970, la dictadura militar brasileña presionó al equipo para ganar usando el fútbol como propaganda.',cat:'Cultura'},
+      {emoji:'📺',fact:'La película "El Milagro de Berna" (2003) recrea la final de 1954 desde la perspectiva de un niño alemán. Es una de las películas más taquilleras de la historia del cine alemán.',cat:'Cultura'},
+      {emoji:'📺',fact:'Durante el Mundial 2018, la economía rusa recibió un impulso estimado en 14.000 millones de dólares gracias al turismo y la inversión en infraestructura.',cat:'Cultura'},
+      {emoji:'📺',fact:'El grito de gol de Andrés Cantor ("¡Goooool!") se hizo famoso mundialmente durante las transmisiones de Telemundo en USA 1994, popularizando el fútbol en Norteamérica.',cat:'Cultura'},
+      {emoji:'📺',fact:'Cada Mundial genera entre 500.000 y 1.000.000 de réplicas de camisetas vendidas solo de la selección campeona. La de Argentina 2022 se agotó en horas.',cat:'Cultura'},
+      {emoji:'📺',fact:'Noel Gallagher (Oasis) compuso "Don\'t Look Back in Anger" parcialmente inspirado en el gol de David Platt vs Bélgica en Italia 1990.',cat:'Cultura'},
+      {emoji:'📺',fact:'Las vuvuzelas de Sudáfrica 2010 generaron tantas quejas por el ruido (127 dB) que los canales de TV desarrollaron filtros de audio para reducir el zumbido.',cat:'Cultura'},
+      {emoji:'📺',fact:'Subbuteo, el juego de mesa de fútbol con figuritas, lanzó ediciones especiales mundialistas desde 1966. La versión de España 1982 es una de las más cotizadas por coleccionistas.',cat:'Cultura'},
+      // 🏅 MUNDIALES 2026 (15)
+      {emoji:'🏅',fact:'El Mundial 2026 será el primero con 48 selecciones (antes eran 32) y 104 partidos (antes 64), disputados en 16 sedes de 3 países.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Es el primer Mundial organizado por 3 países simultáneamente: México 🇲🇽, Estados Unidos 🇺🇸 y Canadá 🇨🇦.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'La final se jugará en el MetLife Stadium de East Rutherford, Nueva Jersey. Es la primera final mundialista en USA.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'México será sede por tercera vez (1970, 1986, 2026). Es el primer país en albergar 3 Mundiales. El Estadio Azteca también será sede por tercera vez.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'El formato cambia: 12 grupos de 4 equipos, con los 2 primeros y los 8 mejores terceros avanzando a una ronda de 32avos.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Las 3 sedes canadienses son Vancouver (BC Place), Toronto (BMO Field) y Edmonton (Commonwealth Stadium), las primeras sedes mundialistas en Canadá.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'El partido inaugural se jugará el 11 de junio de 2026 en el Estadio Azteca de Ciudad de México, exactamente 56 años después de la inauguración del Mundial 1970 en el mismo estadio.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Las mascotas oficiales son 3 personajes animados representando a cada país sede: inspirados en la fauna local de México, USA y Canadá.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Será el primer Mundial en usar VAR semiautomático con inteligencia artificial desde el inicio del torneo. En Qatar 2022 se estrenó parcialmente esta tecnología.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'11 de las 16 sedes están en Estados Unidos, 3 en México y 2 en Canadá. Las sedes estadounidenses incluyen Nueva York, Los Ángeles, Miami, Dallas y Houston.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Con 104 partidos en 39 días, el Mundial 2026 será el más largo de la historia. Qatar 2022 tuvo 64 partidos en 29 días.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'El SoFi Stadium de Inglewood (Los Ángeles) es el estadio más caro del mundo (5.500 millones USD). Albergará una semifinal del Mundial 2026.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'La diferencia horaria entre las sedes más alejadas (Vancouver y Guadalajara) es de solo 2 horas, facilitando la cobertura televisiva.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Hard Rock Stadium de Miami será sede de varios partidos. También albergó el Super Bowl LIV en 2020. El clima subtropical será un factor clave.',cat:'Mundiales 2026'},
+      {emoji:'🏅',fact:'Con 48 selecciones, el Mundial 2026 permitirá debutar a naciones que nunca clasificaron. África tiene 9 plazas (antes 5) y Asia 8 (antes 4+1 repechaje).',cat:'Mundiales 2026'}
     ];
     let currentTriviaIdx = Math.floor(Math.random() * SABIAS_QUE.length);
 
@@ -1306,13 +1441,28 @@
             <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:12px;">${detail.bestFinish}</div><div class="team-detail-stat-label">Mejor resultado</div></div>
           </div></div>`;
       } else {
+        // Show group matches for this team
+        const teamMatches = MATCHES.filter(m => m.home === team.name || m.away === team.name);
+        let matchesHTML = teamMatches.map(m => {
+          const opponent = m.home === team.name ? m.away : m.home;
+          const oppTeam = ALL_TEAMS.find(t => t.name === opponent);
+          const oppIso = oppTeam ? oppTeam.iso : '';
+          return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <span style="font-size:12px;color:var(--text-muted);min-width:70px;">${formatMatchDate(m.date, m.time)}</span>
+            <span style="font-weight:700;">vs</span>
+            ${oppIso ? `<img src="${flagUrl(oppIso)}" style="height:16px;border-radius:2px;" alt="${opponent}">` : ''}
+            <span style="font-weight:600;">${opponent}</span>
+          </div>`;
+        }).join('');
         html += `<div class="team-detail-section"><div class="team-detail-section-title">ℹ️ Información</div>
           <div class="team-detail-grid">
             ${teamGroup ? `<div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:14px;">${teamGroup}</div><div class="team-detail-stat-label">Grupo</div></div>` : ''}
             <div class="team-detail-stat"><div class="team-detail-stat-value" style="font-size:30px;">${team.emoji}</div><div class="team-detail-stat-label">Bandera</div></div>
           </div>
-          <p style="text-align:center;font-size:13px;color:var(--text-muted);margin-top:12px;">Información detallada próximamente disponible.</p>
         </div>`;
+        if (teamMatches.length > 0) {
+          html += `<div class="team-detail-section"><div class="team-detail-section-title">⚽ Partidos en el Mundial 2026</div>${matchesHTML}</div>`;
+        }
       }
       openModal(team.name, html);
     };
@@ -1393,18 +1543,13 @@
       const found = allUsers.find(u => (u.email || '').toLowerCase() === email);
       if (found) {
         saveUser(found);
+        if (email === SUPER_ADMIN_EMAIL) { localStorage.setItem('prode-admin', 'true'); }
+        localStorage.setItem('prode-onboarding-done', 'true');
         showToast(`¡Bienvenido de nuevo, ${found.apodo}! 🎉`, 'success');
         document.getElementById('register-screen').style.display = 'none';
-        if (found.status === 'aprobado' || isAdmin()) {
-          localStorage.setItem('prode-onboarding-done', 'true');
-          startMainApp();
-        } else if (found.status === 'pendiente') {
-          showPendingScreen(found);
-        } else {
-          showPendingScreen(found, true);
-        }
+        startMainApp();
       } else {
-        showToast('No encontramos una cuenta con ese email. ¿Querés registrarte?', 'warning');
+        showToast('No encontramos ese email en este dispositivo. Si te registraste en otro celular, registrate de nuevo acá.', 'warning', 5000);
       }
     };
 
@@ -1890,46 +2035,49 @@
         return { group: g, total: groupMatches.length, saved: groupSaved, complete: groupSaved === groupMatches.length };
       });
 
-      // Build urgent CTA if not 100%
-      let urgentCTA = '';
-      if (pendingCount > 0) {
-        const urgencyColor = pct < 30 ? '#ef4444' : pct < 70 ? '#f59e0b' : '#22c55e';
-        const urgencyIcon = pct < 30 ? '🚨' : pct < 70 ? '⚠️' : '💪';
-        const urgencyMsg = pct === 0 
-          ? '¡Todavía no cargaste ningún pronóstico!'
-          : pct < 50 
-            ? `¡Te faltan ${pendingCount} partidos por completar!`
-            : pct < 100 
-              ? `¡Ya casi! Te faltan solo ${pendingCount} partidos`
-              : '';
-        urgentCTA = `
-          <div class="card" style="background:linear-gradient(135deg, ${urgencyColor}22, ${urgencyColor}11); border:2px solid ${urgencyColor}44; animation: pulse 2s ease-in-out infinite;">
-            <div style="text-align:center; padding:16px 8px;">
-              <div style="font-size:48px; margin-bottom:8px;">${urgencyIcon}</div>
-              <div style="font-size:20px; font-weight:800; color:${urgencyColor}; margin-bottom:4px;">${urgencyMsg}</div>
-              <div style="font-size:15px; color:var(--text-muted); margin-bottom:16px;">
-                ${pct === 0 ? 'Cargá tus pronósticos para competir con tu familia' : `Llevás ${savedCount} de ${totalMatches} (${pct}%)`}
-              </div>
-              <div style="margin-bottom:16px;">
-                <div class="progress-track" style="height:12px; border-radius:6px;">
-                  <div class="progress-fill" style="width:${pct}%; background:${urgencyColor}; height:12px; border-radius:6px; transition:width 1s ease;"></div>
-                </div>
-              </div>
-              <button class="cta-btn" onclick="navigateTo('pronosticos')" style="font-size:20px; padding:16px 32px; width:100%; background:${urgencyColor};">
-                ⚽ ${pct === 0 ? 'EMPEZAR A CARGAR' : pct < 100 ? 'COMPLETAR PRONÓSTICOS' : 'VER PRONÓSTICOS'}
-              </button>
+      // Get next N matches on same day
+      const nextMatchDate = nextMatch.date;
+      const nextDayMatches = MATCHES.filter(m => m.date === nextMatchDate);
+      const isMultiple = nextDayMatches.length > 1;
+
+      // Build match cards with INLINE prediction inputs
+      const matchCardsHTML = nextDayMatches.map(m => {
+        const pred = preds[m.id];
+        const hasP = pred && pred.home !== undefined;
+        const hVal = hasP ? pred.home : '';
+        const aVal = hasP ? pred.away : '';
+        return `
+          <div class="card" style="border:1px solid ${hasP ? 'rgba(34,197,94,0.3)' : 'rgba(197,165,90,0.3)'}; margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span class="badge badge-gold">${m.group}</span>
+              <span style="font-size:13px;color:var(--text-muted);">${formatMatchDate(m.date, m.time)} • ${m.venue || ''}</span>
             </div>
-          </div>`;
-      } else {
-        urgentCTA = `
-          <div class="card" style="background:linear-gradient(135deg, #22c55e22, #22c55e11); border:2px solid #22c55e44;">
-            <div style="text-align:center; padding:16px 8px;">
-              <div style="font-size:48px; margin-bottom:8px;">🎉</div>
-              <div style="font-size:20px; font-weight:800; color:#22c55e; margin-bottom:4px;">¡PRODE COMPLETO!</div>
-              <div style="font-size:15px; color:var(--text-muted);">Cargaste los ${totalMatches} pronósticos. ¡Ahora a esperar los resultados!</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+              <div style="text-align:center;flex:1;">
+                ${tappableTeamFlag(m.homeIso, m.home, 'team-flag-lg')}
+                <div style="font-size:14px;font-weight:700;margin-top:4px;">${m.home}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <input type="number" min="0" max="20" value="${hVal}" id="home-h-${m.id}" 
+                  style="width:52px;height:52px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:2px solid ${hasP ? '#22c55e' : 'var(--gold)'};background:rgba(255,255,255,0.05);color:var(--text,#e6edf3);" 
+                  inputmode="numeric" placeholder="-">
+                <span style="font-size:20px;font-weight:900;color:var(--text-muted);">-</span>
+                <input type="number" min="0" max="20" value="${aVal}" id="home-a-${m.id}" 
+                  style="width:52px;height:52px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:2px solid ${hasP ? '#22c55e' : 'var(--gold)'};background:rgba(255,255,255,0.05);color:var(--text,#e6edf3);" 
+                  inputmode="numeric" placeholder="-">
+              </div>
+              <div style="text-align:center;flex:1;">
+                ${tappableTeamFlag(m.awayIso, m.away, 'team-flag-lg')}
+                <div style="font-size:14px;font-weight:700;margin-top:4px;">${m.away}</div>
+              </div>
             </div>
+            <button onclick="saveHomeMatch(${m.id})" id="home-save-${m.id}" 
+              style="width:100%;padding:10px;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;
+              background:${hasP ? 'rgba(34,197,94,0.2)' : 'var(--gold)'};color:${hasP ? '#22c55e' : '#000'};">
+              ${hasP ? '✅ Guardado' : '💾 Guardar pronóstico'}
+            </button>
           </div>`;
-      }
+      }).join('');
 
       // Group progress mini-grid
       const groupGridHTML = groupProgress.map(g => `
