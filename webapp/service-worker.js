@@ -2,20 +2,20 @@
 // PRODE MUNDIAL 2026 - Service Worker
 // ============================================
 
-const CACHE_NAME = 'prode-mundial-2026-v4';
-const STATIC_CACHE = 'prode-static-v4';
-const DYNAMIC_CACHE = 'prode-dynamic-v4';
-const API_CACHE = 'prode-api-v4';
+const CACHE_NAME = 'prode-mundial-2026-v6';
+const STATIC_CACHE = 'prode-static-v6';
+const DYNAMIC_CACHE = 'prode-dynamic-v6';
+const API_CACHE = 'prode-api-v6';
 
 // Static assets to cache on install (app shell)
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/css/app.css',
-  '/manifest.json',
-  '/icons/icon-512.png',
-  '/icons/icon-192.png',
-  '/icons/icon-72.png'
+  './',
+  'index.html',
+  'css/app.css',
+  'manifest.json',
+  'icons/icon-512.png',
+  'icons/icon-192.png',
+  'icons/icon-72.png'
 ];
 
 // Install event - cache app shell
@@ -86,7 +86,7 @@ self.addEventListener('fetch', (event) => {
   if (request.mode === 'navigate') {
     event.respondWith(
       networkFirst(request, DYNAMIC_CACHE)
-        .catch(() => caches.match('/index.html'))
+        .catch(() => caches.match('index.html'))
     );
     return;
   }
@@ -132,7 +132,7 @@ async function networkFirst(request, cacheName) {
     }
     // Return offline fallback for navigation
     if (request.mode === 'navigate') {
-      return caches.match('/index.html');
+      return caches.match('index.html');
     }
     return new Response(JSON.stringify({ error: 'Offline' }), {
       status: 503,
@@ -156,10 +156,10 @@ self.addEventListener('push', (event) => {
   let data = {
     title: 'PRODE Mundial 2026',
     body: 'Tienes una nueva notificación',
-    icon: '/icons/icon-192.png',
-    badge: '/icons/icon-72.png',
+    icon: 'icons/icon-192.png',
+    badge: 'icons/icon-72.png',
     type: 'general',
-    url: '/'
+    url: './'
   };
 
   if (event.data) {
@@ -172,11 +172,11 @@ self.addEventListener('push', (event) => {
 
   const notificationOptions = {
     body: data.body,
-    icon: data.icon || '/icons/icon-192.png',
-    badge: data.badge || '/icons/icon-72.png',
+    icon: data.icon || 'icons/icon-192.png',
+    badge: data.badge || 'icons/icon-72.png',
     vibrate: [100, 50, 100],
     data: {
-      url: data.url || '/',
+      url: data.url || './',
       type: data.type || 'general',
       dateOfArrival: Date.now()
     },
@@ -221,23 +221,23 @@ self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification clicked:', event.action);
   event.notification.close();
 
-  let targetUrl = '/';
+  let targetUrl = './';
   const data = event.notification.data;
 
   if (event.action === 'dismiss') return;
 
   switch (event.action) {
     case 'predict':
-      targetUrl = '/#pronosticos';
+      targetUrl = './#pronosticos';
       break;
     case 'view_result':
-      targetUrl = '/#pronosticos';
+      targetUrl = './#pronosticos';
       break;
     case 'view_ranking':
-      targetUrl = '/#ranking';
+      targetUrl = './#ranking';
       break;
     default:
-      targetUrl = data?.url || '/';
+      targetUrl = data?.url || './';
   }
 
   event.waitUntil(

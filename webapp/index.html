@@ -517,6 +517,7 @@
           </svg>
           <span class="badge-count" id="notification-count" style="display:none;">0</span>
         </button>
+        <button onclick="openSettingsModal()" style="background:none; border:none; color:var(--text); font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:4px;" aria-label="Ajustes">⚙️</button>
         <span class="header-avatar" id="header-avatar">⚽</span>
       </div>
     </div>
@@ -527,7 +528,7 @@
     <section id="view-inicio" class="view-section"><div id="home-content"></div></section>
     <section id="view-pronosticos" class="view-section"><div id="predictions-content"></div></section>
     <section id="view-ranking" class="view-section"><div id="ranking-content"></div></section>
-    <section id="view-stats" class="view-section"><div id="stats-content"></div></section>
+    <section id="view-simulador" class="view-section"><div id="simulador-content"></div></section>
     <section id="view-mas" class="view-section"><div id="mas-content"></div></section>
     <section id="view-admin" class="view-section"><div id="admin-content"></div></section>
     <section id="view-team" class="view-section"><div id="team-content"></div></section>
@@ -539,9 +540,9 @@
   <nav id="bottom-nav" class="bottom-nav" aria-label="Navegación principal">
     <button class="nav-item active" data-view="inicio" aria-label="Inicio"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span><span class="nav-indicator"></span></button>
     <button class="nav-item" data-view="pronosticos" aria-label="Pronósticos"><span class="nav-icon">⚽</span><span class="nav-label">Pronósticos</span><span class="nav-indicator"></span></button>
-    <button class="nav-item" data-view="ranking" aria-label="Ranking"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span><span class="nav-indicator"></span></button>
-    <button class="nav-item" data-view="stats" aria-label="Stats"><span class="nav-icon">📊</span><span class="nav-label">Stats</span><span class="nav-indicator"></span></button>
-    <button class="nav-item" data-view="mas" aria-label="Más"><span class="nav-icon">⚙️</span><span class="nav-label">Más</span><span class="nav-indicator"></span></button>
+    <button class="nav-item" data-view="simulador" aria-label="Simulador"><span class="nav-icon">🏆</span><span class="nav-label">Simulador</span><span class="nav-indicator"></span></button>
+    <button class="nav-item" data-view="ranking" aria-label="Ranking"><span class="nav-icon">📈</span><span class="nav-label">Ranking</span><span class="nav-indicator"></span></button>
+    <button class="nav-item" data-view="duelos" aria-label="Duelos"><span class="nav-icon">⚔️</span><span class="nav-label">Duelos</span><span class="nav-indicator"></span></button>
     <button class="nav-item" data-view="admin" aria-label="Admin" id="nav-admin" style="display:none;"><span class="nav-icon">🔑</span><span class="nav-label">Admin</span><span class="nav-indicator"></span></button>
   </nav>
 
@@ -586,7 +587,7 @@
     // ============================================
     const ProdeAPI = {
       getApiUrl() {
-        return localStorage.getItem('prode-api-url') || '';
+        return localStorage.getItem('prode-api-url') || 'https://script.google.com/macros/s/AKfycbw60PersonasDefaultFallback/exec';
       },
       setApiUrl(url) {
         if (url) url = url.trim().replace(/\/+$/, '');
@@ -1470,6 +1471,21 @@
       MATCHES[2].homeScore = 3; MATCHES[2].awayScore = 1;
     }
 
+    try {
+      const cachedMatches = localStorage.getItem('prode-matches-cache');
+      if (cachedMatches) {
+        const parsed = JSON.parse(cachedMatches);
+        parsed.forEach(m => {
+          const match = MATCHES.find(x => x.id === m.id);
+          if (match) {
+            match.homeScore = m.homeScore;
+            match.awayScore = m.awayScore;
+            match.status = m.status;
+          }
+        });
+      }
+    } catch(e) {}
+
     // ============================================
     // KNOCKOUT BRACKET
     // ============================================
@@ -1582,10 +1598,204 @@
     let currentTeamDetailName = '';
     let previousViewForTeam = 'stats';
     let teamActiveTab = 'stats';
+    let currentPredSubTab = 'partidos';
+    let currentSimSubTab = 'bracket';
+    let expandedSimGroups = {};
 
     // ============================================
     // HELPERS
     // ============================================
+    function getUrlParams() {
+      const hash = window.location.hash;
+      const parts = hash.split('?');
+      if (parts.length < 2) return {};
+      const params = {};
+      const pairs = parts[1].split('&');
+      pairs.forEach(pair => {
+        const [key, val] = pair.split('=');
+        if (key) params[decodeURIComponent(key)] = decodeURIComponent(val || '');
+      });
+      return params;
+    }
+
+    function startCountdown(dateStr, timeStr) {
+      if (countdownInterval) clearInterval(countdownInterval);
+      const target = new Date(dateStr + 'T' + timeStr + ':00').getTime();
+      
+      function update() {
+        const now = new Date().getTime();
+        const diff = target - now;
+        
+        const dEl = document.getElementById('cd-days');
+        const hEl = document.getElementById('cd-hours');
+        const mEl = document.getElementById('cd-mins');
+        const sEl = document.getElementById('cd-secs');
+        
+        if (!dEl || !hEl || !mEl || !sEl) {
+          clearInterval(countdownInterval);
+          return;
+        }
+        
+        if (diff <= 0) {
+          dEl.textContent = '00';
+          hEl.textContent = '00';
+          mEl.textContent = '00';
+          sEl.textContent = '00';
+          clearInterval(countdownInterval);
+          return;
+        }
+        
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        dEl.textContent = String(days).padStart(2, '0');
+        hEl.textContent = String(hours).padStart(2, '0');
+        mEl.textContent = String(mins).padStart(2, '0');
+        sEl.textContent = String(secs).padStart(2, '0');
+      }
+      
+      update();
+      countdownInterval = setInterval(update, 1000);
+    }
+
+    function getParticipants() {
+      try {
+        const stored = localStorage.getItem('prode-simulated-participants');
+        if (stored) return JSON.parse(stored);
+      } catch(e) {}
+      return DEMO_PARTICIPANTS;
+    }
+
+    function getTeamFlagHTML(teamName) {
+      if (!teamName || teamName.startsWith('Ganador') || teamName.startsWith('Best3') || teamName.includes('-') || /^[0-9]/.test(teamName)) {
+        return '⚽';
+      }
+      const team = ALL_TEAMS.find(t => t.name.toLowerCase() === teamName.toLowerCase());
+      if (team) {
+        return `<img src="https://flagcdn.com/48x36/${team.iso}.png" alt="${team.name}" style="width:18px; height:13px; border-radius:2px; object-fit:cover; vertical-align:middle; margin-right:4px;">`;
+      }
+      return '⚽';
+    }
+
+    function getGroupStandingsData(preds) {
+      const winners = {};
+      const runnersUp = {};
+      const thirds = [];
+
+      Object.keys(GROUPS_DEF).forEach(groupName => {
+        const sorted = calculateGroupStandings(groupName, preds);
+        if (sorted && sorted.length >= 3) {
+          winners[groupName] = sorted[0].name;
+          runnersUp[groupName] = sorted[1].name;
+          thirds.push(sorted[2]);
+        }
+      });
+
+      // Sort third place teams
+      thirds.sort((a, b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
+        if (b.dg !== a.dg) return b.dg - a.dg;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        return a.name.localeCompare(b.name);
+      });
+
+      return {
+        winners: winners,
+        runnersUp: runnersUp,
+        thirds: thirds.map(t => t.name)
+      };
+    }
+
+    function resolveGroupCode(code, standings) {
+      if (!standings) return code;
+      const groupLetter = code.charAt(1); // e.g. 'A' from '1A'
+      const groupName = 'Grupo ' + groupLetter;
+      if (code.startsWith('1')) {
+        return standings.winners[groupName] || code;
+      }
+      if (code.startsWith('2')) {
+        return standings.runnersUp[groupName] || code;
+      }
+      if (code.startsWith('Best3-')) {
+        const idx = parseInt(code.split('-')[1]) - 1;
+        return standings.thirds[idx] || code;
+      }
+      if (code === '3ABC') return standings.thirds[4] || '3ABC';
+      if (code === '3DEF') return standings.thirds[5] || '3DEF';
+      if (code === '3GHI') return standings.thirds[6] || '3GHI';
+      if (code === '3JKL') return standings.thirds[7] || '3JKL';
+      return code;
+    }
+
+    function resolveBracketMatch(matchId, groupPreds, bracketPreds) {
+      const m = BRACKET_MATCHES.find(x => x.id === matchId);
+      if (!m) return null;
+
+      let homeTeamName = '';
+      let awayTeamName = '';
+
+      if (m.round === 'R32') {
+        const standings = getGroupStandingsData(groupPreds);
+        homeTeamName = resolveGroupCode(m.home, standings);
+        awayTeamName = resolveGroupCode(m.away, standings);
+      } else {
+        const parentHome = resolveBracketMatch(m.from[0], groupPreds, bracketPreds);
+        const parentAway = resolveBracketMatch(m.from[1], groupPreds, bracketPreds);
+        homeTeamName = parentHome ? parentHome.winnerName : ('Ganador ' + m.from[0]);
+        awayTeamName = parentAway ? parentAway.winnerName : ('Ganador ' + m.from[1]);
+      }
+
+      const pred = bracketPreds[matchId] || {};
+      let winner = pred.winner || null; // 'home' or 'away'
+      let winnerName = '';
+      if (winner === 'home') {
+        winnerName = homeTeamName;
+      } else if (winner === 'away') {
+        winnerName = awayTeamName;
+      } else {
+        winnerName = 'Ganador ' + matchId;
+      }
+
+      return {
+        id: matchId,
+        round: m.round,
+        label: m.label,
+        home: homeTeamName,
+        away: awayTeamName,
+        winner: winner,
+        winnerName: winnerName
+      };
+    }
+
+    function calculateMatchPoints(realHome, realAway, predHome, predAway) {
+      if (realHome === undefined || realHome === null || realAway === undefined || realAway === null) return 0;
+      if (predHome === undefined || predHome === null || predAway === undefined || predAway === null) return 0;
+      
+      const rH = parseInt(realHome);
+      const rA = parseInt(realAway);
+      const pH = parseInt(predHome);
+      const pA = parseInt(predAway);
+      
+      if (rH === pH && rA === pA) {
+        return 15;
+      }
+      
+      const realDiff = rH - rA;
+      const predDiff = pH - pA;
+      
+      if (realDiff === predDiff && ((rH > rA && pH > pA) || (rH < rA && pH < pA))) {
+        return 8;
+      }
+      
+      if ((rH > rA && pH > pA) || (rH < rA && pH < pA) || (rH === rA && pH === pA)) {
+        return 5;
+      }
+      
+      return 0;
+    }
+
     function getUser() { try { return JSON.parse(localStorage.getItem('prode-user')); } catch(e) { return null; } }
     function saveUser(u) { localStorage.setItem('prode-user', JSON.stringify(u)); }
     function getPredictions() { try { return JSON.parse(localStorage.getItem('prode-predictions')) || {}; } catch(e) { return {}; } }
@@ -1850,7 +2060,7 @@
         });
       }
       
-      DEMO_PARTICIPANTS.forEach(p => {
+      getParticipants().forEach(p => {
         const pred = getDeterministicPrediction(p.apodo, match);
         list.push({
           apodo: p.apodo,
@@ -2076,43 +2286,78 @@
             </div></div>`;
         }
       } else {
-        html += `<div class="card" style="padding:16px;">
-          <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">👥 Estadísticas del Plantel</div>
-          <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Rendimiento acumulado en partidos oficiales recientes y proyectado</p>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            ${[...squad].sort((a, b) => {
-              const priority = {
-                'GK': 1, 'POR': 1, 'ARQ': 1,
-                'DEF': 2, 'DF': 2,
-                'MID': 3, 'MF': 3, 'MED': 3,
-                'FWD': 4, 'FW': 4, 'DEL': 4
-              };
-              const pA = priority[String(a.pos).toUpperCase()] || 99;
-              const pB = priority[String(b.pos).toUpperCase()] || 99;
-              return pA - pB;
-            }).map(p => `
-              <div class="player-stat-card" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; transition: border-color 0.2s;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                  <div>
-                    <span class="badge" style="background:${p.pos==='GK'?'rgba(234,179,8,0.1)':p.pos==='DEF'?'rgba(59,130,246,0.1)':p.pos==='MID'?'rgba(168,85,247,0.1)':'rgba(239,68,68,0.1)'}; color:${p.pos==='GK'?'#f59e0b':p.pos==='DEF'?'#3b82f6':p.pos==='MID'?'#a855f7':'#ef4444'}; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin-right:8px;">${p.pos}</span>
-                    <strong style="font-size:14px; color:var(--text);">${p.name}</strong>
-                  </div>
-                  <span style="font-size:11px; padding:2px 8px; border-radius:12px; font-weight:600;
-                    background:${p.status === 'Disponible' ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)'};
-                    color:${p.status === 'Disponible' ? '#22c55e' : '#ef4444'};">
-                    ${p.status}
-                  </span>
+        const grouped = {
+          'Arqueros': [],
+          'Defensores': [],
+          'Mediocampistas': [],
+          'Delanteros': []
+        };
+        
+        squad.forEach(p => {
+          const pos = String(p.pos).toUpperCase();
+          if (['GK', 'POR', 'ARQ'].includes(pos)) grouped['Arqueros'].push(p);
+          else if (['DEF', 'DF', 'DFR', 'DFL'].includes(pos)) grouped['Defensores'].push(p);
+          else if (['MID', 'MF', 'MED', 'VOL'].includes(pos)) grouped['Mediocampistas'].push(p);
+          else grouped['Delanteros'].push(p);
+        });
+
+        let tbodyHTML = '';
+        Object.keys(grouped).forEach(cat => {
+          const players = grouped[cat];
+          if (players.length === 0) return;
+          
+          tbodyHTML += `<tr style="position:sticky; top:35px; z-index:9; background:rgba(22,27,34,0.95); backdrop-filter:blur(4px); font-weight:800; color:var(--gold); border-bottom:1px solid var(--border);">
+            <td colspan="6" style="padding:6px 8px; font-size:11px; letter-spacing:0.5px;">
+              ${cat.toUpperCase()} (${players.length})
+            </td>
+          </tr>`;
+          
+          players.forEach(p => {
+            const isAvail = p.status === 'Disponible';
+            const statusIndicator = isAvail ? '' : `<span style="font-size:9px; color:#ef4444; margin-left:4px;" title="${p.status}">⚠️</span>`;
+            
+            tbodyHTML += `<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">
+              <td style="padding:6px 8px; font-weight:600; vertical-align:middle;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="color:${isAvail ? 'var(--text)' : 'var(--text-muted)'}; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:130px;">${p.name}</span>
+                  ${statusIndicator}
                 </div>
-                <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:4px; text-align:center; font-size:11px; color:var(--text-muted); padding-top:4px; border-top:1px dashed rgba(255,255,255,0.04);">
-                  <div><strong style="color:var(--text);">${p.pj}</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">PJ</div></div>
-                  <div><strong style="color:${p.goles > 0 ? 'var(--gold)' : 'var(--text)'};">${p.goles} ⚽</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Goles</div></div>
-                  <div><strong style="color:var(--text);">${p.asistencias} 🅰️</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Asist</div></div>
-                  <div><strong style="color:var(--text);">${p.faltasCometidas}/${p.faltasRecibidas}</strong><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Faltas C/R</div></div>
-                  <div><span style="color:#f59e0b;">🟨${p.amarillas}</span> <span style="color:#ef4444;">🟥${p.rojas}</span><div style="font-size:8px; text-transform:uppercase; margin-top:2px;">Tarj.</div></div>
-                </div>
-              </div>
-            `).join('')}
-          </div></div>`;
+              </td>
+              <td style="padding:6px 2px; text-align:center; font-weight:700; font-size:12px;">${p.pj}</td>
+              <td style="padding:6px 2px; text-align:center; font-weight:700; color:${p.goles > 0 ? 'var(--gold)' : 'var(--text)'}; font-size:12px;">${p.goles}</td>
+              <td style="padding:6px 2px; text-align:center; font-size:12px;">${p.asistencias}</td>
+              <td style="padding:6px 2px; text-align:center; color:var(--text-muted); font-size:11px;">${p.faltasCometidas}/${p.faltasRecibidas}</td>
+              <td style="padding:6px 2px; text-align:center; vertical-align:middle;">
+                ${p.amarillas > 0 ? `<span style="background:#eab308; color:#000; padding:1px 3px; border-radius:2px; font-weight:bold; font-size:9px; margin-right:2px;">${p.amarillas}</span>` : ''}
+                ${p.rojas > 0 ? `<span style="background:#ef4444; color:#fff; padding:1px 3px; border-radius:2px; font-weight:bold; font-size:9px;">${p.rojas}</span>` : ''}
+                ${p.amarillas === 0 && p.rojas === 0 ? '<span style="color:var(--text-muted); font-size:11px;">-</span>' : ''}
+              </td>
+            </tr>`;
+          });
+        });
+
+        html += `<div class="card" style="padding:12px; margin-bottom:16px;">
+          <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">👥 Plantel y Estadísticas</div>
+          <p style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Estadísticas recientes acumuladas. ⚠️ indica jugador lesionado o suspendido.</p>
+          
+          <div class="roster-table-container" style="max-height:500px; overflow-y:auto; border-radius:8px; border:1px solid var(--border);">
+            <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+              <thead style="position:sticky; top:0; background:#161b22; z-index:10; border-bottom:2px solid var(--border); box-shadow:0 1px 0 var(--border);">
+                <tr style="color:var(--text-muted); font-weight:700;">
+                  <th style="padding:10px 8px;">Jugador</th>
+                  <th style="padding:10px 4px; text-align:center;">PJ</th>
+                  <th style="padding:10px 4px; text-align:center;">G</th>
+                  <th style="padding:10px 4px; text-align:center;">A</th>
+                  <th style="padding:10px 4px; text-align:center;">Faltas C/R</th>
+                  <th style="padding:10px 4px; text-align:center;">Tarj</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tbodyHTML}
+              </tbody>
+            </table>
+          </div>
+        </div>`;
       }
 
       document.getElementById('team-content').innerHTML = html;
@@ -2475,12 +2720,28 @@
     // ============================================
     // HASH ROUTER
     // ============================================
-    const validViews = ['inicio','pronosticos','ranking','stats','mas','admin','team','reglas','duelos'];
-    function navigateTo(view) {
+    const validViews = ['inicio','pronosticos','ranking','simulador','admin','team','reglas','duelos','mas','stats'];
+    function navigateTo(viewPath) {
+      const parts = viewPath.split('?');
+      let view = parts[0];
+      const queryString = parts[1] || '';
+
+      if (view === 'stats') { navigateTo(queryString ? 'simulador?' + queryString : 'simulador'); return; }
+      if (view === 'mas') { navigateTo('inicio'); openSettingsModal(); return; }
+
       if (!validViews.includes(view)) view = 'inicio';
       if (view === 'admin' && !isAdmin()) view = 'inicio';
       currentView = view;
-      window.location.hash = view === 'inicio' ? '' : view;
+      window.location.hash = view === 'inicio' ? (queryString ? 'inicio?' + queryString : '') : (queryString ? view + '?' + queryString : view);
+
+      // Check for incoming P2P challenge parameters
+      const params = getUrlParams();
+      if (params.action === 'desafiar' && params.matchId) {
+        setTimeout(() => {
+          showIncomingChallenge(params);
+        }, 800);
+      }
+      
       document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.view === view));
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
       const section = document.getElementById('view-' + view);
@@ -2496,8 +2757,7 @@
         case 'inicio': renderHome(); startTriviaAutoRotate(); break;
         case 'pronosticos': renderPredictions(); break;
         case 'ranking': renderRanking(); break;
-        case 'stats': renderStats(); break;
-        case 'mas': renderMas(); break;
+        case 'simulador': renderSimulador(); break;
         case 'admin': renderAdmin(); break;
         case 'team': renderTeamDetailView(); break;
         case 'reglas': renderReglas(); break;
@@ -2858,8 +3118,10 @@
           </div>`;
       }
 
+      const userStats = calculateUserStats(user, preds);
+
       document.getElementById('home-content').innerHTML = `
-        <div class="card" style="background:linear-gradient(135deg, rgba(197,165,90,0.08), rgba(13,17,23,0.95)); border:1px solid rgba(197,165,90,0.2); padding:16px;">
+        <div class="card animated-hero-card" style="padding:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
             <div style="display:flex;align-items:center;gap:10px;">
               <span style="font-size:32px;">${user.avatar}</span>
@@ -2881,61 +3143,40 @@
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px;text-align:center;">
             <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
-              <div style="font-size:20px;font-weight:900;color:var(--gold);">${savedCount > 0 ? '35' : '0'}</div>
+              <div style="font-size:20px;font-weight:900;color:var(--gold);">${userStats.points}</div>
               <div style="font-size:11px;color:var(--text-muted);">Puntos</div>
             </div>
             <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
-              <div style="font-size:20px;font-weight:900;">${savedCount > 0 ? '5°' : '-'}</div>
-              <div style="font-size:11px;color:var(--text-muted);">Posición</div>
-            </div>
-            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
-              <div style="font-size:20px;font-weight:900;color:#22c55e;">${savedCount > 0 ? '2' : '0'}</div>
+              <div style="font-size:20px;font-weight:900;color:var(--gold);">${userStats.exactos}</div>
               <div style="font-size:11px;color:var(--text-muted);">Exactos</div>
             </div>
             <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
-              <div style="font-size:20px;font-weight:900;">${savedCount > 0 ? '3' : '0'} 🔥</div>
-              <div style="font-size:11px;color:var(--text-muted);">Racha</div>
+              <div style="font-size:20px;font-weight:900;color:var(--gold);">${userStats.accuracy}%</div>
+              <div style="font-size:11px;color:var(--text-muted);">Efectividad</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
+              <div style="font-size:20px;font-weight:900;color:var(--gold);">${pct}%</div>
+              <div style="font-size:11px;color:var(--text-muted);">Cargado</div>
             </div>
           </div>
-          <div style="text-align:center;">
-            <span style="font-size:13px;color:${pendingCount > 0 ? '#f59e0b' : '#22c55e'};font-weight:700;">${pendingCount > 0 ? '⚽ ' + pendingCount + '/' + totalMatches + ' pendientes' : '✅ Prode completo'}</span>
-          </div>
         </div>
+
         ${todayHTML}
-        <div class="section-title"><h3>⚽ ${isMultiple ? 'Próximos Partidos' : 'Próximo Partido'} — Cargá tu pronóstico</h3></div>
-        ${matchCardsHTML}
-        <div class="section-title" style="margin-top:12px;"><h3>📋 Progreso por Grupo</h3></div>
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:12px;">
+
+        <div class="section-title mt-3"><h3>📅 Partidos del Día (${formatMatchDate(nextMatchDate, '00:00').split(' — ')[0]})</h3></div>
+        ${matchCardsHTML || `<div class="card" style="text-align:center;padding:16px;"><p class="text-muted">No hay más partidos programados para esta fecha.</p></div>`}
+        
+        <div class="section-title mt-3"><h3>📊 Progreso por Grupo</h3></div>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;margin-bottom:24px;">
           ${groupGridHTML}
         </div>
-        ${pendingCount > 0 ? `
-          <button class="cta-btn" onclick="navigateTo('pronosticos')" style="font-size:18px; padding:14px; width:100%; margin-bottom:12px;">
-            ⚽ Completar todos los pronósticos
-          </button>
-        ` : ''}
-        ${renderTriviaCard()}`;
-      startCountdown(nextMatch);
-    }
-
-    function startCountdown(match) {
-      if (countdownInterval) clearInterval(countdownInterval);
-      const target = new Date(match.date + 'T' + match.time + ':00');
-      function update() {
-        const diff = target - new Date();
-        if (diff <= 0) { ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '00'; }); return; }
-        const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-        const de=document.getElementById('cd-days'),he=document.getElementById('cd-hours'),me=document.getElementById('cd-mins'),se=document.getElementById('cd-secs');
-        if(de) de.textContent=String(d).padStart(2,'0'); if(he) he.textContent=String(h).padStart(2,'0');
-        if(me) me.textContent=String(m).padStart(2,'0'); if(se) se.textContent=String(s).padStart(2,'0');
-      }
-      update(); countdownInterval = setInterval(update, 1000);
-    }
-
-    // ============================================
-    // PREDICTIONS VIEW (abbreviated for space — same logic as before)
-    // ============================================
-    function renderPredictions() {
+      `;
+      
+      startCountdown(nextMatch.date, nextMatch.time);
+    }    function renderPredictions() {
       const preds = getPredictions();
+      const bracketPreds = getBracketPredictions();
+      const bracketCount = Object.keys(bracketPreds).length;
       const savedCount = Object.keys(preds).length;
       const total = MATCHES.length;
       const locked = isLocked();
@@ -2944,118 +3185,185 @@
       if (currentPredFilter !== 'Todos') filtered = MATCHES.filter(m => m.group === currentPredFilter);
       if (currentStatusFilter === 'cargados') filtered = filtered.filter(m => preds[m.id]);
       else if (currentStatusFilter === 'pendientes') filtered = filtered.filter(m => !preds[m.id]);
-      const bracketPreds = getBracketPredictions();
-      const bracketCount = Object.keys(bracketPreds).length;
 
       let html = '';
       if (locked) html += `<div class="card" style="text-align:center;padding:16px;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);"><span style="font-size:24px;">🔒</span><p style="color:#ef4444;font-weight:700;margin-top:8px;">Los pronósticos están bloqueados por el administrador</p></div>`;
-      html += `<div class="completion-pill"><span class="completion-text">${savedCount}/${total} cargados</span><div class="completion-bar"><div class="completion-bar-fill" style="width:${(savedCount/total*100).toFixed(0)}%"></div></div></div>`;
-      html += `<div class="filter-tabs">${groups.map(g => `<button class="filter-tab ${currentPredFilter===g?'active':''}" onclick="setPredFilter('${g}')">${g}</button>`).join('')}</div>`;
-      html += `<div class="status-filters">
-        <button class="status-filter ${currentStatusFilter==='todos'?'active':''}" onclick="setStatusFilter('todos')">Todos</button>
-        <button class="status-filter ${currentStatusFilter==='pendientes'?'active':''}" onclick="setStatusFilter('pendientes')">🟡 Pendientes</button>
-        <button class="status-filter ${currentStatusFilter==='cargados'?'active':''}" onclick="setStatusFilter('cargados')">🟢 Cargados</button>
-      </div>`;
-      html += `<div class="match-cards-grid">${filtered.map((m,idx) => {
-        const p = preds[m.id]; const homeVal = p ? p.home : ''; const awayVal = p ? p.away : ''; const isSaved = !!p;
-        const hasResult = m.homeScore !== undefined && m.awayScore !== undefined;
-        
-        let scoreAreaHTML = '';
-        let footerHTML = '';
-        let cardClass = '';
-        
-        if (hasResult) {
-          scoreAreaHTML = `
-            <div style="display:flex; flex-direction:column; align-items:center; gap:4px; flex:1;">
-              <span class="score-final" style="font-family:'Outfit',sans-serif; font-size:24px; font-weight:900; color:var(--gold); letter-spacing:2px; text-shadow:0 0 8px rgba(197,165,90,0.3);">${m.homeScore} - ${m.awayScore}</span>
-              <span style="font-size:11px; color:var(--text-muted);">Tu pronóstico: ${homeVal!==''?homeVal:'-'} - ${awayVal!==''?awayVal:'-'}</span>
-            </div>`;
-            
-          let ptsText = '+0 pts';
-          let ptsClass = 'rgba(239,68,68,0.15)';
-          let ptsColor = '#ef4444';
-          let label = '❌ Errado';
-          
-          if (isSaved) {
-            const isExact = p.home === m.homeScore && p.away === m.awayScore;
-            const predOutcome = p.home > p.away ? 'home' : p.home < p.away ? 'away' : 'draw';
-            const actualOutcome = m.homeScore > m.awayScore ? 'home' : m.homeScore < m.awayScore ? 'away' : 'draw';
-            
-            if (isExact) {
-              ptsText = '+3 pts';
-              ptsClass = 'rgba(34,197,94,0.15)';
-              ptsColor = '#22c55e';
-              label = '🎯 Exacto';
-              cardClass = 'match-card--exact';
-            } else if (predOutcome === actualOutcome) {
-              ptsText = '+1 pt';
-              ptsClass = 'rgba(234,179,8,0.15)';
-              ptsColor = '#f59e0b';
-              label = '🟡 Acierto';
-              cardClass = 'match-card--correct';
-            } else {
-              cardClass = 'match-card--wrong';
-            }
-          }
-          
-          footerHTML = `
-            <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="status-badge" style="background:${ptsClass}; color:${ptsColor}; padding:3px 8px; font-weight:700; font-size:11px; margin:0;">${ptsText} ${label}</span>
-              </div>
-              <button class="btn btn-outline btn-sm" onclick="showMatchPredictionsModal(${m.id})" style="padding:6px 12px; min-height:36px; font-size:12px; width:auto; border-color:var(--gold); color:var(--gold);">📊 Ver qué puso el resto</button>
-            </div>`;
-        } else {
-          scoreAreaHTML = `
-            <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" ${locked?'disabled':''}>
-            <span class="match-divider">:</span>
-            <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" ${locked?'disabled':''}>`;
-            
-          footerHTML = `
-            <div class="match-status"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
-            <div style="display:flex; gap:8px; align-items:center;">
-              <button class="match-save-btn ${isSaved?'saved':''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
-              <button class="btn btn-outline" onclick="showMatchPredictionsModal(${m.id})" style="padding:0; min-height:38px; width:38px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Ver qué puso el resto">📊</button>
-            </div>`;
-        }
+      
+      // Sub-tab selection bar
+      html += `
+        <div style="display:flex; gap:10px; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;">
+          <button class="ranking-tab-v2 ${currentPredSubTab==='partidos'?'active':''}" onclick="setPredSubTab('partidos')" style="flex:1;">⚽ Partidos</button>
+          <button class="ranking-tab-v2 ${currentPredSubTab==='especiales'?'active':''}" onclick="setPredSubTab('especiales')" style="flex:1;">🏆 Especiales (Torneo)</button>
+        </div>
+      `;
 
-        return `<div class="match-card card stagger ${cardClass}" style="animation-delay:${idx*0.06}s">
-          <div class="match-card-header"><span class="badge badge-gold">${m.group}</span><div class="match-meta"><span class="match-date">${formatMatchDate(m.date,m.time)}</span><span class="match-venue">${m.venue}</span></div></div>
-          <div class="match-card-body">
-            <div class="match-team">${tappableTeamFlag(m.homeIso,m.home)}${tappableTeamName(m.home)}</div>
-            <div class="match-score-area">
-              ${scoreAreaHTML}
+      if (currentPredSubTab === 'especiales') {
+        const gp = getGroupPredictions();
+        const isLocked = isTournamentLocked();
+        html += `
+          <div class="section-title"><h3>🏆 Predicciones del Torneo</h3></div>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Completá tus predicciones globales antes del inicio del Mundial para sumar puntos especiales.</p>
+          <div class="card">
+            ${isLocked ? `
+            <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:10px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:18px;">🔒</span>
+              <span style="color:#ef4444; font-size:12px; font-weight:700;">Las predicciones del torneo están cerradas porque el Mundial ya comenzó.</span>
             </div>
-            <div class="match-team">${tappableTeamFlag(m.awayIso,m.away)}${tappableTeamName(m.away)}</div>
+            ` : ''}
+            <div class="form-group"><label class="form-label">🏆 Campeón</label>
+              <select class="form-input form-select" id="gp-champion" ${isLocked?'disabled':''}><option value="">Elegí al campeón...</option>
+                ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).sort((a,b)=>a.name.localeCompare(b.name)).map(t=>`<option value="${t.name}" ${gp.champion===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+              </select></div>
+            <div class="form-group"><label class="form-label">🥈 Subcampeón</label>
+              <select class="form-input form-select" id="gp-runner" ${isLocked?'disabled':''}><option value="">Elegí al subcampeón...</option>
+                ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).map(t=>`<option value="${t.name}" ${gp.runner===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+              </select></div>
+            <div class="form-group"><label class="form-label">👟 Goleador</label><input type="text" class="form-input" id="gp-scorer" placeholder="Ej: Mbappé" value="${gp.scorer||''}" ${isLocked?'disabled':''}></div>
+            <div class="form-group"><label class="form-label">⚽ Goles totales del torneo</label><input type="number" class="form-input" id="gp-goals" min="0" max="500" placeholder="Ej: 172" value="${gp.goals||''}" inputmode="numeric" ${isLocked?'disabled':''}></div>
+            <div class="form-group"><label class="form-label">🎭 Equipo sorpresa</label>
+              <select class="form-input form-select" id="gp-surprise" ${isLocked?'disabled':''}><option value="">Elegí un equipo sorpresa...</option>
+                ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).map(t=>`<option value="${t.name}" ${gp.surprise===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
+              </select></div>
+            <button class="btn btn-gold btn-block" onclick="saveGroupPreds()" ${isLocked?'disabled':''}>${isLocked?'🔒 Predicciones Cerradas':'💾 Guardar Predicciones'}</button>
           </div>
-          <div class="match-card-footer" style="padding-top:10px; border-top:1px solid rgba(255,255,255,0.04);">
-            ${footerHTML}
-          </div>
+        `;
+      } else {
+        html += `<div class="completion-pill"><span class="completion-text">${savedCount}/${total} cargados</span><div class="completion-bar"><div class="completion-bar-fill" style="width:${(savedCount/total*100).toFixed(0)}%"></div></div></div>`;
+        html += `<div class="filter-tabs">${groups.map(g => `<button class="filter-tab ${currentPredFilter===g?'active':''}" onclick="setPredFilter('${g}')">${g}</button>`).join('')}</div>`;
+        html += `<div class="status-filters">
+          <button class="status-filter ${currentStatusFilter==='todos'?'active':''}" onclick="setStatusFilter('todos')">Todos</button>
+          <button class="status-filter ${currentStatusFilter==='pendientes'?'active':''}" onclick="setStatusFilter('pendientes')">🟡 Pendientes</button>
+          <button class="status-filter ${currentStatusFilter==='cargados'?'active':''}" onclick="setStatusFilter('cargados')">🟢 Cargados</button>
         </div>`;
-      }).join('')}</div>`;
-      if (filtered.length===0) html += `<div class="card"><div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No hay partidos</div></div></div>`;
-      html += `<p class="text-muted text-center" style="margin-top:20px;font-size:12px;">Los pronósticos se bloquean 1 hora antes del partido ⏰</p>`;
+        html += `<div class="match-cards-grid">${filtered.map((m,idx) => {
+          const p = preds[m.id]; const homeVal = p ? p.home : ''; const awayVal = p ? p.away : ''; const isSaved = !!p;
+          const hasResult = m.homeScore !== undefined && m.awayScore !== undefined;
+          
+          let scoreAreaHTML = '';
+          let footerHTML = '';
+          let cardClass = '';
+          
+          if (hasResult) {
+            scoreAreaHTML = `
+              <div style="display:flex; flex-direction:column; align-items:center; gap:4px; flex:1;">
+                <span class="score-final" style="font-family:'Outfit',sans-serif; font-size:24px; font-weight:900; color:var(--gold); letter-spacing:2px; text-shadow:0 0 8px rgba(197,165,90,0.3);">${m.homeScore} - ${m.awayScore}</span>
+                <span style="font-size:11px; color:var(--text-muted);">Tu pronóstico: ${homeVal!==''?homeVal:'-'} - ${awayVal!==''?awayVal:'-'}</span>
+              </div>`;
+              
+            let ptsText = '+0 pts';
+            let ptsClass = 'rgba(239,68,68,0.15)';
+            let ptsColor = '#ef4444';
+            let label = '❌ Errado';
+            
+            if (isSaved) {
+              const isExact = p.home === m.homeScore && p.away === m.awayScore;
+              const predOutcome = p.home > p.away ? 'home' : p.home < p.away ? 'away' : 'draw';
+              const actualOutcome = m.homeScore > m.awayScore ? 'home' : m.homeScore < m.awayScore ? 'away' : 'draw';
+              const predDiff = p.home - p.away;
+              const actualDiff = m.homeScore - m.awayScore;
+              
+              if (isExact) {
+                ptsText = '+15 pts';
+                ptsClass = 'rgba(34,197,94,0.15)';
+                ptsColor = '#22c55e';
+                label = '🎯 Exacto';
+                cardClass = 'match-card--exact';
+              } else if (predDiff === actualDiff && predOutcome === actualOutcome) {
+                ptsText = '+8 pts';
+                ptsClass = 'rgba(234,179,8,0.15)';
+                ptsColor = '#f59e0b';
+                label = '🟡 Diferencia';
+                cardClass = 'match-card--correct';
+              } else if (predOutcome === actualOutcome) {
+                ptsText = '+5 pts';
+                ptsClass = 'rgba(234,179,8,0.15)';
+                ptsColor = '#f59e0b';
+                label = '🟡 Acierto';
+                cardClass = 'match-card--correct';
+              } else {
+                cardClass = 'match-card--wrong';
+              }
+            }
+            
+            footerHTML = `
+              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span class="status-badge" style="background:${ptsClass}; color:${ptsColor}; padding:3px 8px; font-weight:700; font-size:11px; margin:0;">${ptsText} ${label}</span>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="showMatchPredictionsModal(${m.id})" style="padding:6px 12px; min-height:36px; font-size:12px; width:auto; border-color:var(--gold); color:var(--gold);">📊 Ver qué puso el resto</button>
+              </div>`;
+          } else {
+            scoreAreaHTML = `
+              <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="score-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" ${locked?'disabled':''}>
+              <span class="match-divider">:</span>
+              <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="score-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" ${locked?'disabled':''}>`;
+              
+            footerHTML = `
+              <div class="match-status"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
+              <div style="display:flex; gap:8px; align-items:center;">
+                <button class="match-save-btn ${isSaved?'saved':''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
+                <button class="btn btn-outline" onclick="showMatchPredictionsModal(${m.id})" style="padding:0; min-height:38px; width:38px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Ver qué puso el resto">📊</button>
+              </div>`;
+          }
 
-      // Bracket section
-      html += `<div class="section-title mt-3" style="cursor:pointer;" onclick="toggleBracketSection()"><h3>🏆 Cuadro Eliminatorio</h3><span class="section-toggle-arrow ${bracketExpanded?'open':''}" id="bracket-arrow">▼</span></div>`;
-      html += `<div class="bracket-section ${bracketExpanded?'':'collapsed'}" id="bracket-section" style="max-height:${bracketExpanded?'2000px':'0'}">
-        <p class="text-muted" style="font-size:12px;margin-bottom:12px;">Tocá cada partido para elegir al ganador. ${bracketCount>0?bracketCount+' predicciones guardadas.':'Sin predicciones aún.'}</p>
-        <div class="bracket-container"><div class="bracket-wrapper" id="bracket-wrapper">${renderBracketHTML(bracketPreds)}</div></div></div>`;
+          return `<div class="match-card card stagger ${cardClass}" style="animation-delay:${idx*0.06}s">
+            <div class="match-card-header"><span class="badge badge-gold">${m.group}</span><div class="match-meta"><span class="match-date">${formatMatchDate(m.date,m.time)}</span><span class="match-venue">${m.venue}</span></div></div>
+            <div class="match-card-body">
+              <div class="match-team">${tappableTeamFlag(m.homeIso,m.home)}${tappableTeamName(m.home)}</div>
+              <div class="match-score-area">
+                ${scoreAreaHTML}
+              </div>
+              <div class="match-team">${tappableTeamFlag(m.awayIso,m.away)}${tappableTeamName(m.away)}</div>
+            </div>
+            <div class="match-card-footer" style="padding-top:10px; border-top:1px solid rgba(255,255,255,0.04);">
+              ${footerHTML}
+            </div>
+          </div>`;
+        }).join('')}</div>`;
+        if (filtered.length===0) html += `<div class="card"><div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-title">No hay partidos</div></div></div>`;
+        html += `<p class="text-muted text-center" style="margin-top:20px;font-size:12px;">Los pronósticos se bloquean 1 hora antes del partido ⏰</p>`;
+        // Bracket section
+        html += `<div class="section-title mt-3" style="cursor:pointer;" onclick="toggleBracketSection()"><h3>🏆 Cuadro Eliminatorio</h3><span class="section-toggle-arrow ${bracketExpanded?'open':''}" id="bracket-arrow">▼</span></div>`;
+        html += `<div class="bracket-section ${bracketExpanded?'':'collapsed'}" id="bracket-section" style="max-height:${bracketExpanded?'2000px':'0'}">
+          <p class="text-muted" style="font-size:12px;margin-bottom:12px;">Tocá cada partido para elegir al ganador. ${bracketCount>0?bracketCount+' predicciones guardadas.':'Sin predicciones aún.'}</p>
+          <div class="bracket-container"><div class="bracket-wrapper" id="bracket-wrapper">${renderBracketHTML(preds, bracketPreds)}</div></div></div>`;
+      }
       document.getElementById('predictions-content').innerHTML = html;
     }
 
-    function renderBracketHTML(preds) {
-      const rounds = [{key:'R32',name:'32avos'},{key:'R16',name:'Octavos'},{key:'QF',name:'Cuartos'},{key:'SF',name:'Semis'},{key:'F',name:'Final'}];
+    window.setPredSubTab = function(sub) {
+      currentPredSubTab = sub;
+      renderPredictions();
+    };
+
+    function renderBracketHTML(groupPreds, bracketPreds, isSim = false) {
+      const rounds = [
+        {key:'R32',name:'32avos'},
+        {key:'R16',name:'Octavos'},
+        {key:'QF',name:'Cuartos'},
+        {key:'SF',name:'Semis'},
+        {key:'F',name:'Final'}
+      ];
       let html = '';
       rounds.forEach(round => {
         const matches = BRACKET_MATCHES.filter(m => m.round === round.key);
         html += `<div class="bracket-round"><div class="bracket-round-title">${round.name}</div>`;
         matches.forEach(m => {
-          const pred = preds[m.id]; const homeLabel = pred && pred.homeTeam ? pred.homeTeam : m.home; const awayLabel = pred && pred.awayTeam ? pred.awayTeam : m.away;
-          const winner = pred ? pred.winner : null;
-          html += `<div class="bracket-match ${winner?'decided':''}" onclick="openBracketPick('${m.id}')">
-            <div class="bracket-team ${winner==='home'?'winner':''}">${homeLabel}</div><div class="bracket-vs">vs</div>
-            <div class="bracket-team ${winner==='away'?'winner':''}">${awayLabel}</div></div>`;
+          const resolved = resolveBracketMatch(m.id, groupPreds, bracketPreds);
+          const homeTeam = resolved ? resolved.home : ('Ganador ' + (m.from ? m.from[0] : m.home));
+          const awayTeam = resolved ? resolved.away : ('Ganador ' + (m.from ? m.from[1] : m.away));
+          const winner = resolved ? resolved.winner : null;
+          
+          const homeFlag = getTeamFlagHTML(homeTeam);
+          const awayFlag = getTeamFlagHTML(awayTeam);
+          
+          const clickHandler = isSim ? `openBracketPickSim('${m.id}')` : `openBracketPick('${m.id}')`;
+          
+          html += `<div class="bracket-match ${winner?'decided':''}" onclick="${clickHandler}">
+            <div class="bracket-team ${winner==='home'?'winner':''}">${homeFlag} ${homeTeam}</div>
+            <div class="bracket-vs">vs</div>
+            <div class="bracket-team ${winner==='away'?'winner':''}">${awayFlag} ${awayTeam}</div>
+          </div>`;
         });
         html += `</div>`;
       });
@@ -3070,19 +3378,32 @@
     };
 
     window.openBracketPick = function(matchId) {
-      const m = BRACKET_MATCHES.find(x => x.id === matchId); if (!m) return;
-      const preds = getBracketPredictions(); const pred = preds[matchId] || {};
-      const homeLabel = pred.homeTeam || m.home; const awayLabel = pred.awayTeam || m.away;
-      openModal('Elegí al ganador', `<p style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:16px;">${m.label}</p>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <button class="btn btn-block ${pred.winner==='home'?'btn-gold':'btn-outline'}" onclick="saveBracketPick('${matchId}','home')">${homeLabel}</button>
-          <button class="btn btn-block ${pred.winner==='away'?'btn-gold':'btn-outline'}" onclick="saveBracketPick('${matchId}','away')">${awayLabel}</button>
-        </div>`);
+      const groupPreds = getPredictions();
+      const bracketPreds = getBracketPredictions();
+      const resolved = resolveBracketMatch(matchId, groupPreds, bracketPreds);
+      if (!resolved) return;
+      
+      const homeTeam = resolved.home;
+      const awayTeam = resolved.away;
+      
+      openModal('Elegí al ganador', `
+        <p style="text-align:center; color:var(--text-muted); font-size:13px; margin-bottom:16px;">¿Quién pasa a la siguiente ronda?</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn btn-block ${resolved.winner==='home'?'btn-gold':'btn-outline'}" onclick="saveBracketPick('${matchId}','home')">${getTeamFlagHTML(homeTeam)} ${homeTeam}</button>
+          <button class="btn btn-block ${resolved.winner==='away'?'btn-gold':'btn-outline'}" onclick="saveBracketPick('${matchId}','away')">${getTeamFlagHTML(awayTeam)} ${awayTeam}</button>
+        </div>
+      `);
     };
+
     window.saveBracketPick = function(matchId, pick) {
-      const m = BRACKET_MATCHES.find(x => x.id === matchId); const preds = getBracketPredictions(); const pred = preds[matchId] || {};
-      preds[matchId] = { homeTeam: pred.homeTeam || m.home, awayTeam: pred.awayTeam || m.away, winner: pick, savedAt: new Date().toISOString() };
-      saveBracketPredictions(preds); closeModal(); showToast('Predicción guardada ✅','success'); renderPredictions();
+      const preds = getBracketPredictions();
+      preds[matchId] = preds[matchId] || {};
+      preds[matchId].winner = pick;
+      preds[matchId].savedAt = new Date().toISOString();
+      saveBracketPredictions(preds);
+      closeModal();
+      showToast('Predicción guardada ✅', 'success');
+      renderPredictions();
     };
 
     window.setPredFilter = function(f) { currentPredFilter = f; renderPredictions(); };
@@ -3203,12 +3524,44 @@
     // ============================================
     // RANKING VIEW — TRIPLE SYSTEM
     // ============================================
+    function calculateUserStats(user, preds) {
+      if (user.stats && user.stats.puntos !== undefined && user.stats.puntos > 0) {
+        return {
+          points: user.stats.puntos,
+          exactos: user.stats.exactos,
+          accuracy: Math.round((user.stats.exactos / MATCHES.length) * 100) || 45
+        };
+      }
+      let points = 0, exactos = 0, hits = 0, count = 0;
+      MATCHES.forEach(m => {
+        if (m.homeScore !== undefined && m.awayScore !== undefined) {
+          const p = preds[m.id];
+          if (p && p.home !== undefined && p.away !== undefined) {
+            count++;
+            const pts = calculateMatchPoints(m.homeScore, m.awayScore, p.home, p.away);
+            points += pts;
+            if (pts === 15) exactos++;
+            else if (pts > 0) hits++;
+          }
+        }
+      });
+      if (count === 0) {
+        return {
+          points: Object.keys(preds).length > 0 ? 35 : 0,
+          exactos: Object.keys(preds).length > 0 ? 2 : 0,
+          accuracy: Object.keys(preds).length > 0 ? 45 : 0
+        };
+      }
+      return { points, exactos, accuracy: Math.round(((exactos + hits) / count) * 100) || 0 };
+    }
+
     function renderRanking() {
       const user = getUser(); if (!user) return;
-      let ranking = DEMO_PARTICIPANTS.map(p => ({...p}));
+      let ranking = getParticipants().map(p => ({...p}));
       const preds = getPredictions();
+      const userStats = calculateUserStats(user, preds);
       ranking.push({ nombre: user.nombre||'', apellido: user.apellido||'', apodo: user.apodo, avatar: user.avatar, grupo: user.grupo,
-        points: Object.keys(preds).length > 0 ? 35 : 0, exactos: Object.keys(preds).length > 0 ? 2 : 0, accuracy: Object.keys(preds).length > 0 ? 45 : 0, isMe: true });
+        points: userStats.points, exactos: userStats.exactos, accuracy: userStats.accuracy, isMe: true });
       ranking.sort((a,b) => b.points - a.points);
 
       let html = `<div class="ranking-tabs-v2">
@@ -3388,14 +3741,19 @@
       });
     }
 
-    window.toggleStatsGroup = function(groupName) {
-      expandedStatsGroups[groupName] = !expandedStatsGroups[groupName];
-      renderStats();
+    window.setSimSubTab = function(tab) {
+      currentSimSubTab = tab;
+      renderSimulador();
     };
 
-    window.saveStatsMatch = function(id) {
+    window.toggleSimGroup = function(groupName) {
+      expandedSimGroups[groupName] = !expandedSimGroups[groupName];
+      renderSimulador();
+    };
+
+    window.saveSimMatch = function(id) {
       if (isLocked()) { showToast('Los pronósticos están bloqueados','error'); return; }
-      const h = document.getElementById('stats-home-'+id), a = document.getElementById('stats-away-'+id);
+      const h = document.getElementById('sim-home-'+id), a = document.getElementById('sim-away-'+id);
       if (!h || !a) return;
       if (h.value===''||a.value==='') { 
         showToast('Completá ambos marcadores','error'); 
@@ -3406,101 +3764,139 @@
       const preds = getPredictions();
       preds[id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
       savePredictions(preds);
-      const btn = document.getElementById('stats-save-btn-'+id); if(btn) { btn.textContent = '✅ Guardado'; btn.classList.add('saved'); }
+      const btn = document.getElementById('sim-save-btn-'+id); if(btn) { btn.textContent = '✅ Guardado'; btn.classList.add('saved'); }
       h.classList.add('has-value'); a.classList.add('has-value'); h.classList.remove('error'); a.classList.remove('error');
-      renderStats();
+      renderSimulador();
       const match = MATCHES.find(m => m.id === id);
       showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
     };
 
-    function renderStats() {
-      const preds = getPredictions(); const savedCount = Object.keys(preds).length;
-      let html = `<div class="section-title"><h3>📊 Tus Estadísticas</h3></div>
-        <div class="stats-grid">
-          <div class="stat-card card"><span class="stat-label">Puntos</span><span class="stat-value text-gold">${savedCount>0?'35':'0'}</span></div>
-          <div class="stat-card card"><span class="stat-label">Posición</span><span class="stat-value">${savedCount>0?'5°':'-'}</span></div>
-          <div class="stat-card card"><span class="stat-label">Exactos</span><span class="stat-value text-success">${savedCount>0?'2':'0'}</span></div>
-          <div class="stat-card card"><span class="stat-label">Aciertos</span><span class="stat-value">${savedCount>0?'45%':'0%'}</span></div>
-        </div>`;
-
-      html += `<div class="section-title mt-3"><h3>🏟️ Tablas de Posiciones — Fase de Grupos</h3></div>
-        <p class="text-muted" style="font-size:12px; margin-bottom:16px;">Pulsá sobre cualquier grupo para desplegar sus partidos y completar tus pronósticos directamente desde aquí.</p>`;
+    window.openBracketPickSim = function(matchId) {
+      const groupPreds = getPredictions();
+      const bracketPreds = getBracketPredictions();
+      const resolved = resolveBracketMatch(matchId, groupPreds, bracketPreds);
+      if (!resolved) return;
       
-      Object.keys(GROUPS_DEF).forEach(groupName => {
-        const sortedTeams = calculateGroupStandings(groupName, preds);
-        const isExpanded = !!expandedStatsGroups[groupName];
-        html += `<div class="standings-group card" style="padding:12px 14px; margin-bottom:16px;">
-          <div class="standings-group-header" onclick="toggleStatsGroup('${groupName}')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06);">
-            <div class="standings-group-title" style="margin:0; font-size:15px; display:flex; align-items:center; gap:8px; font-weight:700; color:var(--gold);">
-              ⚽ ${groupName}
+      const homeTeam = resolved.home;
+      const awayTeam = resolved.away;
+      
+      openModal('Simular Ganador', `
+        <p style="text-align:center; color:var(--text-muted); font-size:13px; margin-bottom:16px;">¿Quién avanza a la siguiente fase?</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn btn-block ${resolved.winner==='home'?'btn-gold':'btn-outline'}" onclick="saveBracketPickSim('${matchId}','home')">${getTeamFlagHTML(homeTeam)} ${homeTeam}</button>
+          <button class="btn btn-block ${resolved.winner==='away'?'btn-gold':'btn-outline'}" onclick="saveBracketPickSim('${matchId}','away')">${getTeamFlagHTML(awayTeam)} ${awayTeam}</button>
+        </div>
+      `);
+    };
+
+    window.saveBracketPickSim = function(matchId, pick) {
+      const preds = getBracketPredictions();
+      preds[matchId] = preds[matchId] || {};
+      preds[matchId].winner = pick;
+      preds[matchId].savedAt = new Date().toISOString();
+      saveBracketPredictions(preds);
+      closeModal();
+      showToast('Simulación de llave guardada ✅', 'success');
+      renderSimulador();
+    };
+
+    function renderSimulador() {
+      const groupPreds = getPredictions();
+      const bracketPreds = getBracketPredictions();
+      
+      let html = `<div class="section-title"><h3>🏆 Simulador del Mundial</h3></div>
+        <p class="text-muted" style="font-size:12px; margin-bottom:12px;">Completá los resultados de grupos para clasificar equipos y simula las llaves hasta la Final.</p>
+        
+        <div style="display:flex; gap:10px; margin-bottom:16px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;">
+          <button class="ranking-tab-v2 ${currentSimSubTab==='bracket'?'active':''}" onclick="setSimSubTab('bracket')" style="flex:1;">🏆 Fase Eliminatoria</button>
+          <button class="ranking-tab-v2 ${currentSimSubTab==='grupos'?'active':''}" onclick="setSimSubTab('grupos')" style="flex:1;">📊 Fase de Grupos</button>
+        </div>`;
+      
+      if (currentSimSubTab === 'grupos') {
+        Object.keys(GROUPS_DEF).forEach(groupName => {
+          const sortedTeams = calculateGroupStandings(groupName, groupPreds);
+          const isExpanded = !!expandedSimGroups[groupName];
+          html += `<div class="standings-group card" style="padding:12px 14px; margin-bottom:16px;">
+            <div class="standings-group-header" onclick="toggleSimGroup('${groupName}')" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.06);">
+              <div class="standings-group-title" style="margin:0; font-size:15px; display:flex; align-items:center; gap:8px; font-weight:700; color:var(--gold);">
+                ⚽ ${groupName}
+              </div>
+              <span style="font-size:12px; color:var(--gold); font-weight:600;">
+                ${isExpanded ? '▲ Ocultar Partidos' : '▼ Completar Pronósticos'}
+              </span>
             </div>
-            <span style="font-size:12px; color:var(--gold); font-weight:600;">
-              ${isExpanded ? '▲ Ocultar Partidos' : '▼ Completar Pronósticos'}
-            </span>
-          </div>
-          <table class="standings-table">
-            <thead>
-              <tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr>
-            </thead>
-            <tbody>
-            ${sortedTeams.map((t,idx) => {
-              const rowClass = idx < 2 ? 'qualified' : idx === 2 ? 'possible' : '';
-              const dgSign = t.dg > 0 ? '+' : '';
-              return `<tr class="${rowClass}">
-                <td>${idx+1}</td>
-                <td><div class="team-cell">${tappableTeamFlag(t.iso,t.name)}<span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${t.name.replace(/'/g,"\\'")}')" style="cursor:pointer;">${t.name}</span></div></td>
-                <td>${t.pj}</td>
-                <td>${t.pg}</td>
-                <td>${t.pe}</td>
-                <td>${t.pp}</td>
-                <td>${t.gf}</td>
-                <td>${t.gc}</td>
-                <td>${dgSign}${t.dg}</td>
-                <td style="font-weight:700; color:var(--text);">${t.pts}</td>
-              </tr>`;
-            }).join('')}
-            </tbody>
-          </table>`;
+            <table class="standings-table">
+              <thead>
+                <tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>Pts</th></tr>
+              </thead>
+              <tbody>
+              ${sortedTeams.map((t,idx) => {
+                const rowClass = idx < 2 ? 'qualified' : idx === 2 ? 'possible' : '';
+                const dgSign = t.dg > 0 ? '+' : '';
+                return `<tr class="${rowClass}">
+                  <td>${idx+1}</td>
+                  <td><div class="team-cell">${tappableTeamFlag(t.iso,t.name)}<span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${t.name.replace(/'/g,"\\'")}')" style="cursor:pointer;">${t.name}</span></div></td>
+                  <td>${t.pj}</td>
+                  <td>${t.pg}</td>
+                  <td>${t.pe}</td>
+                  <td>${t.pp}</td>
+                  <td>${t.gf}</td>
+                  <td>${t.gc}</td>
+                  <td>${dgSign}${t.dg}</td>
+                  <td style="font-weight:700; color:var(--text);">${t.pts}</td>
+                </tr>`;
+              }).join('')}
+              </tbody>
+            </table>`;
 
-        if (isExpanded) {
-          const groupMatches = MATCHES.filter(m => m.group === groupName);
-          const locked = isLocked();
-          html += `<div class="group-matches-expand-area" style="margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:12px;">`;
-          groupMatches.forEach((m, idx) => {
-            const p = preds[m.id];
-            const homeVal = p ? p.home : '';
-            const awayVal = p ? p.away : '';
-            const isSaved = !!p;
-            html += `<div class="match-card card" style="background:rgba(255,255,255,0.02); margin:0; border:1px solid rgba(255,255,255,0.04); padding:12px;">
-              <div class="match-card-header" style="margin-bottom:8px; display:flex; justify-content:space-between; font-size:11px; align-items:center;">
-                <span class="match-date">${formatMatchDate(m.date,m.time)}</span>
-                <span class="match-venue" style="color:var(--text-muted); font-size:10px;">${m.venue.split(',')[0]}</span>
-              </div>
-              <div class="match-card-body" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <div class="match-team" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end; font-size:13px; font-weight:500;">
-                  <span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${m.home.replace(/'/g,"\\'")}')">${m.home}</span>${tappableTeamFlag(m.homeIso,m.home)}
+          if (isExpanded) {
+            const groupMatches = MATCHES.filter(m => m.group === groupName);
+            const locked = isLocked();
+            html += `<div class="group-matches-expand-area" style="margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1); display:flex; flex-direction:column; gap:12px;">`;
+            groupMatches.forEach((m, idx) => {
+              const p = groupPreds[m.id];
+              const homeVal = p ? p.home : '';
+              const awayVal = p ? p.away : '';
+              const isSaved = !!p;
+              html += `<div class="match-card card" style="background:rgba(255,255,255,0.02); margin:0; border:1px solid rgba(255,255,255,0.04); padding:12px;">
+                <div class="match-card-header" style="margin-bottom:8px; display:flex; justify-content:space-between; font-size:11px; align-items:center;">
+                  <span class="match-date">${formatMatchDate(m.date,m.time)}</span>
+                  <span class="match-venue" style="color:var(--text-muted); font-size:10px;">${m.venue.split(',')[0]}</span>
                 </div>
-                <div class="match-score-area" style="display:flex; align-items:center; gap:6px; margin:0 12px;">
-                  <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="stats-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" style="width:48px !important; height:48px !important; font-size:24px !important;" ${locked?'disabled':''}>
-                  <span class="match-divider" style="font-size:20px;">:</span>
-                  <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="stats-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" style="width:48px !important; height:48px !important; font-size:24px !important;" ${locked?'disabled':''}>
+                <div class="match-card-body" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                  <div class="match-team" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-end; font-size:13px; font-weight:500;">
+                    <span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${m.home.replace(/'/g,"\\'")}')">${m.home}</span>${tappableTeamFlag(m.homeIso,m.home)}
+                  </div>
+                  <div class="match-score-area" style="display:flex; align-items:center; gap:6px; margin:0 12px;">
+                    <input type="number" class="input-score ${homeVal!==''?'has-value':''}" id="sim-home-${m.id}" min="0" max="20" placeholder="-" value="${homeVal}" inputmode="numeric" style="width:48px !important; height:48px !important; font-size:24px !important;" ${locked?'disabled':''}>
+                    <span class="match-divider" style="font-size:20px;">:</span>
+                    <input type="number" class="input-score ${awayVal!==''?'has-value':''}" id="sim-away-${m.id}" min="0" max="20" placeholder="-" value="${awayVal}" inputmode="numeric" style="width:48px !important; height:48px !important; font-size:24px !important;" ${locked?'disabled':''}>
+                  </div>
+                  <div class="match-team" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-start; font-size:13px; font-weight:500;">
+                    ${tappableTeamFlag(m.awayIso,m.away)}<span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${m.away.replace(/'/g,"\\'")}')">${m.away}</span>
+                  </div>
                 </div>
-                <div class="match-team" style="display:flex; align-items:center; gap:6px; flex:1; justify-content:flex-start; font-size:13px; font-weight:500;">
-                  ${tappableTeamFlag(m.awayIso,m.away)}<span class="team-tappable" onclick="event.stopPropagation(); showTeamDetail('${m.away.replace(/'/g,"\\'")}')">${m.away}</span>
+                <div class="match-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                  <div class="match-status" style="font-size:11px;"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
+                  <button class="match-save-btn ${isSaved?'saved':''}" id="sim-save-btn-${m.id}" onclick="saveSimMatch(${m.id})" style="padding:6px 12px; min-height:36px; font-size:13px;" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
                 </div>
-              </div>
-              <div class="match-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
-                <div class="match-status" style="font-size:11px;"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
-                <button class="match-save-btn ${isSaved?'saved':''}" id="stats-save-btn-${m.id}" onclick="saveStatsMatch(${m.id})" style="padding:6px 12px; min-height:36px; font-size:13px;" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
-              </div>
-            </div>`;
-          });
+              </div>`;
+            });
+            html += `</div>`;
+          }
           html += `</div>`;
-        }
-
-        html += `</div>`;
-      });
-      document.getElementById('stats-content').innerHTML = html;
+        });
+      } else {
+        html += `<div class="card" style="padding:12px; overflow-x:auto;">
+          <div class="bracket-container">
+            <div class="bracket-wrapper" id="sim-bracket-wrapper" style="display:flex; gap:20px; overflow-x:auto; padding:10px 0;">
+              ${renderBracketHTML(groupPreds, bracketPreds, true)}
+            </div>
+          </div>
+        </div>`;
+      }
+      
+      document.getElementById('simulador-content').innerHTML = html;
     }
 
     // ============================================
@@ -3512,83 +3908,80 @@
       return Date.now() >= deadline && !isAdmin();
     }
 
-    function renderMas() {
-      const user = getUser(); if (!user) return;
-      const gp = getGroupPredictions();
-      const preds = getPredictions(); const savedCount = Object.keys(preds).length;
+    function openSettingsModal() {
+      const user = getUser();
+      if (!user) return;
+      
+      const preds = getPredictions();
+      const savedCount = Object.keys(preds).length;
       const favTeam = ALL_TEAMS.find(t => t.name === user.equipoFavorito);
       const regDate = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString('es-AR',{year:'numeric',month:'long',day:'numeric'}) : 'N/A';
-      const isLocked = isTournamentLocked();
+      
+      const userStats = calculateUserStats(user, preds);
 
-      document.getElementById('mas-content').innerHTML = `
-        <div class="section-title"><h3>👤 Mi Perfil</h3></div>
-        <div class="card profile-card-v2">
-          <span class="profile-avatar-lg">${user.avatar}</span>
-          <div class="profile-fullname">${user.nombre||''} ${user.apellido||''}</div>
-          <div class="profile-apodo">@${user.apodo}</div>
-          ${familyBadgeHTML(user.grupo)}
-          <div style="margin-top:4px;font-size:10px;color:var(--text-muted);font-family:monospace;">${user.userId||''}</div>
-          <div class="profile-links">
-            ${user.email?`<div class="profile-link"><span class="profile-link-icon">✉️</span><span>${user.email}</span></div>`:''}
-            ${favTeam?`<div class="profile-link" onclick="showTeamDetail('${favTeam.name}')" style="cursor:pointer;"><span class="profile-link-icon"><img src="${flagUrl(favTeam.iso)}" style="width:22px;height:15px;border-radius:2px;"></span><span>Equipo: <strong>${favTeam.name}</strong></span></div>`:''}
-            <div class="profile-link"><span class="profile-link-icon">📅</span><span>Miembro desde: ${regDate}</span></div>
+      const html = `
+        <div style="text-align:center; margin-bottom:16px;">
+          <span style="font-size:48px; display:inline-block; margin-bottom:8px;">${user.avatar}</span>
+          <div style="font-size:20px; font-weight:800; color:var(--text);">${user.nombre||''} ${user.apellido||''}</div>
+          <div style="font-size:14px; color:var(--text-muted); margin-bottom:8px;">@${user.apodo}</div>
+          <div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">
+            ${familyBadgeHTML(user.grupo)}
+            ${favTeam ? `<span class="badge" style="background:rgba(255,255,255,0.06); color:var(--text); display:inline-flex; align-items:center; gap:4px;">${favTeam.emoji} ${favTeam.name}</span>` : ''}
           </div>
-          <div class="profile-stats-row">
-            <div class="profile-stat-item"><div class="profile-stat-val">${savedCount}</div><div class="profile-stat-lbl">Pronósticos</div></div>
-            <div class="profile-stat-item"><div class="profile-stat-val">${MATCHES.length>0?Math.round(savedCount/MATCHES.length*100):0}%</div><div class="profile-stat-lbl">Completado</div></div>
+          <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px; align-items:center;">
+            <span>✉️ ${user.email || '-'}</span>
+            <span>📱 ${user.telefono || '-'}</span>
+            <span>📅 Miembro desde: ${regDate}</span>
           </div>
-          <button class="btn btn-outline btn-block mt-2" onclick="openEditProfile()">✏️ Editar Perfil</button>
+        </div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; text-align:center;">
+          <div style="background:rgba(255,255,255,0.04); border-radius:8px; padding:10px;">
+            <div style="font-size:20px; font-weight:900; color:var(--gold);">${userStats.points}</div>
+            <div style="font-size:11px; color:var(--text-muted);">Puntos</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04); border-radius:8px; padding:10px;">
+            <div style="font-size:20px; font-weight:900; color:var(--gold);">${savedCount} / ${MATCHES.length}</div>
+            <div style="font-size:11px; color:var(--text-muted);">Pronósticos</div>
+          </div>
         </div>
 
-        <button class="btn btn-outline btn-block mt-3" onclick="navigateTo('reglas')" style="background:rgba(197,165,90,0.05);border-color:rgba(197,165,90,0.25);color:var(--gold);display:flex;align-items:center;justify-content:center;gap:8px;">📜 Reglas y Puntajes</button>
-        <button class="btn btn-outline btn-block mt-2" onclick="navigateTo('duelos')" style="background:rgba(59,130,246,0.05);border-color:rgba(59,130,246,0.25);color:#60a5fa;display:flex;align-items:center;justify-content:center;gap:8px;">🤝 Desafíos P2P (Duelos)</button>
-
-        <div class="section-title mt-3"><h3>🏆 Predicciones del Torneo</h3></div>
-        <div class="card">
-          ${isLocked ? `
-          <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:10px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-            <span style="font-size:18px;">🔒</span>
-            <span style="color:#ef4444; font-size:12px; font-weight:700;">Las predicciones del torneo están cerradas porque el Mundial ya comenzó.</span>
-          </div>
-          ` : ''}
-          <div class="form-group"><label class="form-label">🏆 Campeón</label>
-            <select class="form-input form-select" id="gp-champion" ${isLocked?'disabled':''}><option value="">Elegí al campeón...</option>
-              ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).sort((a,b)=>a.name.localeCompare(b.name)).map(t=>`<option value="${t.name}" ${gp.champion===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
-            </select></div>
-          <div class="form-group"><label class="form-label">🥈 Subcampeón</label>
-            <select class="form-input form-select" id="gp-runner" ${isLocked?'disabled':''}><option value="">Elegí al subcampeón...</option>
-              ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).map(t=>`<option value="${t.name}" ${gp.runner===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
-            </select></div>
-          <div class="form-group"><label class="form-label">👟 Goleador</label><input type="text" class="form-input" id="gp-scorer" placeholder="Ej: Mbappé" value="${gp.scorer||''}" ${isLocked?'disabled':''}></div>
-          <div class="form-group"><label class="form-label">⚽ Goles totales del torneo</label><input type="number" class="form-input" id="gp-goals" min="0" max="500" placeholder="Ej: 172" value="${gp.goals||''}" inputmode="numeric" ${isLocked?'disabled':''}></div>
-          <div class="form-group"><label class="form-label">🎭 Equipo sorpresa</label>
-            <select class="form-input form-select" id="gp-surprise" ${isLocked?'disabled':''}><option value="">Elegí un equipo sorpresa...</option>
-              ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).map(t=>`<option value="${t.name}" ${gp.surprise===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
-            </select></div>
-          <button class="btn btn-gold btn-block" onclick="saveGroupPreds()" ${isLocked?'disabled':''}>${isLocked?'🔒 Predicciones Cerradas':'💾 Guardar Predicciones'}</button>
-        </div>
-        <div class="section-title mt-3"><h3>⚙️ Conexión en la Nube</h3></div>
-        <div class="card" style="padding:16px; margin-bottom:12px;">
-          <div class="form-group">
-            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn btn-gold btn-block" style="margin-bottom:12px;" onclick="openEditProfile()">✏️ Editar Perfil</button>
+        <button class="btn btn-outline btn-block" style="margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="closeModal(); navigateTo('reglas')">📜 Reglas y Puntajes</button>
+        <button class="btn btn-outline btn-block" style="margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="closeModal(); showOnboarding()">💡 Ver Tutorial / Ayuda</button>
+        
+        <div class="section-title" style="margin-top:16px; margin-bottom:8px;"><h3>⚙️ Conexión en la Nube</h3></div>
+        <p style="font-size:11px; color:var(--text-muted); margin-bottom:10px; line-height:1.4;">
+          Sincroniza tus pronósticos automáticamente con la planilla de Google Sheets del administrador para que todos puedan ver tu puntaje en tiempo real.
+        </p>
+        <div class="card" style="padding:12px; margin-bottom:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+          <div class="form-group" style="margin-bottom:8px;">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center; font-size:12px;">
               <span>URL de Apps Script Web App</span>
-              <span id="api-status-badge" class="badge" style="background:${ProdeAPI.isConfigured() ? '#22c55e' : '#4b5563'}; color:#fff;">${ProdeAPI.isConfigured() ? 'Configurado' : 'Desconectado'}</span>
+              <span id="api-status-badge" class="badge" style="background:${ProdeAPI.isConfigured() ? '#22c55e' : '#4b5563'}; color:#fff; font-size:9px; padding:2px 6px;">${ProdeAPI.isConfigured() ? 'Configurado' : 'Desconectado'}</span>
             </label>
-            <input type="url" class="form-input" id="api-url-input" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem('prode-api-url') || ''}" style="font-size:12px; font-family:monospace;">
+            <input type="url" class="form-input" id="api-url-input" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem('prode-api-url') || ''}" style="font-size:11px; font-family:monospace; padding:8px;">
           </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
-            <button class="btn btn-outline" style="min-height:36px; padding:6px 12px; font-size:13px;" onclick="testApiConnection()">🧪 Probar Conexión</button>
-            <button class="btn btn-gold" style="min-height:36px; padding:6px 12px; font-size:13px;" onclick="saveApiSettings()">💾 Guardar y Sincronizar</button>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <button class="btn btn-outline" style="min-height:32px; padding:4px 8px; font-size:12px;" onclick="testApiConnection()">🧪 Probar</button>
+            <button class="btn btn-gold" style="min-height:32px; padding:4px 8px; font-size:12px;" onclick="saveApiSettings()">💾 Guardar</button>
           </div>
         </div>
 
-        <button class="btn btn-primary btn-block mt-2" onclick="shareApp()">📤 Compartir PRODE</button>
-        <button class="btn btn-danger btn-block mt-2" onclick="logout()" style="margin-bottom:32px;">🚪 Cerrar Sesión</button>`;
+        <button class="btn btn-primary btn-block" style="margin-bottom:12px;" onclick="shareApp()">📤 Compartir PRODE</button>
+        <button class="btn btn-danger btn-block" style="margin-bottom:8px;" onclick="logout()">🚪 Cerrar Sesión</button>
+      `;
+      openModal('Configuraciones', html);
+    }
+    window.openSettingsModal = openSettingsModal;
+
+    function renderMas() {
+      openSettingsModal();
     }
 
     function renderReglas() {
       document.getElementById('reglas-content').innerHTML = `
-        <button onclick="navigateTo('mas')" class="btn btn-outline" style="margin-bottom:12px; padding:6px 12px; min-height:36px; font-size:13px; width:auto; display:inline-flex; align-items:center; gap:4px;">
+        <button onclick="navigateTo('inicio')" class="btn btn-outline" style="margin-bottom:12px; padding:6px 12px; min-height:36px; font-size:13px; width:auto; display:inline-flex; align-items:center; gap:4px;">
           ← Volver
         </button>
         <div class="section-title"><h3>📜 Reglas y Puntajes</h3></div>
@@ -3755,7 +4148,8 @@
         <div class="admin-shortcuts">
           <div class="admin-shortcut-card" onclick="adminExportData()"><div class="admin-shortcut-icon">📋</div><div class="admin-shortcut-label">Exportar Datos</div></div>
           <div class="admin-shortcut-card" onclick="adminApproveAll()"><div class="admin-shortcut-icon">✅</div><div class="admin-shortcut-label">Aprobar Todos</div></div>
-          <div class="admin-shortcut-card" onclick="adminResetAllData()" style="border-color:rgba(239,68,68,0.25);"><div class="admin-shortcut-icon">🧹</div><div class="admin-shortcut-label" style="color:#ef4444;">Reiniciar Todo</div></div>
+          <div class="admin-shortcut-card" onclick="runFullTournamentSimulation()"><div class="admin-shortcut-icon">🏆</div><div class="admin-shortcut-label">Simular 60 Personas</div></div>
+          <div class="admin-shortcut-card" onclick="adminResetAllData()" style="border-color:rgba(239,68,68,0.25); grid-column: span 3;"><div class="admin-shortcut-icon">🧹</div><div class="admin-shortcut-label" style="color:#ef4444;">Reiniciar Todo</div></div>
         </div>`;
       document.getElementById('admin-content').innerHTML = html;
     }
@@ -3832,6 +4226,75 @@
       if (apiUrl) localStorage.setItem('prode-api-url', apiUrl);
       
       showToast('🧹 Datos locales eliminados. Reiniciando...', 'success');
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+    };
+
+    window.runFullTournamentSimulation = function() {
+      showToast('Simulando torneo completo... 🏆', 'info');
+      
+      // 1. Simulate match results for all 72 matches
+      const simulatedMatches = [];
+      MATCHES.forEach(m => {
+        const scores = [0, 1, 1, 2, 2, 0, 1, 2, 3, 0, 1, 4];
+        const h = scores[Math.floor(Math.random() * scores.length)];
+        const a = scores[Math.floor(Math.random() * scores.length)];
+        
+        m.homeScore = h;
+        m.awayScore = a;
+        m.status = 'finished';
+        simulatedMatches.push({ id: m.id, homeScore: h, awayScore: a, status: 'finished' });
+      });
+      localStorage.setItem('prode-matches-cache', JSON.stringify(MATCHES));
+      
+      // 2. Generate 60 participants
+      const names = ['Carlos','Sofia','Mateo','Valentina','Lucas','Maria','Alejandro','Camila','Diego','Lucia','Bautista','Juana','Felipe','Mia','Tomas','Olivia','Joaquin','Zoe','Benjamín','Martina','Enzo','Alma','Gael','Frida','Thiago','Emma','Uriel','Isabella','Santino','Catalina','Julian','Victoria','Simon','Agustina','Nicolas','Clara','Ignacio','Delfina','Sebastian','Pilar','Manuel','Julieta','Marcos','Elena','Franco','Ambar','Pedro','Leonela','Agustin','Renata','Gaspar','Paula','Lautaro','Federica','Ramiro','Lola','Esteban','Micaela','Bruno','Milagros'];
+      const surnames = ['García','Rodríguez','González','Fernández','López','Martínez','Sánchez','Pérez','Gómez','Díaz','Álvarez','Vasquez','Romero','Sosa','Torres','Ruiz','Ramírez','Flores','Acosta','Benítez','Medina','Herrera','Aguirre','Guzmán','Silva','Molina','Ríos','Castro','Ortiz','Silva','Ramos','Giménez','Román','Duarte','Valdez','Peralta','Cáceres','Velázquez','Méndez','Cardozo','Galeano','Suárez','Portillo','Cabral','Pintos','Villalba','Domínguez','Gonzales','Barrios','Fleitas'];
+      
+      const newParticipants = [];
+      const famNames = FAMILY_GROUPS.map(fg => fg.name);
+      
+      for (let i = 0; i < 60; i++) {
+        const name = names[i % names.length];
+        const surname = surnames[Math.floor(Math.random() * surnames.length)];
+        const apodo = name + Math.floor(10 + Math.random() * 90);
+        const avatar = AVATARS[i % AVATARS.length];
+        const grupo = famNames[i % famNames.length];
+        
+        let points = 0;
+        let exactos = 0;
+        let hits = 0;
+        let count = 0;
+        
+        MATCHES.forEach(m => {
+          if (m.homeScore !== undefined && m.awayScore !== undefined) {
+            const pred = getDeterministicPrediction(apodo, m);
+            count++;
+            const pts = calculateMatchPoints(m.homeScore, m.awayScore, pred.home, pred.away);
+            points += pts;
+            if (pts === 15) exactos++;
+            else if (pts > 0) hits++;
+          }
+        });
+        
+        const accuracy = count > 0 ? Math.round(((exactos + hits) / count) * 100) : 0;
+        
+        newParticipants.push({
+          nombre: name,
+          apellido: surname,
+          apodo: apodo,
+          avatar: avatar,
+          grupo: grupo,
+          points: points,
+          exactos: exactos,
+          accuracy: accuracy
+        });
+      }
+      
+      localStorage.setItem('prode-simulated-participants', JSON.stringify(newParticipants));
+      showToast('✅ Simulación de 60 personas y 72 partidos cargada con éxito!', 'success', 5000);
+      
       setTimeout(() => {
         location.reload();
       }, 1500);
@@ -3969,7 +4432,7 @@
         <div class="form-group"><label class="form-label">Apellido</label><input type="text" class="form-input" id="edit-apellido" value="${user.apellido||''}"></div>
         <div class="form-group"><label class="form-label">Apodo</label><input type="text" class="form-input" id="edit-apodo" value="${user.apodo}"></div>
         <div class="form-group"><label class="form-label">Teléfono</label><input type="tel" class="form-input" id="edit-telefono" value="${user.telefono||''}"></div>
-        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="edit-email" value="${user.email||''}" disabled style="opacity:0.6;"><p style="font-size:10px;color:var(--text-muted);margin-top:4px;">El email no se puede cambiar (es tu ID único)</p></div>
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="edit-email" value="${user.email||''}"></div>
         <div class="form-group"><label class="form-label">Grupo familiar</label>
           <select class="form-input form-select" id="edit-grupo">${FAMILY_GROUPS.map(g => `<option value="${g.name}" ${user.grupo===g.name?'selected':''}>${g.name}</option>`).join('')}</select></div>
         <div class="form-group"><label class="form-label">Equipo favorito</label>
@@ -3983,21 +4446,338 @@
     window.saveEditProfile = function() {
       const user = getUser();
       const apodo = document.getElementById('edit-apodo').value.trim();
+      const email = document.getElementById('edit-email').value.trim().toLowerCase();
       if (!apodo || apodo.length < 3) { showToast('El apodo debe tener al menos 3 caracteres','error'); return; }
+      if (!email || !email.includes('@') || !email.includes('.')) { showToast('El email debe ser válido','error'); return; }
+      
+      const oldUserId = user.userId || user.id;
+      const emailChanged = user.email !== email;
+      
       user.nombre = document.getElementById('edit-nombre').value.trim() || user.nombre;
       user.apellido = document.getElementById('edit-apellido').value.trim() || user.apellido || '';
       user.apodo = apodo;
       user.telefono = document.getElementById('edit-telefono').value.trim() || user.telefono || '';
+      user.email = email;
       user.grupo = document.getElementById('edit-grupo').value;
       user.equipoFavorito = document.getElementById('edit-equipo').value;
       user.avatar = document.getElementById('edit-avatar').value;
+      
+      if (emailChanged) {
+        user.userId = generateUserId(email);
+        const isSuperAdmin = email === SUPER_ADMIN_EMAIL;
+        if (isSuperAdmin) {
+          localStorage.setItem('prode-admin', 'true');
+        } else if (localStorage.getItem('prode-admin') === 'true') {
+          localStorage.removeItem('prode-admin');
+        }
+      }
+      
       saveUser(user);
-      // Also update in allUsers
+      
       const allUsers = getAllUsers();
-      const idx = findUserIdx(allUsers, user.userId || user.id);
-      if (idx !== -1) { Object.assign(allUsers[idx], { nombre: user.nombre, apellido: user.apellido, apodo: user.apodo, telefono: user.telefono, grupo: user.grupo, equipoFavorito: user.equipoFavorito, avatar: user.avatar }); saveAllUsers(allUsers); }
+      const idx = findUserIdx(allUsers, oldUserId);
+      if (idx !== -1) { 
+        Object.assign(allUsers[idx], { 
+          userId: user.userId,
+          email: user.email,
+          nombre: user.nombre, 
+          apellido: user.apellido, 
+          apodo: user.apodo, 
+          telefono: user.telefono, 
+          grupo: user.grupo, 
+          equipoFavorito: user.equipoFavorito, 
+          avatar: user.avatar 
+        }); 
+        saveAllUsers(allUsers); 
+      }
+      
+      if (emailChanged && ProdeAPI.isConfigured() && navigator.onLine) {
+        const apiPayload = { nombre: user.nombre, email: user.email, familia: user.grupo };
+        ProdeAPI.request('registrarUsuario', apiPayload, 'POST')
+          .then(() => showToast('¡Email actualizado en la nube! ☁️', 'success'))
+          .catch(() => ProdeAPI.addToQueue('registrarUsuario', apiPayload));
+      }
+      
       document.getElementById('header-avatar').textContent = user.avatar;
-      closeModal(); showToast('Perfil actualizado ✅','success'); renderView(currentView);
+      showToast('Perfil actualizado ✅','success'); 
+      openSettingsModal();
+    };
+
+    // ============================================
+    // P2P DUELS MODULE
+    // ============================================
+    function getDuels() {
+      try {
+        return JSON.parse(localStorage.getItem('prode-duels')) || [];
+      } catch(e) {
+        return [];
+      }
+    }
+    function saveDuels(duels) {
+      localStorage.setItem('prode-duels', JSON.stringify(duels));
+    }
+
+    function renderDuelos() {
+      const user = getUser();
+      if (!user) return;
+      
+      const duels = getDuels();
+      // Auto-update completed duels based on real match scores
+      duels.forEach(d => {
+        const match = MATCHES.find(m => m.id === d.matchId);
+        if (match && match.homeScore !== undefined && match.awayScore !== undefined) {
+          if (d.status === 'active' || d.status === 'sent') {
+            d.status = 'completed';
+            d.ptsChallenger = calculateMatchPoints(match.homeScore, match.awayScore, d.predHomeChallenger, d.predAwayChallenger);
+            d.ptsChallenged = d.predHomeChallenged !== undefined ? calculateMatchPoints(match.homeScore, match.awayScore, d.predHomeChallenged, d.predAwayChallenged) : 0;
+            if (d.ptsChallenger > d.ptsChallenged) d.winner = d.challenger;
+            else if (d.ptsChallenged > d.ptsChallenger) d.winner = d.challenged;
+            else d.winner = 'draw';
+          }
+        }
+      });
+      saveDuels(duels);
+
+      let html = `<div class="section-title"><h3>⚔️ Duelos Familiares P2P</h3></div>
+        <p class="text-muted" style="font-size:12px; margin-bottom:16px;">Creá un desafío mano a mano por WhatsApp con una apuesta en juego. Quien sume más puntos para ese partido se queda con la gloria.</p>`;
+      
+      // 1. Form to create duel
+      const futureMatches = MATCHES.filter(m => new Date(m.date + 'T' + m.time + ':00') > new Date());
+      html += `
+        <div class="card" style="padding:16px; margin-bottom:20px;">
+          <h4 style="margin:0 0 12px 0; color:var(--gold); font-size:15px; font-weight:700;">⚔️ Crear Nuevo Desafío</h4>
+          <div class="form-group">
+            <label class="form-label">Elegir Partido</label>
+            <select class="form-input form-select" id="duel-match-select">
+              <option value="">Seleccioná un partido...</option>
+              ${futureMatches.map(m => `<option value="${m.id}">${m.home} vs ${m.away} (${formatMatchDate(m.date, m.time).split(' — ')[0]})</option>`).join('')}
+            </select>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Goles Local</label>
+              <input type="number" class="form-input text-center" id="duel-pred-h" min="0" max="20" placeholder="-" inputmode="numeric">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Goles Visitante</label>
+              <input type="number" class="form-input text-center" id="duel-pred-a" min="0" max="20" placeholder="-" inputmode="numeric">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">¿Qué se juega? (La Apuesta)</label>
+            <input type="text" class="form-input" id="duel-stake" placeholder="Ej: un asado / un fernet / 1000 pesos">
+          </div>
+          <button class="btn btn-gold btn-block" onclick="createAndSendDuel()" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+            💬 Enviar por WhatsApp
+          </button>
+        </div>
+      `;
+
+      // 2. Active Duels
+      const activeDuels = duels.filter(d => d.status === 'active');
+      html += `<div class="section-title"><h3>🔥 Duelos Activos (${activeDuels.length})</h3></div>`;
+      if (activeDuels.length === 0) {
+        html += `<div class="card" style="text-align:center; padding:16px; margin-bottom:20px;"><p class="text-muted" style="margin:0;">No tenés duelos activos en este momento.</p></div>`;
+      } else {
+        html += `<div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">`;
+        activeDuels.forEach(d => {
+          const match = MATCHES.find(m => m.id === d.matchId);
+          html += `
+            <div class="card" style="padding:12px; border-left:4px solid var(--gold);">
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:8px;">
+                <span>⚔️ DUELO ACTIVO</span>
+                <span>🔥 Apuesta: <strong>${d.stake}</strong></span>
+              </div>
+              <div style="text-align:center; font-weight:700; font-size:14px; margin-bottom:8px;">
+                ${match.home} vs ${match.away}
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border-radius:6px; padding:8px;">
+                <div style="text-align:center; flex:1;">
+                  <div style="font-size:12px; font-weight:700;">@${d.challenger}</div>
+                  <div style="font-size:16px; color:var(--gold); font-weight:800; margin-top:2px;">${d.predHomeChallenger} - ${d.predAwayChallenger}</div>
+                </div>
+                <div style="font-weight:900; color:var(--text-muted); font-size:12px; padding:0 8px;">VS</div>
+                <div style="text-align:center; flex:1;">
+                  <div style="font-size:12px; font-weight:700;">@${d.challenged}</div>
+                  <div style="font-size:16px; color:var(--gold); font-weight:800; margin-top:2px;">${d.predHomeChallenged} - ${d.predAwayChallenged}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      // 3. Completed Duels
+      const completedDuels = duels.filter(d => d.status === 'completed');
+      html += `<div class="section-title"><h3>✅ Duelos Completados (${completedDuels.length})</h3></div>`;
+      if (completedDuels.length === 0) {
+        html += `<div class="card" style="text-align:center; padding:16px; margin-bottom:24px;"><p class="text-muted" style="margin:0;">Los duelos terminados aparecerán acá.</p></div>`;
+      } else {
+        html += `<div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">`;
+        completedDuels.forEach(d => {
+          const match = MATCHES.find(m => m.id === d.matchId);
+          const isChallengerWin = d.winner === d.challenger;
+          const isChallengedWin = d.winner === d.challenged;
+          const isDraw = d.winner === 'draw';
+          
+          let resultLabel = '';
+          if (isDraw) resultLabel = '🤝 Empate de puntos';
+          else if (d.winner === user.apodo) resultLabel = '🏆 ¡Ganaste el duelo!';
+          else resultLabel = `😢 Ganó @${d.winner}`;
+
+          html += `
+            <div class="card" style="padding:12px; border-left:4px solid ${d.winner === user.apodo ? '#22c55e' : d.winner === 'draw' ? '#6b7280' : '#ef4444'};">
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); margin-bottom:8px;">
+                <span style="font-weight:700; color:${d.winner === user.apodo ? '#22c55e' : d.winner === 'draw' ? 'var(--text-muted)' : '#ef4444'};">${resultLabel}</span>
+                <span>🔥 Apuesta: <strong>${d.stake}</strong></span>
+              </div>
+              <div style="text-align:center; font-weight:700; font-size:14px; margin-bottom:4px;">
+                ${match.home} ${match.homeScore} - ${match.awayScore} ${match.away}
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.03); border-radius:6px; padding:8px;">
+                <div style="text-align:center; flex:1; opacity: ${isChallengedWin ? 0.5 : 1};">
+                  <div style="font-size:11px;">@${d.challenger}</div>
+                  <div style="font-size:14px; font-weight:800;">${d.predHomeChallenger} - ${d.predAwayChallenger}</div>
+                  <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${d.ptsChallenger} pts</div>
+                </div>
+                <div style="font-weight:900; color:var(--text-muted); font-size:11px;">VS</div>
+                <div style="text-align:center; flex:1; opacity: ${isChallengerWin ? 0.5 : 1};">
+                  <div style="font-size:11px;">@${d.challenged}</div>
+                  <div style="font-size:14px; font-weight:800;">${d.predHomeChallenged || 0} - ${d.predAwayChallenged || 0}</div>
+                  <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">${d.ptsChallenged || 0} pts</div>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+      
+      document.getElementById('duelos-content').innerHTML = html;
+    }
+    window.renderDuelos = renderDuelos;
+
+    window.createAndSendDuel = function() {
+      const matchId = document.getElementById('duel-match-select').value;
+      const hVal = document.getElementById('duel-pred-h').value;
+      const aVal = document.getElementById('duel-pred-a').value;
+      const stake = document.getElementById('duel-stake').value.trim();
+      
+      if (!matchId) { showToast('Seleccioná un partido', 'error'); return; }
+      if (hVal === '' || aVal === '') { showToast('Cargá tu pronóstico para el duelo', 'error'); return; }
+      if (!stake) { showToast('Definí qué se juega (apuesta)', 'error'); return; }
+      
+      const user = getUser();
+      const match = MATCHES.find(m => String(m.id) === String(matchId));
+      
+      const appUrl = 'https://santosd1997-sudo.github.io/PRODE-MUNDIAL-FAMILIAR-2026/';
+      const hashParams = `#duelos?action=desafiar&challenger=${encodeURIComponent(user.apodo)}&matchId=${match.id}&stake=${encodeURIComponent(stake)}&predH=${hVal}&predA=${aVal}`;
+      const inviteUrl = appUrl + hashParams;
+      
+      const message = `🏆 *DESAFÍO PRODE FAMILIAR MUNDIAL 2026* ⚽\n\n*@${user.apodo}* te desafió a un duelo P2P para el partido:\n👉 *${match.home} vs ${match.away}*\n\n🔥 Apuesta: *${stake}*\n⚽ Su predicción: *${hVal} - ${aVal}*\n\n¿Aceptás el desafío? Entrá acá para responder:\n${inviteUrl}`;
+      
+      const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank');
+      
+      // Save it locally as a pending duel we sent!
+      const duels = getDuels();
+      duels.push({
+        id: 'duel-sent-' + Date.now(),
+        matchId: match.id,
+        challenger: user.apodo,
+        challenged: 'Amigo',
+        stake: stake,
+        predHomeChallenger: parseInt(hVal),
+        predAwayChallenger: parseInt(aVal),
+        status: 'sent'
+      });
+      saveDuels(duels);
+      renderDuelos();
+    };
+
+    window.showIncomingChallenge = function(params) {
+      const match = MATCHES.find(m => String(m.id) === String(params.matchId));
+      if (!match) return;
+      
+      const user = getUser();
+      if (!user) {
+        showToast('¡Registrate primero para aceptar el desafío!', 'warning', 5000);
+        return;
+      }
+      
+      if (params.challenger === user.apodo) {
+        cleanDuelParams();
+        return;
+      }
+      
+      openModal('⚔️ ¡Desafío Recibido!', `
+        <div style="text-align:center; margin-bottom:16px;">
+          <span style="font-size:40px;">⚔️</span>
+          <h4 style="margin:8px 0; font-size:16px;">@${params.challenger} te desafió</h4>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">Partido: <strong>${match.home} vs ${match.away}</strong></p>
+          <div class="badge badge-gold" style="font-size:12px; padding:6px 12px;">🔥 Apuesta: ${params.stake}</div>
+        </div>
+        
+        <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:12px; margin-bottom:16px; text-align:center;">
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:4px;">Predicción de @${params.challenger}</div>
+          <div style="font-size:20px; font-weight:800; color:var(--gold);">${params.predH} - ${params.predA}</div>
+        </div>
+        
+        <p style="font-size:13px; font-weight:700; margin-bottom:8px; text-align:center;">Ingresá tu predicción para aceptar:</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+          <div class="form-group" style="margin:0;">
+            <input type="number" class="form-input text-center" id="accept-pred-h" min="0" max="20" placeholder="Goles ${match.home}" inputmode="numeric" style="padding:10px;">
+          </div>
+          <div class="form-group" style="margin:0;">
+            <input type="number" class="form-input text-center" id="accept-pred-a" min="0" max="20" placeholder="Goles ${match.away}" inputmode="numeric" style="padding:10px;">
+          </div>
+        </div>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button class="btn btn-outline" onclick="closeModal(); cleanDuelParams();">Rechazar 👎</button>
+          <button class="btn btn-gold" onclick="acceptIncomingDuel('${params.challenger}', ${match.id}, '${params.stake.replace(/'/g,"\\'")}', ${params.predH}, ${params.predA})">Aceptar 👍</button>
+        </div>
+      `);
+    };
+
+    window.acceptIncomingDuel = function(challenger, matchId, stake, predH, predA) {
+      const myH = document.getElementById('accept-pred-h').value;
+      const myA = document.getElementById('accept-pred-a').value;
+      
+      if (myH === '' || myA === '') {
+        showToast('Ingresá tu predicción primero', 'error');
+        return;
+      }
+      
+      const user = getUser();
+      const duels = getDuels();
+      
+      const newDuel = {
+        id: 'duel-recv-' + Date.now(),
+        matchId: matchId,
+        challenger: challenger,
+        challenged: user.apodo,
+        stake: stake,
+        predHomeChallenger: parseInt(predH),
+        predAwayChallenger: parseInt(predA),
+        predHomeChallenged: parseInt(myH),
+        predAwayChallenged: parseInt(myA),
+        status: 'active'
+      };
+      
+      duels.push(newDuel);
+      saveDuels(duels);
+      
+      closeModal();
+      cleanDuelParams();
+      showToast('⚔️ ¡Desafío aceptado! A apostar... 🍻', 'success');
+      navigateTo('duelos');
+    };
+
+    window.cleanDuelParams = function() {
+      window.location.hash = '#duelos';
+      if (currentView === 'duelos') renderDuelos();
     };
 
     // ============================================
