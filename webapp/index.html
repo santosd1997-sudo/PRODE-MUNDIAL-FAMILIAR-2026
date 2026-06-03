@@ -482,7 +482,7 @@
         <img src="icons/icon-72.png" alt="Logo" class="header-logo" onerror="this.src='icons/icon-192.png'">
         <div class="header-title-group">
           <h1 class="header-title">PRODE MUNDIAL</h1>
-          <span class="header-subtitle">2026</span>
+          <span class="header-subtitle" id="header-greeting">2026</span>
         </div>
       </div>
       <div class="header-right">
@@ -1940,45 +1940,78 @@
         </div>
       `).join('');
 
+      // Update header with user name
+      const headerGreeting = document.getElementById('header-greeting');
+      if (headerGreeting) headerGreeting.textContent = `¡Hola, ${user.apodo}!`;
+      const headerAvatar = document.getElementById('header-avatar');
+      if (headerAvatar) headerAvatar.textContent = user.avatar || '⚽';
+
+      // Get next N matches on same day
+      const nextMatchDate = nextMatch.date;
+      const nextDayMatches = MATCHES.filter(m => m.date === nextMatchDate);
+      const isMultiple = nextDayMatches.length > 1;
+
+      // Build match cards with INLINE prediction inputs
+      const matchCardsHTML = nextDayMatches.map(m => {
+        const pred = preds[m.id];
+        const hasP = pred && pred.home !== undefined;
+        const hVal = hasP ? pred.home : '';
+        const aVal = hasP ? pred.away : '';
+        return `
+          <div class="card" style="border:1px solid ${hasP ? 'rgba(34,197,94,0.3)' : 'rgba(197,165,90,0.3)'}; margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <span class="badge badge-gold">${m.group}</span>
+              <span style="font-size:13px;color:var(--text-muted);">${formatMatchDate(m.date, m.time)} • ${m.venue || ''}</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
+              <div style="text-align:center;flex:1;">
+                ${tappableTeamFlag(m.homeIso, m.home, 'team-flag-lg')}
+                <div style="font-size:14px;font-weight:700;margin-top:4px;">${m.home}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <input type="number" min="0" max="20" value="${hVal}" id="home-h-${m.id}" 
+                  style="width:52px;height:52px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:2px solid ${hasP ? '#22c55e' : 'var(--gold)'};background:rgba(255,255,255,0.05);color:var(--text,#e6edf3);" 
+                  inputmode="numeric" placeholder="-">
+                <span style="font-size:20px;font-weight:900;color:var(--text-muted);">-</span>
+                <input type="number" min="0" max="20" value="${aVal}" id="home-a-${m.id}" 
+                  style="width:52px;height:52px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:2px solid ${hasP ? '#22c55e' : 'var(--gold)'};background:rgba(255,255,255,0.05);color:var(--text,#e6edf3);" 
+                  inputmode="numeric" placeholder="-">
+              </div>
+              <div style="text-align:center;flex:1;">
+                ${tappableTeamFlag(m.awayIso, m.away, 'team-flag-lg')}
+                <div style="font-size:14px;font-weight:700;margin-top:4px;">${m.away}</div>
+              </div>
+            </div>
+            <button onclick="saveHomeMatch(${m.id})" id="home-save-${m.id}" 
+              style="width:100%;padding:10px;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;
+              background:${hasP ? 'rgba(34,197,94,0.2)' : 'var(--gold)'};color:${hasP ? '#22c55e' : '#000'};">
+              ${hasP ? '✅ Guardado' : '💾 Guardar pronóstico'}
+            </button>
+          </div>`;
+      }).join('');
+
       document.getElementById('home-content').innerHTML = `
-        ${urgentCTA}
         ${renderTodayMatchesSection()}
-        <div class="welcome-card card"><div class="welcome-card-content">
-          <div class="welcome-avatar">${user.avatar}</div>
-          <div class="welcome-name">¡Hola, ${user.apodo}! 👋</div>
-          <div class="welcome-greeting">${familyBadgeHTML(user.grupo)}</div>
-        </div></div>
-        <div class="section-title"><h3>📋 Progreso por Grupo</h3></div>
-        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:16px;">
+        <div class="section-title"><h3>⏱️ ${isMultiple ? 'Próximos Partidos' : 'Próximo Partido'}</h3>
+          <span style="font-size:13px;color:var(--text-muted);">${pendingCount > 0 ? pendingCount + ' pendientes' : '✅ Completo'}</span>
+        </div>
+        <div class="countdown" id="home-countdown" style="margin-bottom:12px;">
+          <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
+          <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
+        </div>
+        ${matchCardsHTML}
+        <div class="section-title" style="margin-top:16px;"><h3>📋 Progreso por Grupo</h3></div>
+        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:12px;">
           ${groupGridHTML}
         </div>
         ${pendingCount > 0 ? `
-          <button class="cta-btn" onclick="navigateTo('pronosticos')" style="font-size:18px; padding:14px; width:100%; margin-bottom:16px;">
+          <button class="cta-btn" onclick="navigateTo('pronosticos')" style="font-size:18px; padding:14px; width:100%; margin-bottom:12px;">
             ⚽ Completar ${pendingCount} pronósticos pendientes
           </button>
         ` : ''}
-        <div class="card card-gold position-card"><div><div class="position-label">Tu posición</div><div class="position-number">${savedCount > 0 ? '5°' : '-'}</div></div>
-          <div style="flex:1"><div class="position-variation same">— sin cambios</div><div class="position-stats">
-            <span class="position-stat"><strong class="text-gold">${savedCount > 0 ? '35' : '0'}</strong> pts</span>
-            <span class="position-stat"><strong>${savedCount > 0 ? '45' : '0'}%</strong> aciertos</span></div></div></div>
-        <div class="section-title"><h3>⏱️ Próximo Partido</h3></div>
-        <div class="card next-match-card">
-          <div class="match-card-header"><span class="badge badge-gold">${nextMatch.group}</span>
-            <div class="match-meta"><span class="match-date">${formatMatchDate(nextMatch.date, nextMatch.time)}</span><span class="match-venue">${nextMatch.venue}</span></div></div>
-          <div class="next-match-teams">
-            <div class="next-match-team">${tappableTeamFlag(nextMatch.homeIso, nextMatch.home, 'team-flag-lg')}${tappableTeamName(nextMatch.home)}</div>
-            <div class="next-match-vs">VS</div>
-            <div class="next-match-team">${tappableTeamFlag(nextMatch.awayIso, nextMatch.away, 'team-flag-lg')}${tappableTeamName(nextMatch.away)}</div>
-          </div>
-          <div class="countdown" id="home-countdown">
-            <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
-            <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
-            <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
-            <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
-          </div>
-        </div>
-        <div class="section-title"><h3>📊 Tu Resumen</h3></div>
-        <div class="quick-stats">
+        <div class="quick-stats" style="margin-bottom:12px;">
           <div class="quick-stat"><div class="quick-stat-value text-gold">${savedCount > 0 ? '35' : '0'}</div><div class="quick-stat-label">Puntos</div></div>
           <div class="quick-stat"><div class="quick-stat-value">${savedCount > 0 ? '5°' : '-'}</div><div class="quick-stat-label">Posición</div></div>
           <div class="quick-stat"><div class="quick-stat-value text-success">${savedCount > 0 ? '2' : '0'}</div><div class="quick-stat-label">Exactos</div></div>
@@ -2110,6 +2143,20 @@
       savePredictions(preds);
       const btn = document.getElementById('save-btn-'+id); btn.textContent = '✅ Guardado'; btn.classList.add('saved');
       h.classList.add('has-value'); a.classList.add('has-value'); h.classList.remove('error'); a.classList.remove('error');
+      const match = MATCHES.find(m => m.id === id);
+      showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+    };
+
+    window.saveHomeMatch = function(id) {
+      if (isLocked()) { showToast('Los pronósticos están bloqueados','error'); return; }
+      const h = document.getElementById('home-h-'+id), a = document.getElementById('home-a-'+id);
+      if (!h || !a || h.value==='' || a.value==='') { showToast('Completá ambos marcadores','error'); return; }
+      const preds = getPredictions();
+      preds[id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
+      savePredictions(preds);
+      const btn = document.getElementById('home-save-'+id);
+      if (btn) { btn.textContent = '✅ Guardado'; btn.style.background = 'rgba(34,197,94,0.2)'; btn.style.color = '#22c55e'; }
+      h.style.borderColor = '#22c55e'; a.style.borderColor = '#22c55e';
       const match = MATCHES.find(m => m.id === id);
       showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
     };
