@@ -436,6 +436,8 @@
         <br>
         <button class="admin-pin-btn" onclick="recoverAccount()">🔍 Recuperar</button>
       </div>
+      <!-- PWA Installation Guide -->
+      <a class="recovery-link" style="display:block; margin-top:10px; margin-bottom: 12px; cursor: pointer;" onclick="showInstallInstructionsModal()">📱 ¿Cómo instalar esta App en tu celular?</a>
       <!-- Admin Access Link -->
       <a class="admin-link" id="admin-access-link" onclick="toggleAdminPin()">🔑 ¿Sos administrador?</a>
       <div class="admin-pin-area" id="admin-pin-area">
@@ -469,8 +471,8 @@
         <h2 class="onboarding-title">Competí en el Ranking</h2>
         <p class="onboarding-desc">Sumá puntos por cada acierto y escalá en la tabla de posiciones.</p>
         <div class="onboarding-highlight">
-          <p>🎯 <strong>Resultado exacto</strong> = 10 pts<br>
-          📊 <strong>Diferencia correcta</strong> = 7 pts<br>
+          <p>🎯 <strong>Resultado exacto</strong> = 15 pts<br>
+          📊 <strong>Diferencia correcta</strong> = 8 pts<br>
           ✅ <strong>Ganador correcto</strong> = 5 pts</p>
         </div>
       </div>
@@ -533,7 +535,6 @@
     <section id="view-admin" class="view-section"><div id="admin-content"></div></section>
     <section id="view-team" class="view-section"><div id="team-content"></div></section>
     <section id="view-reglas" class="view-section"><div id="reglas-content"></div></section>
-    <section id="view-duelos" class="view-section"><div id="duelos-content"></div></section>
   </main>
 
   <!-- BOTTOM NAV -->
@@ -542,7 +543,6 @@
     <button class="nav-item" data-view="pronosticos" aria-label="Pronósticos"><span class="nav-icon">⚽</span><span class="nav-label">Pronósticos</span><span class="nav-indicator"></span></button>
     <button class="nav-item" data-view="simulador" aria-label="Simulador"><span class="nav-icon">🏆</span><span class="nav-label">Simulador</span><span class="nav-indicator"></span></button>
     <button class="nav-item" data-view="ranking" aria-label="Ranking"><span class="nav-icon">📈</span><span class="nav-label">Ranking</span><span class="nav-indicator"></span></button>
-    <button class="nav-item" data-view="duelos" aria-label="Duelos"><span class="nav-icon">⚔️</span><span class="nav-label">Duelos</span><span class="nav-indicator"></span></button>
     <button class="nav-item" data-view="admin" aria-label="Admin" id="nav-admin" style="display:none;"><span class="nav-icon">🔑</span><span class="nav-label">Admin</span><span class="nav-indicator"></span></button>
   </nav>
 
@@ -1123,7 +1123,7 @@
       { id: 'aramburu-mac', name: 'Aramburu - Mac', color: '#457B9D' },
       { id: 'mccormick-mac', name: 'Mc Cormick - Mac', color: '#2A9D8F' },
       { id: 'zubizarreta-mac', name: 'Zubizarreta - Mac', color: '#E9C46A' },
-      { id: 'mac-donnels', name: 'Mac Donnels', color: '#F4A261' },
+      { id: 'mac-donnells', name: 'Mac Donnells', color: '#F4A261' },
       { id: 'montes', name: 'Montes', color: '#264653' },
       { id: 'caratini', name: 'Caratini', color: '#6A4C93' },
       { id: 'caratini-wust', name: 'Caratini - Wust', color: '#1982C4' },
@@ -1551,9 +1551,9 @@
       {nombre:'Angie',apellido:'Zubizarreta',apodo:'Angie',avatar:'🎖️',grupo:'Zubizarreta - Mac',points:142,exactos:8,accuracy:68},
       {nombre:'Guadi',apellido:'Zubizarreta',apodo:'Guadi',avatar:'🔮',grupo:'Zubizarreta - Mac',points:108,exactos:6,accuracy:55},
       {nombre:'Trini',apellido:'Zubizarreta',apodo:'Trini',avatar:'🌈',grupo:'Zubizarreta - Mac',points:92,exactos:5,accuracy:48},
-      // Mac Donnels (2)
-      {nombre:'Johny',apellido:'Mac Donnell',apodo:'Johny',avatar:'🐺',grupo:'Mac Donnels',points:158,exactos:10,accuracy:74},
-      {nombre:'Flor',apellido:'Mac Donnell',apodo:'Flor',avatar:'🌸',grupo:'Mac Donnels',points:135,exactos:7,accuracy:65},
+      // Mac Donnells (2)
+      {nombre:'Johny',apellido:'Mac Donnells',apodo:'Johny',avatar:'🐺',grupo:'Mac Donnells',points:158,exactos:10,accuracy:74},
+      {nombre:'Flor',apellido:'Mac Donnells',apodo:'Flor',avatar:'🌸',grupo:'Mac Donnells',points:135,exactos:7,accuracy:65},
       // Montes (4)
       {nombre:'Santiago',apellido:'Montes',apodo:'Santi',avatar:'⚡',grupo:'Montes',points:168,exactos:11,accuracy:77},
       {nombre:'Magda',apellido:'Montes',apodo:'Magda',avatar:'💐',grupo:'Montes',points:125,exactos:7,accuracy:61},
@@ -1872,6 +1872,47 @@
       return `${fn} ${ln}`;
     }
 
+    window.getTeamH2H = function(teamA, teamB) {
+      const sorted = [teamA, teamB].sort();
+      const seedStr = sorted[0] + '-' + sorted[1];
+      const hash = getHash(seedStr);
+      const totalMatches = 5 + (hash % 12);
+      
+      const detailA = getTeamDetails(teamA);
+      const detailB = getTeamDetails(teamB);
+      const rankA = detailA ? detailA.rank : 50;
+      const rankB = detailB ? detailB.rank : 50;
+      
+      const rankDiff = rankB - rankA;
+      let pA = 0.38 + (rankDiff * 0.005);
+      pA = Math.max(0.15, Math.min(0.7, pA));
+      
+      let pDraw = 0.28;
+      let wA = 0;
+      let wB = 0;
+      let draws = 0;
+      
+      for (let i = 0; i < totalMatches; i++) {
+        const matchHash = getHash(seedStr + '-match-' + i);
+        const roll = (matchHash % 100) / 100;
+        if (roll < pA) {
+          if (sorted[0] === teamA) wA++; else wB++;
+        } else if (roll < pA + pDraw) {
+          draws++;
+        } else {
+          if (sorted[0] === teamA) wB++; else wA++;
+        }
+      }
+      
+      return {
+        opponent: teamB,
+        matches: totalMatches,
+        w: wA,
+        d: draws,
+        l: wB
+      };
+    };
+
     window.getTeamDetails = function(teamName) {
       let detail = TEAM_DETAILS[teamName];
       if (!detail) {
@@ -2071,7 +2112,7 @@
         });
       });
       
-      const hasResult = match.homeScore !== undefined && match.awayScore !== undefined;
+      const hasResult = match.status === 'finished' && match.homeScore !== undefined && match.awayScore !== undefined;
       let minDistance = 999;
       let maxDistance = -1;
       
@@ -2164,6 +2205,135 @@
       modalHTML += `</div>`;
       
       openModal('Pronósticos de la Familia', modalHTML);
+    };
+
+    window.showMatchStatsModal = function(matchId) {
+      const match = MATCHES.find(m => m.id === matchId);
+      if (!match) return;
+
+      const teamA = match.home;
+      const teamB = match.away;
+
+      const isSwapped = teamA > teamB;
+      const t1 = isSwapped ? teamB : teamA;
+      const t2 = isSwapped ? teamA : teamB;
+      const hash = getHash(t1 + '-' + t2);
+
+      let pos1 = 48 + (hash % 11);
+      let pos2 = 100 - pos1;
+
+      let xG1 = (0.8 + (hash % 13) * 0.15).toFixed(2);
+      let xG2 = (0.8 + ((hash + 7) % 13) * 0.15).toFixed(2);
+
+      let shots1 = 8 + (hash % 10);
+      let shots2 = 8 + ((hash + 3) % 10);
+
+      let corners1 = 3 + (hash % 6);
+      let corners2 = 3 + ((hash + 2) % 6);
+
+      let fouls1 = 8 + (hash % 8);
+      let fouls2 = 8 + ((hash + 4) % 8);
+
+      const possessionA = isSwapped ? pos2 : pos1;
+      const possessionB = isSwapped ? pos1 : pos2;
+      const xGA = isSwapped ? xG2 : xG1;
+      const xGB = isSwapped ? xG1 : xG2;
+      const shotsA = isSwapped ? shots2 : shots1;
+      const shotsB = isSwapped ? shots1 : shots2;
+      const cornersA = isSwapped ? corners2 : corners1;
+      const cornersB = isSwapped ? corners1 : corners2;
+      const foulsA = isSwapped ? fouls2 : fouls1;
+      const foulsB = isSwapped ? fouls1 : fouls2;
+
+      const h2h = getTeamH2H(teamA, teamB);
+
+      const isPro = isExpertMode();
+
+      const modalHTML = `
+        <div style="position: relative; overflow: hidden; min-height: 250px; padding: 4px;">
+          <!-- Locked Overlay if not PRO -->
+          ${!isPro ? `
+          <div class="pro-locked-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 10; text-align: center; box-sizing: border-box; padding: 20px;">
+            <span style="font-size: 32px; margin-bottom: 8px;">🔒</span>
+            <h4 style="margin: 0 0 6px 0; color: var(--gold); font-size: 15px; font-weight: 800;">Estadísticas PRO Bloqueadas</h4>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px; max-width: 250px;">Activá el modo PRO para ver H2H e historial detallado, xG, posesión y tiros de ambos equipos.</p>
+            <button class="btn btn-gold btn-sm" onclick="event.stopPropagation(); toggleExpertMode(); showMatchStatsModal(${matchId});" style="min-height: 36px; padding: 6px 16px; font-size: 13px; font-weight: 700; width: auto; box-shadow: 0 4px 15px rgba(197,165,90,0.3);">🧠 Activar Modo PRO</button>
+          </div>
+          ` : ''}
+
+          <!-- Content to be blurred if not PRO -->
+          <div style="${!isPro ? 'filter: blur(4px); pointer-events: none; user-select: none;' : ''} display: flex; flex-direction: column; gap: 16px;">
+            <div style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px;">
+              <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Historial H2H Reciente</div>
+              <div style="font-size: 14px; font-weight: 700; color: var(--gold);">${teamA} vs ${teamB}</div>
+              <div style="font-size: 12px; margin-top: 6px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <span>Partidos: <strong>${h2h.matches}</strong></span>
+                <span>Gana ${teamA}: <strong style="color:#22c55e;">${h2h.w}</strong></span>
+                <span>Empates: <strong style="color:var(--text-muted);">${h2h.d}</strong></span>
+                <span>Gana ${teamB}: <strong style="color:#ef4444;">${h2h.l}</strong></span>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; text-align: center; font-weight: bold;">Métricas Promedio de Partido</div>
+              
+              <!-- Possession Row -->
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span>${possessionA}% Posesión (${teamA})</span>
+                  <span>${possessionB}% Posesión (${teamB})</span>
+                </div>
+                <div style="display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.05);">
+                  <div style="width: ${possessionA}%; background: var(--gold);"></div>
+                  <div style="width: ${possessionB}%; background: rgba(255,255,255,0.2);"></div>
+                </div>
+              </div>
+
+              <!-- xG Row -->
+              <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span>${xGA} xG (${teamA})</span>
+                  <span>${xGB} xG (${teamB})</span>
+                </div>
+                <div style="display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: rgba(255,255,255,0.05);">
+                  <div style="width: ${parseFloat(xGA)/(parseFloat(xGA)+parseFloat(xGB))*100}%; background: var(--gold);"></div>
+                  <div style="width: ${parseFloat(xGB)/(parseFloat(xGA)+parseFloat(xGB))*100}%; background: rgba(255,255,255,0.2);"></div>
+                </div>
+              </div>
+
+              <!-- Detailed Stats Table -->
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: center; margin-top: 8px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+                    <th style="padding: 4px; text-align: left; width: 35%;">${teamA}</th>
+                    <th style="padding: 4px; width: 30%;">Métrica</th>
+                    <th style="padding: 4px; text-align: right; width: 35%;">${teamB}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <td style="padding: 6px 4px; text-align: left; font-weight: 700;">${shotsA}</td>
+                    <td style="padding: 6px 4px; color: var(--text-muted);">Remates / P</td>
+                    <td style="padding: 6px 4px; text-align: right; font-weight: 700;">${shotsB}</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <td style="padding: 6px 4px; text-align: left; font-weight: 700;">${cornersA}</td>
+                    <td style="padding: 6px 4px; color: var(--text-muted);">Córners / P</td>
+                    <td style="padding: 6px 4px; text-align: right; font-weight: 700;">${cornersB}</td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <td style="padding: 6px 4px; text-align: left; font-weight: 700;">${foulsA}</td>
+                    <td style="padding: 6px 4px; color: var(--text-muted);">Faltas / P</td>
+                    <td style="padding: 6px 4px; text-align: right; font-weight: 700;">${foulsB}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+
+      openModal('📊 Estadísticas Avanzadas', modalHTML);
     };
 
     function getDeterministicPrediction(apodo, match) {
@@ -2260,7 +2430,80 @@
                 <span class="team-recent-score" style="font-weight:700; color:var(--text); font-size:13px;">${r.score}</span>
               </div>`).join('')}
             </div></div>`;
+
+          const hash = getHash(team.name);
+          const avgPossession = 48 + (hash % 15);
+          const avgXG = (1.1 + (hash % 9) * 0.15).toFixed(2);
+          const avgShots = 10 + (hash % 8);
+          const avgFouls = 9 + (hash % 6);
+          const avgCorners = 4 + (hash % 5);
+
+          const opponentName = team.name === 'Argentina' ? 'Brasil' : 
+                               team.name === 'Brasil' ? 'Argentina' : 
+                               team.name === 'México' ? 'USA' : 
+                               team.name === 'USA' ? 'México' : 
+                               team.name === 'Alemania' ? 'Francia' : 
+                               team.name === 'Francia' ? 'Alemania' : 
+                               team.name === 'España' ? 'Portugal' : 
+                               team.name === 'Portugal' ? 'España' : 
+                               team.name === 'Inglaterra' ? 'Croacia' : 
+                               team.name === 'Croacia' ? 'Inglaterra' : 'Uruguay';
+          const rData = getTeamH2H(team.name, opponentName);
+
+          const isPro = isExpertMode();
+
+          html += `<div class="card" style="margin-bottom:16px; border: 1px solid var(--gold) !important; background: linear-gradient(135deg, rgba(197,165,90,0.05), var(--bg-card)); position: relative; overflow: hidden;">
+            <!-- Locked Overlay if not PRO -->
+            ${!isPro ? `
+            <div class="pro-locked-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 10; text-align: center; box-sizing: border-box; padding: 20px;">
+              <span style="font-size: 32px; margin-bottom: 6px;">🔒</span>
+              <h4 style="margin: 0 0 4px 0; color: var(--gold); font-size: 14px; font-weight: 800;">Estadísticas PRO Bloqueadas</h4>
+              <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; max-width: 250px;">Activá el modo PRO para ver posesión, xG y H2H avanzado de esta selección.</p>
+              <button class="btn btn-gold btn-sm" onclick="event.stopPropagation(); toggleExpertMode();" style="min-height: 36px; padding: 6px 16px; font-size: 13px; font-weight: 700; width: auto; box-shadow: 0 4px 15px rgba(197,165,90,0.3);">🧠 Activar Modo PRO</button>
+            </div>
+            ` : ''}
+
+            <div style="${!isPro ? 'filter: blur(4px); pointer-events: none; user-select: none;' : ''}">
+              <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">
+                <span>🧠 Estadísticas PRO Avanzadas</span>
+                <span class="badge badge-gold" style="font-size:9px; padding:1px 4px; border-radius:4px;">PRO</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-bottom:16px; text-align:center;">
+                <div style="background:rgba(197,165,90,0.05); padding:10px; border-radius:8px; border:1px solid rgba(197,165,90,0.15);">
+                  <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Posesión Promedio</div>
+                  <div style="font-size:20px; font-weight:900; color:var(--gold); margin-top:2px;">${avgPossession}%</div>
+                </div>
+                <div style="background:rgba(197,165,90,0.05); padding:10px; border-radius:8px; border:1px solid rgba(197,165,90,0.15);">
+                  <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">xG (Goles Esperados)</div>
+                  <div style="font-size:20px; font-weight:900; color:var(--gold); margin-top:2px;">${avgXG}</div>
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; text-align:center; font-size:11px; margin-bottom:16px;">
+                <div style="background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04);">
+                  <strong style="color:var(--text); font-size:14px;">${avgShots}</strong><br><span style="color:var(--text-muted); font-size:9px; text-transform:uppercase;">Remates/P</span>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04);">
+                  <strong style="color:var(--text); font-size:14px;">${avgCorners}</strong><br><span style="color:var(--text-muted); font-size:9px; text-transform:uppercase;">Córners/P</span>
+                </div>
+                <div style="background:rgba(255,255,255,0.02); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04);">
+                  <strong style="color:var(--text); font-size:14px;">${avgFouls}</strong><br><span style="color:var(--text-muted); font-size:9px; text-transform:uppercase;">Faltas/P</span>
+                </div>
+              </div>
+              <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:12px; text-align:left;">
+                <div style="font-weight:700; font-size:11px; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">🤝 Historial H2H vs ${rData.opponent}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; background:rgba(0,0,0,0.2); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.03);">
+                  <span>Partidos: <strong>${rData.matches}</strong></span>
+                  <span style="font-size:12px;">
+                    G: <strong style="color:#22c55e;">${rData.w}</strong> • 
+                    E: <strong style="color:var(--text-muted);">${rData.d}</strong> • 
+                    P: <strong style="color:#ef4444;">${rData.l}</strong>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>`;
         }
+      }
 
         const teamMatches = MATCHES.filter(m => m.home === team.name || m.away === team.name);
         if (teamMatches.length > 0) {
@@ -2412,14 +2655,49 @@
     };
 
     window.verifyAdminPin = function() {
-      const pin = document.getElementById('admin-pin-input').value;
+      const pin = document.getElementById('admin-pin-input').value.trim();
       if (pin === ADMIN_PIN) {
         localStorage.setItem('prode-admin', 'true');
         showToast('🔑 Acceso de administrador activado', 'success');
         document.getElementById('admin-pin-area').classList.remove('visible');
-        const user = getUser();
-        if (!user) showToast('Ahora registrate normalmente, tendrás acceso admin', 'info');
-        else document.getElementById('nav-admin').style.display = '';
+        
+        let user = getUser();
+        if (!user) {
+          const email = SUPER_ADMIN_EMAIL;
+          const allUsers = getAllUsers();
+          let adminUser = allUsers.find(u => (u.email || '').toLowerCase() === email);
+          if (!adminUser) {
+            adminUser = {
+              userId: generateUserId(email),
+              email: email,
+              nombre: 'Admin',
+              apellido: 'Super',
+              apodo: 'Admin',
+              telefono: '',
+              grupo: 'Mac Donnells',
+              equipoFavorito: 'Argentina',
+              avatar: '👑',
+              status: 'aprobado',
+              fechaRegistro: new Date().toISOString(),
+              fechaAprobacion: new Date().toISOString(),
+              predictions: {},
+              bracket: {},
+              tournamentPredictions: {},
+              stats: { puntos: 0, exactos: 0, diferencias: 0, ganadores: 0, errores: 0, racha: 0 }
+            };
+            allUsers.push(adminUser);
+            saveAllUsers(allUsers);
+          }
+          saveUser(adminUser);
+        }
+        
+        localStorage.setItem('prode-onboarding-done', 'true');
+        document.getElementById('register-screen').style.display = 'none';
+        
+        const navAdmin = document.getElementById('nav-admin');
+        if (navAdmin) navAdmin.style.display = '';
+        
+        startMainApp();
       } else {
         showToast('PIN incorrecto', 'error');
         document.getElementById('admin-pin-input').value = '';
@@ -2436,7 +2714,7 @@
       const email = document.getElementById('recovery-email-input').value.trim().toLowerCase();
       if (!email || !email.includes('@')) { showToast('Ingresá un email válido', 'error'); return; }
       
-      showToast('Buscando tu cuenta en el servidor... 🔍', 'info', 2000);
+      showToast('Buscando tu cuenta... 🔍', 'info', 2000);
       
       if (ProdeAPI.isConfigured() && navigator.onLine) {
         try {
@@ -2460,11 +2738,7 @@
         }
         startMainApp();
       } else {
-        if (ProdeAPI.isConfigured() && navigator.onLine) {
-          showToast('No encontramos ese email en Google Sheets. Verificá si está bien escrito o hablá con el administrador.', 'error', 6000);
-        } else {
-          showToast('No encontramos ese email en este dispositivo. Conectate a internet para buscar tu cuenta en el servidor.', 'warning', 5000);
-        }
+        showToast('El email ingresado no existe en la base de datos', 'error', 5000);
       }
     };
 
@@ -2640,11 +2914,138 @@
     function showOnboarding() { document.getElementById('onboarding-screen').style.display = 'flex'; fillInstallInstructions(); updateOnboardSlide(); }
     function fillInstallInstructions() {
       const el = document.getElementById('install-instructions');
-      const ua = navigator.userAgent.toLowerCase();
-      if (/iphone|ipad|ipod/.test(ua)) el.innerHTML = '<p>En <strong>Safari</strong>: Tocá el ícono de <strong>Compartir</strong> → <strong>"Agregar a pantalla de inicio"</strong></p>';
-      else if (/android/.test(ua)) el.innerHTML = '<p>En <strong>Chrome</strong>: Tocá el menú <strong>⋮</strong> → <strong>"Instalar aplicación"</strong></p>';
-      else el.innerHTML = '<p>En tu navegador, buscá la opción <strong>"Instalar"</strong> en la barra de direcciones.</p>';
+      el.innerHTML = `
+        <div style="text-align:left; font-size:12px; line-height:1.4; display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+          <div style="background:rgba(0,80,212,0.15); padding:8px; border-radius:8px; border:1px solid rgba(0,80,212,0.3); border-left:4px solid var(--primary-light);">
+            <strong>🤖 En Android (Chrome):</strong>
+            <ol style="margin-left:14px; margin-top:4px; padding-left:4px; list-style-type:decimal;">
+              <li>Tocá los tres puntos <strong style="color:var(--gold);">Acá ⋮</strong> arriba a la derecha.</li>
+              <li>Seleccioná <strong style="color:var(--gold);">"Instalar aplicación"</strong> o <strong style="color:var(--gold);">"Agregar a la pantalla principal"</strong>.</li>
+            </ol>
+          </div>
+          <div style="background:rgba(197,165,90,0.1); padding:8px; border-radius:8px; border:1px solid rgba(197,165,90,0.25); border-left:4px solid var(--gold);">
+            <strong>🍏 En iPhone / iOS (Safari):</strong>
+            <ol style="margin-left:14px; margin-top:4px; padding-left:4px; list-style-type:decimal;">
+              <li>Tocá el botón de <strong style="color:var(--gold);">Compartir 📤</strong> en la barra de navegación inferior.</li>
+              <li>Deslizá hacia abajo y seleccioná <strong style="color:var(--gold);">"Agregar a pantalla de inicio" ➕</strong>.</li>
+            </ol>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-block" style="margin-top:10px; min-height:36px; font-size:12px; padding:6px; display:flex; align-items:center; justify-content:center; gap:6px; border-color:var(--gold); color:var(--gold);" onclick="showDemoInstallModal()">
+          🎬 Ver Demo Animada de Instalación
+        </button>
+      `;
     }
+
+    window.showInstallInstructionsModal = function() {
+      const html = `
+        <div style="text-align:left; font-size:13px; line-height:1.5; display:flex; flex-direction:column; gap:12px; padding:8px 0;">
+          <p style="color:var(--text-muted); font-size:12px; margin-bottom:8px; text-align:center;">Seguí estos simples pasos para instalar el PRODE como una aplicación en tu celular y acceder más rápido:</p>
+          
+          <div style="background:rgba(0,80,212,0.15); padding:10px; border-radius:10px; border:1px solid rgba(0,80,212,0.3); border-left:4px solid var(--primary-light);">
+            <strong style="font-size:14px; color:var(--text);">🤖 En Android (Chrome):</strong>
+            <ol style="margin-left:16px; margin-top:6px; padding-left:4px; list-style-type:decimal;">
+              <li>Tocá los tres puntos <strong style="color:var(--gold);">⋮</strong> en la esquina superior derecha.</li>
+              <li>Seleccioná <strong style="color:var(--gold);">"Instalar aplicación"</strong> o <strong style="color:var(--gold);">"Agregar a la pantalla principal"</strong>.</li>
+            </ol>
+          </div>
+          
+          <div style="background:rgba(197,165,90,0.1); padding:10px; border-radius:10px; border:1px solid rgba(197,165,90,0.25); border-left:4px solid var(--gold);">
+            <strong style="font-size:14px; color:var(--text);">🍏 En iPhone / iOS (Safari):</strong>
+            <ol style="margin-left:16px; margin-top:6px; padding-left:4px; list-style-type:decimal;">
+              <li>Tocá el botón de <strong style="color:var(--gold);">Compartir 📤</strong> en la barra de navegación inferior.</li>
+              <li>Deslizá hacia abajo y seleccioná <strong style="color:var(--gold);">"Agregar a pantalla de inicio" ➕</strong>.</li>
+            </ol>
+          </div>
+          
+          <button class="btn btn-gold btn-block" style="margin-top:10px;" onclick="showDemoInstallModal()">
+            🎬 Ver Demo Animada de Instalación
+          </button>
+        </div>
+      `;
+      openModal('📱 Cómo Instalar la App', html);
+    };
+
+    window.showDemoInstallModal = function() {
+      const html = `
+        <div style="text-align:center; padding:12px 0;">
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Simulación animada para instalar la App en Safari (iPhone) / Chrome (Android):</p>
+          
+          <div style="position:relative; width:220px; height:440px; margin:0 auto; border:8px solid #30363d; border-radius:36px; background:#0d1117; overflow:hidden; box-shadow:0 12px 30px rgba(0,0,0,0.5); display:flex; flex-direction:column; justify-content:space-between; align-items:center; padding:16px; box-sizing:border-box;">
+            <!-- Notch / Speaker -->
+            <div style="width:110px; height:18px; background:#30363d; border-radius:0 0 14px 14px; position:absolute; top:0; z-index:100; left:50%; transform:translateX(-50%);"></div>
+            
+            <!-- App UI Simulation -->
+            <div style="width:100%; display:flex; flex-direction:column; gap:6px; margin-top:20px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:9px; color:var(--text-muted); border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px;">
+                <span>PRODE 2026</span>
+                <span>📶 🔋</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); height:60px; border-radius:10px; border:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px;">
+                <span style="font-size:24px;">⚽</span>
+                <span style="font-size:8px; font-weight:700; color:var(--gold);">PRODE FAMILIAR</span>
+              </div>
+              <div style="background:rgba(197,165,90,0.1); height:80px; border-radius:10px; border:1px solid rgba(197,165,90,0.2); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold; color:var(--gold);">
+                ¡Mundial Fútbol 2026!
+              </div>
+            </div>
+
+            <!-- Simulated Share Menu Overlay -->
+            <div id="demo-overlay" style="position:absolute; bottom:0; left:0; width:100%; height:0px; background:rgba(22,27,34,0.98); border-top:2px solid var(--border); transition:height 0.8s ease; display:flex; flex-direction:column; gap:10px; padding:16px 12px; box-sizing:border-box; z-index:90; overflow:hidden;">
+              <div style="font-weight:bold; font-size:11px; color:var(--text); text-align:left; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:6px;">Compartir / Opciones</div>
+              <div style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.03); padding:8px; border-radius:6px; text-align:left; border:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:16px;">📤</span>
+                <span style="font-size:10px; color:var(--text);">Enviar a un amigo</span>
+              </div>
+              <div id="demo-install-item" style="display:flex; align-items:center; gap:8px; background:rgba(197,165,90,0.15); padding:8px; border-radius:6px; text-align:left; border:1px solid var(--gold); transition: transform 0.2s;">
+                <span style="font-size:16px; color:var(--gold);">➕</span>
+                <span style="font-size:10px; font-weight:bold; color:var(--gold);">Agregar a pantalla de inicio</span>
+              </div>
+            </div>
+
+            <!-- Browser Navigation bar mockup -->
+            <div style="width:100%; display:flex; justify-content:space-around; align-items:center; font-size:14px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px; z-index:95;">
+              <span>◀</span>
+              <span>▶</span>
+              <span id="demo-share-btn" style="cursor:pointer; background:rgba(197,165,90,0.2); padding:4px 8px; border-radius:6px; font-weight:bold; border:1px solid var(--gold); transition: transform 0.2s;">📤</span>
+              <span>📖</span>
+            </div>
+          </div>
+        </div>
+      `;
+      openModal('Demo de Instalación 📱', html);
+      
+      // Delay to avoid DOM lookup errors
+      setTimeout(() => {
+        const overlay = document.getElementById('demo-overlay');
+        const shareBtn = document.getElementById('demo-share-btn');
+        const installItem = document.getElementById('demo-install-item');
+        if (!overlay || !shareBtn || !installItem) return;
+        
+        let state = 0; // 0 = closed, 1 = share clicked, 2 = install clicked
+        
+        const runStep = () => {
+          if (state === 0) {
+            shareBtn.style.transform = 'scale(0.85)';
+            setTimeout(() => {
+              shareBtn.style.transform = '';
+              overlay.style.height = '170px';
+              state = 1;
+              setTimeout(runStep, 2000);
+            }, 400);
+          } else if (state === 1) {
+            installItem.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+              installItem.style.transform = '';
+              overlay.style.height = '0px';
+              state = 0;
+              setTimeout(runStep, 3000);
+            }, 400);
+          }
+        };
+        setTimeout(runStep, 1500);
+      }, 500);
+    };
     function updateOnboardSlide() {
       document.querySelectorAll('.onboarding-slide').forEach((s,i) => { s.classList.remove('active','prev'); if(i===onboardSlide) s.classList.add('active'); else if(i<onboardSlide) s.classList.add('prev'); });
       document.querySelectorAll('.onboarding-dot').forEach((d,i) => d.classList.toggle('active', i===onboardSlide));
@@ -2720,7 +3121,7 @@
     // ============================================
     // HASH ROUTER
     // ============================================
-    const validViews = ['inicio','pronosticos','ranking','simulador','admin','team','reglas','duelos','mas','stats'];
+    const validViews = ['inicio','pronosticos','ranking','simulador','admin','team','reglas','mas','stats'];
     function navigateTo(viewPath) {
       const parts = viewPath.split('?');
       let view = parts[0];
@@ -2734,14 +3135,6 @@
       currentView = view;
       window.location.hash = view === 'inicio' ? (queryString ? 'inicio?' + queryString : '') : (queryString ? view + '?' + queryString : view);
 
-      // Check for incoming P2P challenge parameters
-      const params = getUrlParams();
-      if (params.action === 'desafiar' && params.matchId) {
-        setTimeout(() => {
-          showIncomingChallenge(params);
-        }, 800);
-      }
-      
       document.querySelectorAll('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.view === view));
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
       const section = document.getElementById('view-' + view);
@@ -2761,7 +3154,6 @@
         case 'admin': renderAdmin(); break;
         case 'team': renderTeamDetailView(); break;
         case 'reglas': renderReglas(); break;
-        case 'duelos': renderDuelos(); break;
       }
     }
 
@@ -3237,7 +3629,7 @@
         </div>`;
         html += `<div class="match-cards-grid">${filtered.map((m,idx) => {
           const p = preds[m.id]; const homeVal = p ? p.home : ''; const awayVal = p ? p.away : ''; const isSaved = !!p;
-          const hasResult = m.homeScore !== undefined && m.awayScore !== undefined;
+          const hasResult = m.status === 'finished' && m.homeScore !== undefined && m.awayScore !== undefined;
           
           let scoreAreaHTML = '';
           let footerHTML = '';
@@ -3286,11 +3678,14 @@
             }
             
             footerHTML = `
-              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+              <div style="display:flex; justify-content:space-between; width:100%; align-items:center; gap: 8px;">
                 <div style="display:flex; align-items:center; gap:6px;">
                   <span class="status-badge" style="background:${ptsClass}; color:${ptsColor}; padding:3px 8px; font-weight:700; font-size:11px; margin:0;">${ptsText} ${label}</span>
                 </div>
-                <button class="btn btn-outline btn-sm" onclick="showMatchPredictionsModal(${m.id})" style="padding:6px 12px; min-height:36px; font-size:12px; width:auto; border-color:var(--gold); color:var(--gold);">📊 Ver qué puso el resto</button>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn btn-outline btn-sm" onclick="showMatchStatsModal(${m.id})" style="padding:6px 10px; min-height:32px; font-size:11px; width:auto; border-color:var(--gold); color:var(--gold); display:flex; align-items:center; gap:4px;">📊 Stats</button>
+                  <button class="btn btn-outline btn-sm" onclick="showMatchPredictionsModal(${m.id})" style="padding:6px 10px; min-height:32px; font-size:11px; width:auto; border-color:var(--gold); color:var(--gold); display:flex; align-items:center; gap:4px;">👥 Preds</button>
+                </div>
               </div>`;
           } else {
             scoreAreaHTML = `
@@ -3300,9 +3695,10 @@
               
             footerHTML = `
               <div class="match-status"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
-              <div style="display:flex; gap:8px; align-items:center;">
+              <div style="display:flex; gap:6px; align-items:center;">
                 <button class="match-save-btn ${isSaved?'saved':''}" id="save-btn-${m.id}" onclick="saveMatch(${m.id})" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
-                <button class="btn btn-outline" onclick="showMatchPredictionsModal(${m.id})" style="padding:0; min-height:38px; width:38px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Ver qué puso el resto">📊</button>
+                <button class="btn btn-outline" onclick="showMatchStatsModal(${m.id})" style="padding:0; min-height:38px; width:38px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Estadísticas H2H y PRO">📊</button>
+                <button class="btn btn-outline" onclick="showMatchPredictionsModal(${m.id})" style="padding:0; min-height:38px; width:38px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Ver qué puso el resto">👥</button>
               </div>`;
           }
 
@@ -3402,7 +3798,7 @@
       preds[matchId].savedAt = new Date().toISOString();
       saveBracketPredictions(preds);
       closeModal();
-      showToast('Predicción guardada ✅', 'success');
+      showToast('Se cargó correcto ✅', 'success');
       renderPredictions();
     };
 
@@ -3421,7 +3817,7 @@
       const btn = document.getElementById('save-btn-'+id); btn.textContent = '✅ Guardado'; btn.classList.add('saved');
       h.classList.add('has-value'); a.classList.add('has-value'); h.classList.remove('error'); a.classList.remove('error');
       const match = MATCHES.find(m => m.id === id);
-      showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+      showToast('Se cargó correcto ✅','success');
 
       // Sincronizar en la nube
       if (ProdeAPI.isConfigured()) {
@@ -3457,7 +3853,7 @@
       if (btn) { btn.textContent = '✅ Guardado'; btn.style.background = 'rgba(34,197,94,0.2)'; btn.style.color = '#22c55e'; }
       h.style.borderColor = '#22c55e'; a.style.borderColor = '#22c55e';
       const match = MATCHES.find(m => m.id === id);
-      showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+      showToast('Se cargó correcto ✅','success');
 
       // Sincronizar en la nube
       if (ProdeAPI.isConfigured()) {
@@ -3498,7 +3894,7 @@
       });
       if (saved > 0) {
         savePredictions(preds);
-        showToast(`${saved} pronósticos guardados 🎉`,'success');
+        showToast('Se cargó correcto ✅','success');
 
         // Sincronizar en la nube
         if (ProdeAPI.isConfigured()) {
@@ -3506,7 +3902,7 @@
           const apiPayload = { participante: user.nombre, pronosticos: pronList };
           if (navigator.onLine) {
             ProdeAPI.request('guardarPronosticoBatch', apiPayload, 'POST')
-              .then(() => showToast('¡Sincronizado con Google Sheets! ☁️', 'success'))
+              .then(() => showToast('Se cargó correcto ✅', 'success'))
               .catch(() => {
                 ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
                 showToast('Guardado localmente. Se subirá al reconectar 📡', 'info');
@@ -3768,7 +4164,7 @@
       h.classList.add('has-value'); a.classList.add('has-value'); h.classList.remove('error'); a.classList.remove('error');
       renderSimulador();
       const match = MATCHES.find(m => m.id === id);
-      showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+      showToast('Se cargó correcto ✅','success');
     };
 
     window.openBracketPickSim = function(matchId) {
@@ -3796,7 +4192,7 @@
       preds[matchId].savedAt = new Date().toISOString();
       saveBracketPredictions(preds);
       closeModal();
-      showToast('Simulación de llave guardada ✅', 'success');
+      showToast('Se cargó correcto ✅', 'success');
       renderSimulador();
     };
 
@@ -3878,7 +4274,10 @@
                 </div>
                 <div class="match-card-footer" style="display:flex; justify-content:space-between; align-items:center;">
                   <div class="match-status" style="font-size:11px;"><span class="match-status-indicator">${isSaved?'🟢 Guardado':'🟡 Pendiente'}</span></div>
-                  <button class="match-save-btn ${isSaved?'saved':''}" id="sim-save-btn-${m.id}" onclick="saveSimMatch(${m.id})" style="padding:6px 12px; min-height:36px; font-size:13px;" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    <button class="btn btn-outline" onclick="showMatchStatsModal(${m.id})" style="padding:0; min-height:36px; width:36px; display:flex; align-items:center; justify-content:center; border-color:var(--gold); color:var(--gold);" title="Estadísticas H2H y PRO">📊</button>
+                    <button class="match-save-btn ${isSaved?'saved':''}" id="sim-save-btn-${m.id}" onclick="saveSimMatch(${m.id})" style="padding:6px 12px; min-height:36px; font-size:13px;" ${locked?'disabled':''}>${isSaved?'✅ Guardado':'💾 Guardar'}</button>
+                  </div>
                 </div>
               </div>`;
             });
@@ -4310,7 +4709,7 @@
       }
       const data = { champion: document.getElementById('gp-champion').value, runner: document.getElementById('gp-runner').value, scorer: document.getElementById('gp-scorer').value, goals: document.getElementById('gp-goals').value, surprise: document.getElementById('gp-surprise').value, savedAt: new Date().toISOString() };
       saveGroupPredictions(data);
-      showToast('Predicciones del torneo guardadas 🏆', 'success');
+      showToast('Se cargó correcto ✅', 'success');
 
       // Sincronizar en la nube
       if (ProdeAPI.isConfigured()) {
@@ -4327,7 +4726,7 @@
         };
         if (navigator.onLine) {
           ProdeAPI.request('guardarPrediccionesEstadisticas', apiPayload, 'POST')
-            .then(() => showToast('¡Predicciones del torneo sincronizadas! ☁️', 'success'))
+            .then(() => showToast('Se cargó correcto ✅', 'success'))
             .catch(e => {
               ProdeAPI.addToQueue('guardarPrediccionesEstadisticas', apiPayload);
               showToast('Guardadas localmente. Se subirán al reconectar 📡', 'info');

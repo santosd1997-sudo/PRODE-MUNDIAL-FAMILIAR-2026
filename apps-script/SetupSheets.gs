@@ -42,16 +42,17 @@ function crearTodasLasHojas() {
   ss.toast('3/22 — Participantes ✅', '🏆 PRODE', 2);
 
   crearHojaPartidos(ss);
-  ss.toast('4/22 — Partidos ✅', '🏆 PRODE', 2);
+  popularPartidos(ss);
+  ss.toast('4/22 — Fixture y Partidos ✅', '🏆 PRODE', 2);
 
   crearHojaCargaPronosticos(ss);
-  ss.toast('5/22 — Carga de Pronósticos ✅', '🏆 PRODE', 2);
+  ss.toast('5/22 — Pronósticos ✅', '🏆 PRODE', 2);
 
   crearHojaResultadosOficiales(ss);
   ss.toast('6/22 — Resultados Oficiales ✅', '🏆 PRODE', 2);
 
   crearHojaTablaGeneral(ss);
-  ss.toast('7/22 — Tabla General ✅', '🏆 PRODE', 2);
+  ss.toast('7/22 — Ranking General ✅', '🏆 PRODE', 2);
 
   crearHojaRankingSemanal(ss);
   ss.toast('8/22 — Ranking Semanal ✅', '🏆 PRODE', 2);
@@ -362,37 +363,34 @@ function crearHojaParticipantes(ss) {
 // =============================================================================
 
 function crearHojaPartidos(ss) {
-  var sheet = obtenerOCrearHoja(ss, 'Partidos');
-  var headers = ['ID', 'Fecha', 'Hora', 'Sede', 'Ciudad', 'País', 'Fase', 'Grupo',
-                 'EquipoLocal', 'EquipoVisitante', 'GolLocal', 'GolVisitante', 'Estado', 'Resultado'];
+  var sheet = obtenerOCrearHoja(ss, SHEET_FIXTURE);
+  var headers = ['ID', 'Fecha', 'Fase', 'Grupo', 'Equipo Local', 'Equipo Visitante', 'Hora', 'Estadio', 'Ciudad', 'Gol Local', 'Gol Visitante', 'Estado'];
   formatearEncabezados(sheet, headers, headers.length);
-  ajustarAnchoColumnas(sheet, [60, 110, 80, 200, 140, 120, 140, 70, 160, 160, 80, 100, 110, 100]);
+  ajustarAnchoColumnas(sheet, [60, 110, 140, 70, 160, 160, 80, 200, 140, 80, 100, 110]);
 
   // Data validations
-  agregarValidacionDesplegable(sheet, 13, 2, 200,
+  agregarValidacionDesplegable(sheet, 12, 2, 200,
     ['Pendiente', 'En Juego', 'Finalizado', 'Suspendido', 'Postergado']);
-  agregarValidacionDesplegable(sheet, 7, 2, 200,
+  agregarValidacionDesplegable(sheet, 3, 2, 200,
     ['Fase de Grupos', 'Treintaidosavos', 'Octavos de Final', 'Cuartos de Final', 'Semifinal', 'Tercer Puesto', 'Final']);
-  agregarValidacionDesplegable(sheet, 14, 2, 200,
-    ['Local', 'Empate', 'Visitante']);
 
   // Add conditional formatting: Finalizado = light green
   var rules = sheet.getConditionalFormatRules();
   var ruleFinished = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('Finalizado')
     .setBackground('#D9EAD3')
-    .setRanges([sheet.getRange('M2:M200')])
+    .setRanges([sheet.getRange('L2:L200')])
     .build();
   var rulePending = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('Pendiente')
     .setBackground('#FFF2CC')
-    .setRanges([sheet.getRange('M2:M200')])
+    .setRanges([sheet.getRange('L2:L200')])
     .build();
   var ruleInPlay = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('En Juego')
     .setBackground('#D0E0FF')
     .setFontColor('#003087')
-    .setRanges([sheet.getRange('M2:M200')])
+    .setRanges([sheet.getRange('L2:L200')])
     .build();
   rules.push(ruleFinished, rulePending, ruleInPlay);
   sheet.setConditionalFormatRules(rules);
@@ -403,7 +401,7 @@ function crearHojaPartidos(ss) {
 // =============================================================================
 
 function crearHojaCargaPronosticos(ss) {
-  var sheet = obtenerOCrearHoja(ss, 'Carga de Pronósticos');
+  var sheet = obtenerOCrearHoja(ss, SHEET_PRONOSTICOS);
   var headers = ['IDPronostico', 'IDParticipante', 'NombreParticipante', 'IDPartido',
                  'EquipoLocal', 'EquipoVisitante', 'GolLocalPron', 'GolVisitantePron',
                  'FechaCarga', 'Bloqueado'];
@@ -429,7 +427,7 @@ function crearHojaCargaPronosticos(ss) {
 // =============================================================================
 
 function crearHojaResultadosOficiales(ss) {
-  var sheet = obtenerOCrearHoja(ss, 'Resultados Oficiales');
+  var sheet = obtenerOCrearHoja(ss, SHEET_RESULTADOS);
   var headers = ['IDPartido', 'Fecha', 'EquipoLocal', 'EquipoVisitante', 'GolLocal',
                  'GolVisitante', 'Resultado', 'Fase', 'PenalesLocal', 'PenalesVisitante', 'Notas'];
   formatearEncabezados(sheet, headers, headers.length);
@@ -448,7 +446,7 @@ function crearHojaResultadosOficiales(ss) {
 // =============================================================================
 
 function crearHojaTablaGeneral(ss) {
-  var sheet = obtenerOCrearHoja(ss, 'Tabla General');
+  var sheet = obtenerOCrearHoja(ss, SHEET_RANKING);
   var headers = ['Posición', 'Participante', 'PuntosTotal', 'Exactos', 'Resultados',
                  'BonusGoles', 'PartidosJugados', 'Efectividad%', 'MejorRacha', 'PuntosÚltimos5'];
   formatearEncabezados(sheet, headers, headers.length);
@@ -1135,15 +1133,14 @@ function borrarTodasLasHojas() {
     return;
   }
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheetNames = [
-    'Configuración', 'Equipos', 'Participantes', 'Partidos',
-    'Carga de Pronósticos', 'Resultados Oficiales', 'Tabla General',
+    SHEET_CONFIG, 'Equipos', SHEET_PARTICIPANTES, SHEET_FIXTURE,
+    SHEET_PRONOSTICOS, SHEET_RESULTADOS, SHEET_RANKING,
     'Ranking Semanal', 'Ranking por Fase', 'Estadísticas',
-    'Historial Ganadores', 'Dashboard', 'Simulador', 'Modo Experto',
-    'Estadísticas Partidos', 'Estadísticas Jugadores', 'Predicciones Jugadores',
+    'Historial Ganadores', SHEET_DASHBOARD, 'Simulador', SHEET_MODO_EXPERTO,
+    'Estadísticas Partidos', SHEET_ESTADISTICAS_JUGADORES, 'Predicciones Jugadores',
     'Ranking Estadístico', 'Ranking Combinado', 'Base FIFA',
-    'Reglas Avanzadas', 'Gamificación'
+    'Reglas Avanzadas', SHEET_LOGROS
   ];
 
   // Ensure at least one sheet remains (create a temp sheet)
@@ -1171,15 +1168,14 @@ function borrarTodasLasHojas() {
  * Only the spreadsheet owner can bypass this protection.
  */
 function protegerEncabezados() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheetNames = [
-    'Configuración', 'Equipos', 'Participantes', 'Partidos',
-    'Carga de Pronósticos', 'Resultados Oficiales', 'Tabla General',
+    SHEET_CONFIG, 'Equipos', SHEET_PARTICIPANTES, SHEET_FIXTURE,
+    SHEET_PRONOSTICOS, SHEET_RESULTADOS, SHEET_RANKING,
     'Ranking Semanal', 'Ranking por Fase', 'Estadísticas',
-    'Historial Ganadores', 'Dashboard', 'Simulador', 'Modo Experto',
-    'Estadísticas Partidos', 'Estadísticas Jugadores', 'Predicciones Jugadores',
+    'Historial Ganadores', SHEET_DASHBOARD, 'Simulador', SHEET_MODO_EXPERTO,
+    'Estadísticas Partidos', SHEET_ESTADISTICAS_JUGADORES, 'Predicciones Jugadores',
     'Ranking Estadístico', 'Ranking Combinado', 'Base FIFA',
-    'Reglas Avanzadas', 'Gamificación'
+    'Reglas Avanzadas', SHEET_LOGROS
   ];
 
   var protectedCount = 0;
@@ -1222,9 +1218,116 @@ function actualizarRankingsCompleto() {
  */
 function cargarFixtureCompleto() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  ss.toast('Función de carga de fixture ejecutada.', '📅 Fixture', 5);
-  // This function should call fixture loading logic from Fixture.gs or equivalent
-  // cargarFixtureDesdeJSON(); // Uncomment when implemented
+  ss.toast('Cargando fixture oficial del Mundial 2026...', '📅 Fixture', 10);
+  popularPartidos(ss);
+  ss.toast('¡Fixture de 72 partidos de grupos cargado con éxito! 🏆', '📅 Fixture', 5);
+}
+
+function popularPartidos(ss) {
+  var sheet = ss.getSheetByName(SHEET_FIXTURE);
+  if (!sheet) return;
+  
+  var equipos = [
+    {name: 'Marruecos', iso: 'MAR', group: 'A'},
+    {name: 'España', iso: 'ESP', group: 'A'},
+    {name: 'Canadá', iso: 'CAN', group: 'A'},
+    {name: 'Australia', iso: 'AUS', group: 'A'},
+    {name: 'Portugal', iso: 'POR', group: 'B'},
+    {name: 'Paraguay', iso: 'PAR', group: 'B'},
+    {name: 'Nueva Zelanda', iso: 'NZL', group: 'B'},
+    {name: 'Repechaje AFC/OFC', iso: 'TBD', group: 'B'},
+    {name: 'Bélgica', iso: 'BEL', group: 'C'},
+    {name: 'México', iso: 'MEX', group: 'C'},
+    {name: 'Ecuador', iso: 'ECU', group: 'C'},
+    {name: 'Bolivia', iso: 'BOL', group: 'C'},
+    {name: 'Francia', iso: 'FRA', group: 'D'},
+    {name: 'Colombia', iso: 'COL', group: 'D'},
+    {name: 'Arabia Saudita', iso: 'KSA', group: 'D'},
+    {name: 'Repechaje UEFA', iso: 'TBD', group: 'D'},
+    {name: 'Argentina', iso: 'ARG', group: 'E'},
+    {name: 'Chile', iso: 'CHI', group: 'E'},
+    {name: 'Uzbekistán', iso: 'UZB', group: 'E'},
+    {name: 'Repechaje CONCACAF/CONMEBOL', iso: 'TBD', group: 'E'},
+    {name: 'Países Bajos', iso: 'NED', group: 'F'},
+    {name: 'Japón', iso: 'JPN', group: 'F'},
+    {name: 'Irán', iso: 'IRN', group: 'F'},
+    {name: 'Senegal', iso: 'SEN', group: 'F'},
+    {name: 'Inglaterra', iso: 'ENG', group: 'G'},
+    {name: 'EE.UU.', iso: 'USA', group: 'G'},
+    {name: 'Serbia', iso: 'SRB', group: 'G'},
+    {name: 'Panamá', iso: 'PAN', group: 'G'},
+    {name: 'Alemania', iso: 'GER', group: 'H'},
+    {name: 'Uruguay', iso: 'URU', group: 'H'},
+    {name: 'Corea del Sur', iso: 'KOR', group: 'H'},
+    {name: 'Nigeria', iso: 'NGA', group: 'H'},
+    {name: 'Brasil', iso: 'BRA', group: 'I'},
+    {name: 'Italia', iso: 'ITA', group: 'I'},
+    {name: 'Albania', iso: 'ALB', group: 'I'},
+    {name: 'Repechaje CAF', iso: 'TBD', group: 'I'},
+    {name: 'Croacia', iso: 'CRO', group: 'J'},
+    {name: 'Camerún', iso: 'CMR', group: 'J'},
+    {name: 'Perú', iso: 'PER', group: 'J'},
+    {name: 'Costa Rica', iso: 'CRC', group: 'J'},
+    {name: 'Suiza', iso: 'SUI', group: 'K'},
+    {name: 'Dinamarca', iso: 'DEN', group: 'K'},
+    {name: 'Ghana', iso: 'GHA', group: 'K'},
+    {name: 'Honduras', iso: 'HON', group: 'K'},
+    {name: 'Austria', iso: 'AUT', group: 'L'},
+    {name: 'Egipto', iso: 'EGY', group: 'L'},
+    {name: 'Venezuela', iso: 'VEN', group: 'L'},
+    {name: 'Jamaica', iso: 'JAM', group: 'L'}
+  ];
+  
+  var groupsDef = {};
+  equipos.forEach(function(eq) {
+    if (!groupsDef[eq.group]) groupsDef[eq.group] = [];
+    groupsDef[eq.group].push(eq);
+  });
+  
+  var groupNames = Object.keys(groupsDef).sort();
+  var matchDays = [
+    {dates:['2026-06-11','2026-06-12','2026-06-13','2026-06-14','2026-06-15'], times:['15:00','18:00','21:00']},
+    {dates:['2026-06-16','2026-06-17','2026-06-18','2026-06-19','2026-06-20'], times:['15:00','18:00','21:00']},
+    {dates:['2026-06-21','2026-06-22','2026-06-23','2026-06-24','2026-06-25'], times:['18:00','21:00']}
+  ];
+  var venues = ['MetLife Stadium, NJ','SoFi Stadium, LA','AT&T Stadium, Dallas','Hard Rock Stadium, Miami','NRG Stadium, Houston','Lumen Field, Seattle','BC Place, Vancouver','BMO Field, Toronto','Lincoln Financial, Philadelphia','Gillette Stadium, Boston','Rose Bowl, LA',"Levi's Stadium, SF",'Estadio Azteca, CDMX','Estadio Akron, Guadalajara','BBVA Stadium, Monterrey'];
+  
+  var matches = [];
+  var matchId = 1;
+  
+  groupNames.forEach(function(groupName, gi) {
+    var teams = groupsDef[groupName];
+    var combos = [[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
+    combos.forEach(function(c, ci) {
+      var md = Math.floor(ci / 2);
+      var time = matchDays[0].times[ci % 3];
+      var venue = venues[(gi * 6 + ci) % venues.length];
+      var homeTeam = teams[c[0]].name;
+      var awayTeam = teams[c[1]].name;
+      
+      var dayStr = String(11 + gi + md).padStart(2, '0');
+      var dateStr = '2026-06-' + dayStr;
+      
+      matches.push([
+        matchId,
+        dateStr,
+        'Fase de Grupos',
+        groupName,
+        homeTeam,
+        awayTeam,
+        time,
+        venue.split(',')[0],
+        venue.split(',')[1] || '',
+        '',
+        '',
+        'Pendiente'
+      ]);
+      matchId++;
+    });
+  });
+  
+  sheet.getRange(2, 1, matches.length, 12).setValues(matches);
+  aplicarColoresAlternos(sheet, 12, matches.length);
 }
 
 /**

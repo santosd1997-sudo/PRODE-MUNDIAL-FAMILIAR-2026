@@ -41,7 +41,7 @@ var SHEET_ESTADISTICAS_EQUIPOS = 'Estadísticas Equipos';
 var SHEET_PARTICIPANTES = 'Participantes';
 
 /** @const {string} Sheet: Gamification / achievements */
-var SHEET_LOGROS = 'Logros';
+var SHEET_LOGROS = 'Gamificación';
 
 /** @const {string} Sheet: Audit log */
 var SHEET_LOG = 'Log';
