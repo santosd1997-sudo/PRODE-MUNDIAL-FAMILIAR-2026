@@ -383,24 +383,9 @@
       </div>
       <form id="register-form" class="register-form" novalidate>
         <div class="form-group">
-          <label class="form-label">Nombre <span class="required">*</span></label>
-          <input type="text" class="form-input" id="reg-nombre" placeholder="Ej: Juan" required autocomplete="given-name">
-          <div class="form-error" id="err-nombre">Ingresá tu nombre</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Apellido <span class="required">*</span></label>
-          <input type="text" class="form-input" id="reg-apellido" placeholder="Ej: Pérez" required autocomplete="family-name">
-          <div class="form-error" id="err-apellido">Ingresá tu apellido</div>
-        </div>
-        <div class="form-group">
           <label class="form-label">Apodo / Nickname <span class="required">*</span></label>
           <input type="text" class="form-input" id="reg-apodo" placeholder="Ej: Juanchi" required minlength="3" autocomplete="off">
           <div class="form-error" id="err-apodo">El apodo debe tener al menos 3 caracteres</div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Teléfono <span class="required">*</span></label>
-          <input type="tel" class="form-input" id="reg-telefono" placeholder="+54 11 1234-5678" required autocomplete="tel">
-          <div class="form-error" id="err-telefono">Ingresá tu teléfono</div>
         </div>
         <div class="form-group">
           <label class="form-label">Email <span class="required">*</span></label>
@@ -587,7 +572,7 @@
     // ============================================
     const ProdeAPI = {
       getApiUrl() {
-        return localStorage.getItem('prode-api-url') || 'https://script.google.com/macros/s/AKfycbw60PersonasDefaultFallback/exec';
+        return localStorage.getItem('prode-api-url') || 'https://script.google.com/macros/s/AKfycbzeK6dcghKv5NLGFm0wtq3VTG0y7CwmqfbkDc-uBslDsRR9g3wwmFhupcRa3UVx_BHj/exec';
       },
       setApiUrl(url) {
         if (url) url = url.trim().replace(/\/+$/, '');
@@ -2764,7 +2749,6 @@
         screen.querySelector('.pending-desc').textContent = 'Tu solicitud fue rechazada por el administrador. Contactalo para más información.';
       }
       dataEl.innerHTML = `
-        <div class="pending-data-row"><span class="pending-data-label">Nombre</span><span class="pending-data-value">${user.nombre} ${user.apellido}</span></div>
         <div class="pending-data-row"><span class="pending-data-label">Apodo</span><span class="pending-data-value">${user.apodo}</span></div>
         <div class="pending-data-row"><span class="pending-data-label">Email</span><span class="pending-data-value">${user.email}</span></div>
         <div class="pending-data-row"><span class="pending-data-label">Grupo</span><span class="pending-data-value">${user.grupo}</span></div>
@@ -2812,21 +2796,20 @@
 
     document.getElementById('register-form').addEventListener('submit', function(e) {
       e.preventDefault();
-      const nombre = document.getElementById('reg-nombre').value.trim();
-      const apellido = document.getElementById('reg-apellido').value.trim();
       const apodo = document.getElementById('reg-apodo').value.trim();
-      const telefono = document.getElementById('reg-telefono').value.trim();
       const email = document.getElementById('reg-email').value.trim().toLowerCase();
       const grupo = document.getElementById('reg-grupo').value;
       const equipo = document.getElementById('reg-equipo').value;
       const avatar = document.getElementById('reg-avatar').value;
 
+      // Defaults to avoid breaking elsewhere
+      const nombre = apodo;
+      const apellido = '';
+      const telefono = '';
+
       // Validation
       const fields = [
-        {id:'nombre',val:nombre,check:v=>v.length>=2},
-        {id:'apellido',val:apellido,check:v=>v.length>=2},
         {id:'apodo',val:apodo,check:v=>v.length>=3},
-        {id:'telefono',val:telefono,check:v=>v.length>=6},
         {id:'email',val:email,check:v=>v.includes('@')&&v.includes('.')},
         {id:'grupo',val:grupo,check:v=>v!==''},
         {id:'equipo',val:equipo,check:v=>v!==''},
@@ -4321,15 +4304,13 @@
       const html = `
         <div style="text-align:center; margin-bottom:16px;">
           <span style="font-size:48px; display:inline-block; margin-bottom:8px;">${user.avatar}</span>
-          <div style="font-size:20px; font-weight:800; color:var(--text);">${user.nombre||''} ${user.apellido||''}</div>
-          <div style="font-size:14px; color:var(--text-muted); margin-bottom:8px;">@${user.apodo}</div>
-          <div style="display:flex; justify-content:center; gap:8px; margin-bottom:12px;">
+          <div style="font-size:20px; font-weight:800; color:var(--text);">${user.apodo}</div>
+          <div style="display:flex; justify-content:center; gap:8px; margin-top:8px; margin-bottom:12px;">
             ${familyBadgeHTML(user.grupo)}
             ${favTeam ? `<span class="badge" style="background:rgba(255,255,255,0.06); color:var(--text); display:inline-flex; align-items:center; gap:4px;">${favTeam.emoji} ${favTeam.name}</span>` : ''}
           </div>
           <div style="font-size:12px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px; align-items:center;">
             <span>✉️ ${user.email || '-'}</span>
-            <span>📱 ${user.telefono || '-'}</span>
             <span>📅 Miembro desde: ${regDate}</span>
           </div>
         </div>
@@ -4512,8 +4493,7 @@
             <div class="admin-user-header">
               <span class="admin-user-avatar">${u.avatar||'⚽'}</span>
               <div class="admin-user-info">
-                <div class="admin-user-name">${u.nombre} ${u.apellido}</div>
-                <div class="admin-user-apodo">@${u.apodo}</div>
+                <div class="admin-user-name">${u.apodo}</div>
                 <div class="admin-user-id">${u.userId || u.id || '-'}</div>
               </div>
               <span class="status-badge ${u.status}">${u.status}</span>
@@ -4521,7 +4501,6 @@
             <div class="admin-user-details">
               <div class="admin-user-detail">👥 ${u.grupo}</div>
               <div class="admin-user-detail">⚽ ${u.equipoFavorito}</div>
-              <div class="admin-user-detail">📱 ${u.telefono||'-'}</div>
               <div class="admin-user-detail">✉️ ${u.email||'-'}</div>
               <div class="admin-user-detail" style="grid-column:span 2;">📅 ${regDate}</div>
             </div>
@@ -4827,10 +4806,7 @@
     window.openEditProfile = function() {
       const user = getUser();
       openModal('Editar Perfil', `
-        <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="edit-nombre" value="${user.nombre||''}"></div>
-        <div class="form-group"><label class="form-label">Apellido</label><input type="text" class="form-input" id="edit-apellido" value="${user.apellido||''}"></div>
-        <div class="form-group"><label class="form-label">Apodo</label><input type="text" class="form-input" id="edit-apodo" value="${user.apodo}"></div>
-        <div class="form-group"><label class="form-label">Teléfono</label><input type="tel" class="form-input" id="edit-telefono" value="${user.telefono||''}"></div>
+        <div class="form-group"><label class="form-label">Apodo / Nickname</label><input type="text" class="form-input" id="edit-apodo" value="${user.apodo}"></div>
         <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="edit-email" value="${user.email||''}"></div>
         <div class="form-group"><label class="form-label">Grupo familiar</label>
           <select class="form-input form-select" id="edit-grupo">${FAMILY_GROUPS.map(g => `<option value="${g.name}" ${user.grupo===g.name?'selected':''}>${g.name}</option>`).join('')}</select></div>
@@ -4852,10 +4828,10 @@
       const oldUserId = user.userId || user.id;
       const emailChanged = user.email !== email;
       
-      user.nombre = document.getElementById('edit-nombre').value.trim() || user.nombre;
-      user.apellido = document.getElementById('edit-apellido').value.trim() || user.apellido || '';
+      user.nombre = apodo;
+      user.apellido = '';
       user.apodo = apodo;
-      user.telefono = document.getElementById('edit-telefono').value.trim() || user.telefono || '';
+      user.telefono = '';
       user.email = email;
       user.grupo = document.getElementById('edit-grupo').value;
       user.equipoFavorito = document.getElementById('edit-equipo').value;
