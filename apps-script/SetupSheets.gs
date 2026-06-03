@@ -459,7 +459,7 @@ function crearHojaTablaGeneral(ss) {
   var ruleGold = SpreadsheetApp.newConditionalFormatRule()
     .whenFormulaSatisfied('=AND($A2=1,$A2<>"")')
     .setBackground('#FFD700')
-    .setFontWeight('bold')
+    .setBold(true)
     .setRanges([sheet.getRange('A2:J2')])
     .build();
 
@@ -756,7 +756,7 @@ function crearHojaRankingEstadistico(ss) {
   var ruleLeyenda = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('Leyenda')
     .setBackground('#FFD700')
-    .setFontWeight('bold')
+    .setBold(true)
     .setRanges([sheet.getRange('G2:G200')])
     .build();
   var ruleMaestro = SpreadsheetApp.newConditionalFormatRule()
@@ -790,7 +790,7 @@ function crearHojaRankingCombinado(ss) {
   var ruleLeader = SpreadsheetApp.newConditionalFormatRule()
     .whenFormulaSatisfied('=AND($A2=1,$A2<>"")')
     .setBackground('#FFD700')
-    .setFontWeight('bold')
+    .setBold(true)
     .setRanges([sheet.getRange('A2:H2')])
     .build();
   rules.push(ruleLeader);
@@ -1004,20 +1004,20 @@ function crearHojaGamificacion(ss) {
   var ruleLeyenda = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('Leyenda')
     .setBackground('#FFD700')
-    .setFontWeight('bold')
+    .setBold(true)
     .setFontColor('#7F5000')
     .setRanges([sheet.getRange('C2:C200')])
     .build();
   var ruleMaestro = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('Maestro')
     .setBackground('#E0E0E0')
-    .setFontWeight('bold')
+    .setBold(true)
     .setRanges([sheet.getRange('C2:C200')])
     .build();
   var ruleExperto = SpreadsheetApp.newConditionalFormatRule()
     .whenTextEqualTo('Experto')
     .setBackground('#BCAAA4')
-    .setFontWeight('bold')
+    .setBold(true)
     .setFontColor('#FFFFFF')
     .setRanges([sheet.getRange('C2:C200')])
     .build();
