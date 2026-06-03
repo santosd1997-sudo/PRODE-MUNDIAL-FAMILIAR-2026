@@ -1688,7 +1688,7 @@
     // ============================================
     // SHAREABLE RANKING IMAGE (Canvas API)
     // ============================================
-    function generateRankingImage(type) {
+    window.generateRankingImage = function(type) {
       const canvas = document.createElement('canvas');
       canvas.width = 1080;
       canvas.height = 1350;
@@ -1824,7 +1824,7 @@
           downloadBlob(blob, file.name);
         }
       }, 'image/png');
-    }
+    };
 
     function downloadBlob(blob, name) {
       const url = URL.createObjectURL(blob);
@@ -2027,13 +2027,15 @@
     window.saveAllPredictions = function() {
       if (isLocked()) { showToast('Los pronósticos están bloqueados','error'); return; }
       let saved = 0;
+      const preds = getPredictions();
       MATCHES.forEach(m => {
         const h = document.getElementById('score-home-'+m.id), a = document.getElementById('score-away-'+m.id);
         if (h && a && h.value !== '' && a.value !== '') {
-          const preds = getPredictions(); preds[m.id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
-          savePredictions(preds); const btn = document.getElementById('save-btn-'+m.id); if(btn) { btn.textContent='✅ Guardado'; btn.classList.add('saved'); } saved++;
+          preds[m.id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
+          const btn = document.getElementById('save-btn-'+m.id); if(btn) { btn.textContent='✅ Guardado'; btn.classList.add('saved'); } saved++;
         }
       });
+      if (saved > 0) savePredictions(preds);
       showToast(saved > 0 ? `${saved} pronósticos guardados 🎉` : 'No hay pronósticos nuevos para guardar', saved > 0 ? 'success' : 'warning');
     };
 
