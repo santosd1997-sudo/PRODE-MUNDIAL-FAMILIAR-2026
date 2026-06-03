@@ -1940,83 +1940,95 @@
         </div>
       `).join('');
 
-      // Update header with user name
-      const headerGreeting = document.getElementById('header-greeting');
-      if (headerGreeting) headerGreeting.textContent = `¡Hola, ${user.apodo}!`;
-      const headerAvatar = document.getElementById('header-avatar');
-      if (headerAvatar) headerAvatar.textContent = user.avatar || '⚽';
+      // Find user's favorite team data
+      const favTeam = ALL_TEAMS.find(t => t.name === user.equipoFavorito);
+      const favEmoji = favTeam ? favTeam.emoji : '⚽';
+      const favIso = favTeam ? favTeam.iso : '';
 
-      // Get next N matches on same day
-      const nextMatchDate = nextMatch.date;
-      const nextDayMatches = MATCHES.filter(m => m.date === nextMatchDate);
-      const isMultiple = nextDayMatches.length > 1;
-
-      // Build match cards with INLINE prediction inputs
-      const matchCardsHTML = nextDayMatches.map(m => {
-        const pred = preds[m.id];
-        const hasP = pred && pred.home !== undefined;
-        const hVal = hasP ? pred.home : '';
-        const aVal = hasP ? pred.away : '';
-        return `
-          <div class="card" style="border:1px solid ${hasP ? 'rgba(34,197,94,0.3)' : 'rgba(197,165,90,0.3)'}; margin-bottom:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-              <span class="badge badge-gold">${m.group}</span>
-              <span style="font-size:13px;color:var(--text-muted);">${formatMatchDate(m.date, m.time)} • ${m.venue || ''}</span>
+      // Today's matches (if any)
+      const todayMatches = getTodayMatches();
+      const hasTodayMatches = todayMatches.length > 0;
+      let todayHTML = '';
+      if (hasTodayMatches) {
+        todayHTML = `
+          <div style="margin-bottom:12px;padding:10px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+              <span style="display:inline-block;width:8px;height:8px;background:#ef4444;border-radius:50%;animation:trophyPulse 1s infinite;"></span>
+              <span style="font-weight:800;font-size:14px;color:#ef4444;">📅 HOY SE JUEGA</span>
             </div>
-            <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px;">
-              <div style="text-align:center;flex:1;">
-                ${tappableTeamFlag(m.homeIso, m.home, 'team-flag-lg')}
-                <div style="font-size:14px;font-weight:700;margin-top:4px;">${m.home}</div>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;">
-                <input type="number" min="0" max="20" value="${hVal}" id="home-h-${m.id}" 
-                  style="width:52px;height:52px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:2px solid ${hasP ? '#22c55e' : 'var(--gold)'};background:rgba(255,255,255,0.05);color:var(--text,#e6edf3);" 
-                  inputmode="numeric" placeholder="-">
-                <span style="font-size:20px;font-weight:900;color:var(--text-muted);">-</span>
-                <input type="number" min="0" max="20" value="${aVal}" id="home-a-${m.id}" 
-                  style="width:52px;height:52px;text-align:center;font-size:24px;font-weight:800;border-radius:12px;border:2px solid ${hasP ? '#22c55e' : 'var(--gold)'};background:rgba(255,255,255,0.05);color:var(--text,#e6edf3);" 
-                  inputmode="numeric" placeholder="-">
-              </div>
-              <div style="text-align:center;flex:1;">
-                ${tappableTeamFlag(m.awayIso, m.away, 'team-flag-lg')}
-                <div style="font-size:14px;font-weight:700;margin-top:4px;">${m.away}</div>
-              </div>
-            </div>
-            <button onclick="saveHomeMatch(${m.id})" id="home-save-${m.id}" 
-              style="width:100%;padding:10px;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;
-              background:${hasP ? 'rgba(34,197,94,0.2)' : 'var(--gold)'};color:${hasP ? '#22c55e' : '#000'};">
-              ${hasP ? '✅ Guardado' : '💾 Guardar pronóstico'}
-            </button>
+            ${todayMatches.map(m => {
+              const pred = preds[m.id];
+              const predText = pred ? `${pred.home}-${pred.away}` : '⚠️ Sin cargar';
+              const predColor = pred ? 'var(--gold)' : '#ef4444';
+              return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;">
+                <span style="font-weight:700;min-width:35px;">${m.time}</span>
+                ${tappableTeamFlag(m.homeIso,m.home,'team-flag-sm')} <span>${m.home}</span>
+                <span style="color:var(--text-muted);">vs</span>
+                <span>${m.away}</span> ${tappableTeamFlag(m.awayIso,m.away,'team-flag-sm')}
+                <span style="margin-left:auto;font-weight:700;color:${predColor};">${predText}</span>
+              </div>`;
+            }).join('')}
           </div>`;
-      }).join('');
+      }
 
       document.getElementById('home-content').innerHTML = `
-        ${renderTodayMatchesSection()}
-        <div class="section-title"><h3>⏱️ ${isMultiple ? 'Próximos Partidos' : 'Próximo Partido'}</h3>
-          <span style="font-size:13px;color:var(--text-muted);">${pendingCount > 0 ? pendingCount + ' pendientes' : '✅ Completo'}</span>
+        <div class="card" style="background:linear-gradient(135deg, rgba(197,165,90,0.08), rgba(13,17,23,0.95)); border:1px solid rgba(197,165,90,0.2); padding:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:32px;">${user.avatar}</span>
+              <div>
+                <div style="font-size:16px;font-weight:800;">${user.apodo}</div>
+                <div style="font-size:12px;color:var(--text-muted);">${familyBadgeHTML(user.grupo)}</div>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              ${favIso ? `<img src="https://flagcdn.com/48x36/${favIso}.png" style="height:24px;border-radius:3px;" alt="${user.equipoFavorito}">` : ''}
+              <div style="font-size:11px;color:var(--text-muted);">${user.equipoFavorito || ''}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:12px;text-align:center;">
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
+              <div style="font-size:20px;font-weight:900;color:var(--gold);">${savedCount > 0 ? '35' : '0'}</div>
+              <div style="font-size:11px;color:var(--text-muted);">Puntos</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
+              <div style="font-size:20px;font-weight:900;">${savedCount > 0 ? '5°' : '-'}</div>
+              <div style="font-size:11px;color:var(--text-muted);">Posición</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
+              <div style="font-size:20px;font-weight:900;color:#22c55e;">${savedCount > 0 ? '2' : '0'}</div>
+              <div style="font-size:11px;color:var(--text-muted);">Exactos</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 4px;">
+              <div style="font-size:20px;font-weight:900;">${savedCount > 0 ? '3' : '0'} 🔥</div>
+              <div style="font-size:11px;color:var(--text-muted);">Racha</div>
+            </div>
+          </div>
+          <div class="countdown" id="home-countdown" style="margin:0;">
+            <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
+            <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
+          </div>
+          <div style="text-align:center;margin-top:8px;">
+            <span style="font-size:12px;color:var(--text-muted);">⏱️ Próximo: <strong style="color:var(--gold);">${nextMatch.home} vs ${nextMatch.away}</strong> • ${formatMatchDate(nextMatch.date, nextMatch.time)}</span>
+          </div>
+          <div style="text-align:center;margin-top:6px;">
+            <span style="font-size:13px;color:${pendingCount > 0 ? '#f59e0b' : '#22c55e'};font-weight:700;">${pendingCount > 0 ? '⚽ ' + pendingCount + '/' + totalMatches + ' pendientes' : '✅ Prode completo'}</span>
+          </div>
         </div>
-        <div class="countdown" id="home-countdown" style="margin-bottom:12px;">
-          <div class="countdown-unit"><span class="countdown-value" id="cd-days">--</span><span class="countdown-label">Días</span></div>
-          <div class="countdown-unit"><span class="countdown-value" id="cd-hours">--</span><span class="countdown-label">Horas</span></div>
-          <div class="countdown-unit"><span class="countdown-value" id="cd-mins">--</span><span class="countdown-label">Min</span></div>
-          <div class="countdown-unit"><span class="countdown-value" id="cd-secs">--</span><span class="countdown-label">Seg</span></div>
-        </div>
+        ${todayHTML}
+        <div class="section-title"><h3>⚽ ${isMultiple ? 'Próximos Partidos' : 'Próximo Partido'} — Cargá tu pronóstico</h3></div>
         ${matchCardsHTML}
-        <div class="section-title" style="margin-top:16px;"><h3>📋 Progreso por Grupo</h3></div>
+        <div class="section-title" style="margin-top:12px;"><h3>📋 Progreso por Grupo</h3></div>
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-bottom:12px;">
           ${groupGridHTML}
         </div>
         ${pendingCount > 0 ? `
           <button class="cta-btn" onclick="navigateTo('pronosticos')" style="font-size:18px; padding:14px; width:100%; margin-bottom:12px;">
-            ⚽ Completar ${pendingCount} pronósticos pendientes
+            ⚽ Completar todos los pronósticos
           </button>
         ` : ''}
-        <div class="quick-stats" style="margin-bottom:12px;">
-          <div class="quick-stat"><div class="quick-stat-value text-gold">${savedCount > 0 ? '35' : '0'}</div><div class="quick-stat-label">Puntos</div></div>
-          <div class="quick-stat"><div class="quick-stat-value">${savedCount > 0 ? '5°' : '-'}</div><div class="quick-stat-label">Posición</div></div>
-          <div class="quick-stat"><div class="quick-stat-value text-success">${savedCount > 0 ? '2' : '0'}</div><div class="quick-stat-label">Exactos</div></div>
-          <div class="quick-stat"><div class="quick-stat-value">${savedCount > 0 ? '3' : '0'} 🔥</div><div class="quick-stat-label">Racha</div></div>
-        </div>
         ${renderTriviaCard()}`;
       startCountdown(nextMatch);
     }
