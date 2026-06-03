@@ -202,7 +202,7 @@
     .admin-search:focus { border-color:var(--gold); outline:none; }
     .admin-search::placeholder { color:var(--text-muted); }
 
-    .admin-shortcuts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px; }
+    .admin-shortcuts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:16px; }
     .admin-shortcut-card { background:var(--bg-elevated); border:1px solid var(--border); border-radius:10px; padding:14px; text-align:center; cursor:pointer; transition:all .2s; }
     .admin-shortcut-card:hover { border-color:var(--gold); background:rgba(197,165,90,0.05); }
     .admin-shortcut-icon { font-size:24px; margin-bottom:6px; }
@@ -531,6 +531,8 @@
     <section id="view-mas" class="view-section"><div id="mas-content"></div></section>
     <section id="view-admin" class="view-section"><div id="admin-content"></div></section>
     <section id="view-team" class="view-section"><div id="team-content"></div></section>
+    <section id="view-reglas" class="view-section"><div id="reglas-content"></div></section>
+    <section id="view-duelos" class="view-section"><div id="duelos-content"></div></section>
   </main>
 
   <!-- BOTTOM NAV -->
@@ -578,6 +580,193 @@
 
     const ADMIN_PIN = '2026mundial';
     const SUPER_ADMIN_EMAIL = 'santos-dewey@hotmail.com';
+
+    // ============================================
+    // GOOGLE SHEETS API CLIENT (OFFLINE-FIRST)
+    // ============================================
+    const ProdeAPI = {
+      getApiUrl() {
+        return localStorage.getItem('prode-api-url') || '';
+      },
+      setApiUrl(url) {
+        if (url) url = url.trim().replace(/\/+$/, '');
+        localStorage.setItem('prode-api-url', url || '');
+      },
+      isConfigured() {
+        return !!this.getApiUrl();
+      },
+      async request(action, params = {}, method = 'GET') {
+        const urlBase = this.getApiUrl();
+        if (!urlBase) throw new Error('API no configurada.');
+        
+        let url = urlBase;
+        const options = {
+          method: method,
+          mode: 'cors',
+          redirect: 'follow',
+          headers: {}
+        };
+        
+        if (method === 'GET') {
+          const searchParams = new URLSearchParams({ action, ...params });
+          url += '?' + searchParams.toString();
+        } else {
+          options.headers['Content-Type'] = 'text/plain'; // Evitar CORS preflight estricto
+          options.body = JSON.stringify({ action, ...params });
+        }
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s
+        options.signal = controller.signal;
+        
+        try {
+          const response = await fetch(url, options);
+          clearTimeout(timeoutId);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const text = await response.text();
+          let json;
+          try { json = JSON.parse(text); } catch (e) {
+            throw new Error('Respuesta de la API inválida (no es JSON).');
+          }
+          if (json.success === false || json.error) {
+            throw new Error(json.error || json.message || 'Error del servidor.');
+          }
+          return json.data;
+        } catch (e) {
+          clearTimeout(timeoutId);
+          console.error(`[API] Error en request "${action}":`, e);
+          throw e;
+        }
+      },
+      
+      async ping() {
+        return this.request('ping');
+      },
+      
+      async syncDown(user) {
+        if (!this.isConfigured() || !navigator.onLine) return false;
+        try {
+          console.log('[API] Sincronizando datos desde Google Sheets...');
+          
+          // 1. Obtener Fixture / Partidos actualizados
+          const partidos = await this.request('getPartidos');
+          if (partidos && partidos.length > 0) {
+            partidos.forEach(p => {
+              const localMatch = MATCHES.find(m => String(m.id) === String(p.partidoId));
+              if (localMatch) {
+                if (p.golLocal !== null && p.golLocal !== undefined && p.golLocal !== '') localMatch.homeScore = parseInt(p.golLocal);
+                if (p.golVisitante !== null && p.golVisitante !== undefined && p.golVisitante !== '') localMatch.awayScore = parseInt(p.golVisitante);
+                if (p.estado) localMatch.status = p.estado;
+              }
+            });
+            localStorage.setItem('prode-matches-cache', JSON.stringify(MATCHES));
+          }
+          
+          // 2. Obtener Participantes aprobados
+          const participantes = await this.request('getParticipantes');
+          if (participantes && participantes.length > 0) {
+            const allUsers = getAllUsers();
+            participantes.forEach(remote => {
+              const idx = allUsers.findIndex(u => (u.email || '').toLowerCase() === (remote.email || '').toLowerCase());
+              const status = remote.activo === 'SI' || remote.activo === true || remote.activo === 'Activo' ? 'aprobado' : 'pendiente';
+              if (idx !== -1) {
+                allUsers[idx].status = status;
+                allUsers[idx].nombre = remote.nombre;
+                allUsers[idx].grupo = remote.familia || remote.grupo || allUsers[idx].grupo;
+              } else {
+                allUsers.push({
+                  userId: generateUserId(remote.email),
+                  email: remote.email.toLowerCase(),
+                  nombre: remote.nombre,
+                  apodo: remote.nombre.split(' ')[0],
+                  grupo: remote.familia || 'Familia',
+                  status: status,
+                  predictions: {},
+                  bracket: {},
+                  stats: { puntos: 0, exactos: 0, diferencias: 0, ganadores: 0 }
+                });
+              }
+            });
+            saveAllUsers(allUsers);
+          }
+          
+          // 3. Obtener Ranking calculado
+          const rankingData = await this.request('getRanking', { tipo: 'general' });
+          if (rankingData && rankingData.ranking) {
+            localStorage.setItem('prode-ranking-cache', JSON.stringify(rankingData.ranking));
+            const allUsers = getAllUsers();
+            rankingData.ranking.forEach(r => {
+              const u = allUsers.find(user => (user.nombre || '').toLowerCase() === (r.Participante || '').toLowerCase() || (user.email || '').toLowerCase() === (r.Email || '').toLowerCase());
+              if (u) {
+                u.stats = {
+                  puntos: parseInt(r.Puntos || 0),
+                  exactos: parseInt(r.Exactos || 0),
+                  diferencias: parseInt(r.Diferencias || 0),
+                  ganadores: parseInt(r.Ganadores || 0),
+                  errores: parseInt(r.Errores || 0),
+                  racha: parseInt(r.Racha || 0)
+                };
+              }
+            });
+            saveAllUsers(allUsers);
+          }
+          
+          // 4. Si hay usuario activo, descargar sus pronósticos
+          if (user) {
+            const pronosticos = await this.request('getPronosticosConPartidos', { participante: user.nombre });
+            if (pronosticos && Array.isArray(pronosticos)) {
+              const localPreds = getPredictions();
+              pronosticos.forEach(p => {
+                if (p.golLocalPred !== null && p.golLocalPred !== undefined && p.golLocalPred !== '') {
+                  localPreds[p.partidoId] = {
+                    home: parseInt(p.golLocalPred),
+                    away: parseInt(p.golVisitantePred),
+                    savedAt: p.timestamp || new Date().toISOString()
+                  };
+                }
+              });
+              savePredictions(localPreds);
+            }
+          }
+          
+          console.log('[API] Sincronización de bajada finalizada con éxito.');
+          return true;
+        } catch (e) {
+          console.error('[API] Error en sincronización de bajada:', e);
+          return false;
+        }
+      },
+      
+      addToQueue(action, params) {
+        const queue = this.getQueue();
+        queue.push({ action, params, timestamp: new Date().toISOString() });
+        localStorage.setItem('prode-sync-queue', JSON.stringify(queue));
+        console.log(`[API] Solicitud "${action}" encolada localmente.`);
+      },
+      getQueue() {
+        try { return JSON.parse(localStorage.getItem('prode-sync-queue')) || []; } catch(e) { return []; }
+      },
+      async syncPendingQueue() {
+        if (!this.isConfigured() || !navigator.onLine) return;
+        const queue = this.getQueue();
+        if (queue.length === 0) return;
+        
+        console.log(`[API] Subiendo ${queue.length} solicitudes pendientes desde la cola...`);
+        const remaining = [];
+        
+        for (const item of queue) {
+          try {
+            await this.request(item.action, item.params, 'POST');
+            console.log(`[API] Solicitud encolada "${item.action}" enviada correctamente.`);
+          } catch (e) {
+            console.error(`[API] Error al procesar solicitud encolada "${item.action}":`, e);
+            remaining.push(item);
+          }
+        }
+        
+        localStorage.setItem('prode-sync-queue', JSON.stringify(remaining));
+      }
+    };
 
     // Ranking position emojis
     function getRankEmoji(pos, total) {
@@ -1026,7 +1215,7 @@
     // ============================================
     const TEAM_DETAILS = {
       'Argentina': {
-        rank: 3, coach: 'Scaloni', star: 'J. Álvarez', confederation: 'CONMEBOL',
+        rank: 3, coach: 'Lionel Scaloni', star: 'Lionel Messi', confederation: 'CONMEBOL',
         titles: 3, titleYears: [1978,1986,2022], bestFinish: 'Campeón (x3)',
         wcMatches: 88, wcGoals: 152, wcRecord: '47-17-24',
         lastWC: 'Campeón (venció a Francia 4-2 en penales)',
@@ -1039,7 +1228,7 @@
         ]
       },
       'Brazil': {
-        rank: 6, coach: 'Dorival Jr', star: 'Vinícius Jr', confederation: 'CONMEBOL',
+        rank: 6, coach: 'Dorival Júnior', star: 'Vinícius Júnior', confederation: 'CONMEBOL',
         titles: 5, titleYears: [1958,1962,1970,1994,2002], bestFinish: 'Campeón (x5)',
         wcMatches: 114, wcGoals: 237, wcRecord: '76-19-19',
         lastWC: 'Cuartos de final (eliminado por Croacia en penales)',
@@ -1052,7 +1241,7 @@
         ]
       },
       'France': {
-        rank: 1, coach: 'Deschamps', star: 'Mbappé', confederation: 'UEFA',
+        rank: 1, coach: 'Didier Deschamps', star: 'Kylian Mbappé', confederation: 'UEFA',
         titles: 2, titleYears: [1998,2018], bestFinish: 'Campeón (x2)',
         wcMatches: 73, wcGoals: 136, wcRecord: '39-14-20',
         lastWC: 'Subcampeón (perdió vs Argentina en la final)',
@@ -1065,7 +1254,7 @@
         ]
       },
       'Germany': {
-        rank: 10, coach: 'Nagelsmann', star: 'Musiala', confederation: 'UEFA',
+        rank: 10, coach: 'Julian Nagelsmann', star: 'Jamal Musiala', confederation: 'UEFA',
         titles: 4, titleYears: [1954,1974,1990,2014], bestFinish: 'Campeón (x4)',
         wcMatches: 112, wcGoals: 232, wcRecord: '68-21-23',
         lastWC: 'Fase de grupos (eliminado)',
@@ -1078,7 +1267,7 @@
         ]
       },
       'Spain': {
-        rank: 2, coach: 'De la Fuente', star: 'Pedri', confederation: 'UEFA',
+        rank: 2, coach: 'Luis de la Fuente', star: 'Lamine Yamal', confederation: 'UEFA',
         titles: 1, titleYears: [2010], bestFinish: 'Campeón (2010)',
         wcMatches: 67, wcGoals: 108, wcRecord: '31-15-21',
         lastWC: 'Octavos (eliminado por Marruecos en penales)',
@@ -1091,7 +1280,7 @@
         ]
       },
       'England': {
-        rank: 4, coach: 'Tuchel', star: 'Bellingham', confederation: 'UEFA',
+        rank: 4, coach: 'Thomas Tuchel', star: 'Jude Bellingham', confederation: 'UEFA',
         titles: 1, titleYears: [1966], bestFinish: 'Campeón (1966)',
         wcMatches: 74, wcGoals: 104, wcRecord: '32-22-20',
         lastWC: 'Cuartos de final (eliminado por Francia)',
@@ -1104,7 +1293,7 @@
         ]
       },
       'Portugal': {
-        rank: 5, coach: 'Martínez', star: 'Ronaldo', confederation: 'UEFA',
+        rank: 5, coach: 'Roberto Martínez', star: 'Cristiano Ronaldo', confederation: 'UEFA',
         titles: 0, titleYears: [], bestFinish: 'Tercer lugar (1966)',
         wcMatches: 35, wcGoals: 58, wcRecord: '17-6-12',
         lastWC: 'Cuartos de final (eliminado por Marruecos)',
@@ -1117,7 +1306,7 @@
         ]
       },
       'Uruguay': {
-        rank: 17, coach: 'Bielsa', star: 'Núñez', confederation: 'CONMEBOL',
+        rank: 17, coach: 'Marcelo Bielsa', star: 'Federico Valverde', confederation: 'CONMEBOL',
         titles: 2, titleYears: [1930,1950], bestFinish: 'Campeón (x2)',
         wcMatches: 59, wcGoals: 89, wcRecord: '25-12-22',
         lastWC: 'Fase de grupos (eliminado)',
@@ -1130,7 +1319,7 @@
         ]
       },
       'Netherlands': {
-        rank: 7, coach: 'Koeman', star: 'De Jong', confederation: 'UEFA',
+        rank: 7, coach: 'Ronald Koeman', star: 'Virgil van Dijk', confederation: 'UEFA',
         titles: 0, titleYears: [], bestFinish: 'Subcampeón (1974, 1978, 2010)',
         wcMatches: 50, wcGoals: 96, wcRecord: '27-11-12',
         lastWC: 'Cuartos de final (eliminado por Argentina en penales)',
@@ -1143,7 +1332,7 @@
         ]
       },
       'Colombia': {
-        rank: 12, coach: 'Lorenzo', star: 'Luis Díaz', confederation: 'CONMEBOL',
+        rank: 12, coach: 'Néstor Lorenzo', star: 'Luis Díaz', confederation: 'CONMEBOL',
         titles: 0, titleYears: [], bestFinish: 'Cuartos de final (2014)',
         wcMatches: 22, wcGoals: 30, wcRecord: '9-3-10',
         lastWC: 'No clasificó (Qatar 2022)',
@@ -1156,7 +1345,7 @@
         ]
       },
       'Croatia': {
-        rank: 11, coach: 'Dalić', star: 'Modrić', confederation: 'UEFA',
+        rank: 11, coach: 'Zlatko Dalić', star: 'Luka Modrić', confederation: 'UEFA',
         titles: 0, titleYears: [], bestFinish: '3er puesto (2022)',
         wcMatches: 30, wcGoals: 42, wcRecord: '13-8-9',
         lastWC: '3er puesto (venció a Marruecos 2-1)',
@@ -1169,7 +1358,7 @@
         ]
       },
       'Japan': {
-        rank: 18, coach: 'Moriyasu', star: 'Mitoma', confederation: 'AFC',
+        rank: 18, coach: 'Hajime Moriyasu', star: 'Kaoru Mitoma', confederation: 'AFC',
         titles: 0, titleYears: [], bestFinish: 'Octavos de final',
         wcMatches: 25, wcGoals: 27, wcRecord: '7-6-12',
         lastWC: 'Octavos (eliminado por Croacia en penales)',
@@ -1182,7 +1371,7 @@
         ]
       },
       'South Korea': {
-        rank: 25, coach: 'Hong', star: 'Son Heung-min', confederation: 'AFC',
+        rank: 25, coach: 'Hong Myung-bo', star: 'Son Heung-min', confederation: 'AFC',
         titles: 0, titleYears: [], bestFinish: 'Cuarto lugar (2002)',
         wcMatches: 38, wcGoals: 36, wcRecord: '7-10-21',
         lastWC: 'Octavos (eliminado por Brasil)',
@@ -1195,7 +1384,7 @@
         ]
       },
       'Mexico': {
-        rank: 15, coach: 'Aguirre', star: 'Edson Álvarez', confederation: 'CONCACAF',
+        rank: 15, coach: 'Javier Aguirre', star: 'Santiago Giménez', confederation: 'CONCACAF',
         titles: 0, titleYears: [], bestFinish: 'Cuartos de final (1970, 1986)',
         wcMatches: 60, wcGoals: 60, wcRecord: '17-15-28',
         lastWC: 'Fase de grupos (eliminado)',
@@ -1208,7 +1397,7 @@
         ]
       },
       'Morocco': {
-        rank: 19, coach: 'Regragui', star: 'Hakimi', confederation: 'CAF',
+        rank: 19, coach: 'Walid Regragui', star: 'Achraf Hakimi', confederation: 'CAF',
         titles: 0, titleYears: [], bestFinish: 'Cuarto lugar (2022)',
         wcMatches: 20, wcGoals: 15, wcRecord: '6-7-7',
         lastWC: 'Cuarto lugar (semifinalista)',
@@ -1516,6 +1705,10 @@
     };
 
     window.getTeamSquad = function(teamName) {
+      if (squadsDb && squadsDb[teamName]) {
+        return squadsDb[teamName];
+      }
+      
       const positions = ['GK', 'DEF', 'DEF', 'DEF', 'DEF', 'MID', 'MID', 'MID', 'MID', 'FWD', 'FWD', 'FWD', 'FWD', 'MID', 'DEF'];
       const playerNamesByCountry = {
         'Argentina': [
@@ -1523,17 +1716,17 @@
           { name: 'Nahuel Molina', pos: 'DEF', status: 'Disponible' },
           { name: 'Cristian Romero', pos: 'DEF', status: 'Disponible' },
           { name: 'Nicolás Otamendi', pos: 'DEF', status: 'Disponible' },
-          { name: 'Nicolás Tagliafico', pos: 'DEF', status: 'Lesionado (Desgarro)' },
+          { name: 'Nicolás Tagliafico', pos: 'DEF', status: 'Disponible' },
           { name: 'Rodrigo De Paul', pos: 'MID', status: 'Disponible' },
           { name: 'Enzo Fernández', pos: 'MID', status: 'Disponible' },
           { name: 'Alexis Mac Allister', pos: 'MID', status: 'Disponible' },
           { name: 'Lionel Messi', pos: 'FWD', status: 'Disponible' },
           { name: 'Julián Álvarez', pos: 'FWD', status: 'Disponible' },
           { name: 'Lautaro Martínez', pos: 'FWD', status: 'Disponible' },
-          { name: 'Ángel Di María', pos: 'FWD', status: 'Suspendido (Tarjetas)' },
+          { name: 'Lisandro Martínez', pos: 'DEF', status: 'Disponible' },
           { name: 'Leandro Paredes', pos: 'MID', status: 'Disponible' },
           { name: 'Giovani Lo Celso', pos: 'MID', status: 'Disponible' },
-          { name: 'Lisandro Martínez', pos: 'DEF', status: 'Disponible' }
+          { name: 'Nicolás González', pos: 'FWD', status: 'Disponible' }
         ],
         'Brazil': [
           { name: 'Alisson Becker', pos: 'GK', status: 'Disponible' },
@@ -1547,7 +1740,6 @@
           { name: 'Vinícius Júnior', pos: 'FWD', status: 'Disponible' },
           { name: 'Raphinha Dias', pos: 'FWD', status: 'Disponible' },
           { name: 'Endrick Felipe', pos: 'FWD', status: 'Disponible' },
-          { name: 'Neymar Jr', pos: 'FWD', status: 'Lesionado (Ligamento)' },
           { name: 'Casemiro Henrique', pos: 'MID', status: 'Disponible' },
           { name: 'Éder Militão', pos: 'DEF', status: 'Disponible' },
           { name: 'Andreas Pereira', pos: 'MID', status: 'Disponible' }
@@ -1558,7 +1750,7 @@
           { name: 'Johan Vásquez', pos: 'DEF', status: 'Disponible' },
           { name: 'Jorge Sánchez', pos: 'DEF', status: 'Disponible' },
           { name: 'Jesús Gallardo', pos: 'DEF', status: 'Disponible' },
-          { name: 'Edson Álvarez', pos: 'MID', status: 'Lesionado (Muscular)' },
+          { name: 'Edson Álvarez', pos: 'MID', status: 'Disponible' },
           { name: 'Luis Chávez', pos: 'MID', status: 'Disponible' },
           { name: 'Erick Sánchez', pos: 'MID', status: 'Disponible' },
           { name: 'Santiago Giménez', pos: 'FWD', status: 'Disponible' },
@@ -1568,57 +1760,6 @@
           { name: 'Luis Romo', pos: 'MID', status: 'Disponible' },
           { name: 'Gerardo Arteaga', pos: 'DEF', status: 'Disponible' },
           { name: 'Henry Martín', pos: 'FWD', status: 'Disponible' }
-        ],
-        'Spain': [
-          { name: 'Unai Simón', pos: 'GK', status: 'Disponible' },
-          { name: 'Dani Carvajal', pos: 'DEF', status: 'Disponible' },
-          { name: 'Robin Le Normand', pos: 'DEF', status: 'Disponible' },
-          { name: 'Aymeric Laporte', pos: 'DEF', status: 'Disponible' },
-          { name: 'Marc Cucurella', pos: 'DEF', status: 'Disponible' },
-          { name: 'Rodri Hernández', pos: 'MID', status: 'Disponible' },
-          { name: 'Fabián Ruiz', pos: 'MID', status: 'Disponible' },
-          { name: 'Pedri González', pos: 'MID', status: 'Disponible' },
-          { name: 'Lamine Yamal', pos: 'FWD', status: 'Disponible' },
-          { name: 'Álvaro Morata', pos: 'FWD', status: 'Disponible' },
-          { name: 'Nico Williams', pos: 'FWD', status: 'Disponible' },
-          { name: 'Dani Olmo', pos: 'MID', status: 'Disponible' },
-          { name: 'Mikel Merino', pos: 'MID', status: 'Disponible' },
-          { name: 'Alejandro Grimaldo', pos: 'DEF', status: 'Disponible' },
-          { name: 'Ferran Torres', pos: 'FWD', status: 'Lesionado (Tobillo)' }
-        ],
-        'France': [
-          { name: 'Mike Maignan', pos: 'GK', status: 'Disponible' },
-          { name: 'Jules Koundé', pos: 'DEF', status: 'Disponible' },
-          { name: 'Dayot Upamecano', pos: 'DEF', status: 'Disponible' },
-          { name: 'William Saliba', pos: 'DEF', status: 'Disponible' },
-          { name: 'Theo Hernández', pos: 'DEF', status: 'Disponible' },
-          { name: 'Aurélien Tchouaméni', pos: 'MID', status: 'Disponible' },
-          { name: 'N\'Golo Kanté', pos: 'MID', status: 'Disponible' },
-          { name: 'Adrien Rabiot', pos: 'MID', status: 'Disponible' },
-          { name: 'Kylian Mbappé', pos: 'FWD', status: 'Disponible' },
-          { name: 'Antoine Griezmann', pos: 'FWD', status: 'Disponible' },
-          { name: 'Ousmane Dembélé', pos: 'FWD', status: 'Disponible' },
-          { name: 'Marcus Thuram', pos: 'FWD', status: 'Disponible' },
-          { name: 'Eduardo Camavinga', pos: 'MID', status: 'Disponible' },
-          { name: 'Kingsley Coman', pos: 'FWD', status: 'Lesionado (Rodilla)' },
-          { name: 'Ibrahima Konaté', pos: 'DEF', status: 'Disponible' }
-        ],
-        'USA': [
-          { name: 'Matt Turner', pos: 'GK', status: 'Disponible' },
-          { name: 'Sergiño Dest', pos: 'DEF', status: 'Lesionado (Ligamento)' },
-          { name: 'Chris Richards', pos: 'DEF', status: 'Disponible' },
-          { name: 'Tim Ream', pos: 'DEF', status: 'Disponible' },
-          { name: 'Antonee Robinson', pos: 'DEF', status: 'Disponible' },
-          { name: 'Weston McKennie', pos: 'MID', status: 'Disponible' },
-          { name: 'Tyler Adams', pos: 'MID', status: 'Disponible' },
-          { name: 'Yunus Musah', pos: 'MID', status: 'Disponible' },
-          { name: 'Christian Pulisic', pos: 'FWD', status: 'Disponible' },
-          { name: 'Folarin Balogun', pos: 'FWD', status: 'Disponible' },
-          { name: 'Timothy Weah', pos: 'FWD', status: 'Disponible' },
-          { name: 'Gio Reyna', pos: 'MID', status: 'Disponible' },
-          { name: 'Ricardo Pepi', pos: 'FWD', status: 'Disponible' },
-          { name: 'Johnny Cardoso', pos: 'MID', status: 'Disponible' },
-          { name: 'Cameron Carter-Vickers', pos: 'DEF', status: 'Disponible' }
         ]
       };
 
@@ -1939,7 +2080,17 @@
           <div class="team-detail-section-title" style="font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; color:var(--gold); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;">👥 Estadísticas del Plantel</div>
           <p style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Rendimiento acumulado en partidos oficiales recientes y proyectado</p>
           <div style="display:flex; flex-direction:column; gap:10px;">
-            ${squad.map(p => `
+            ${[...squad].sort((a, b) => {
+              const priority = {
+                'GK': 1, 'POR': 1, 'ARQ': 1,
+                'DEF': 2, 'DF': 2,
+                'MID': 3, 'MF': 3, 'MED': 3,
+                'FWD': 4, 'FW': 4, 'DEL': 4
+              };
+              const pA = priority[String(a.pos).toUpperCase()] || 99;
+              const pB = priority[String(b.pos).toUpperCase()] || 99;
+              return pA - pB;
+            }).map(p => `
               <div class="player-stat-card" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); border-radius:10px; padding:12px; transition: border-color 0.2s;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                   <div>
@@ -2036,9 +2187,20 @@
       if (area.classList.contains('visible')) document.getElementById('recovery-email-input').focus();
     };
 
-    window.recoverAccount = function() {
+    window.recoverAccount = async function() {
       const email = document.getElementById('recovery-email-input').value.trim().toLowerCase();
       if (!email || !email.includes('@')) { showToast('Ingresá un email válido', 'error'); return; }
+      
+      showToast('Buscando tu cuenta en el servidor... 🔍', 'info', 2000);
+      
+      if (ProdeAPI.isConfigured() && navigator.onLine) {
+        try {
+          await ProdeAPI.syncDown();
+        } catch(e) {
+          console.warn('[API] No se pudo sincronizar antes de recuperar:', e);
+        }
+      }
+      
       const allUsers = getAllUsers();
       const found = allUsers.find(u => (u.email || '').toLowerCase() === email);
       if (found) {
@@ -2047,9 +2209,17 @@
         localStorage.setItem('prode-onboarding-done', 'true');
         showToast(`¡Bienvenido de nuevo, ${found.apodo}! 🎉`, 'success');
         document.getElementById('register-screen').style.display = 'none';
+        
+        if (ProdeAPI.isConfigured() && navigator.onLine) {
+          await ProdeAPI.syncDown(found);
+        }
         startMainApp();
       } else {
-        showToast('No encontramos ese email en este dispositivo. Si te registraste en otro celular, registrate de nuevo acá.', 'warning', 5000);
+        if (ProdeAPI.isConfigured() && navigator.onLine) {
+          showToast('No encontramos ese email en Google Sheets. Verificá si está bien escrito o hablá con el administrador.', 'error', 6000);
+        } else {
+          showToast('No encontramos ese email en este dispositivo. Conectate a internet para buscar tu cuenta en el servidor.', 'warning', 5000);
+        }
       }
     };
 
@@ -2173,7 +2343,8 @@
       const user = {
         userId: userId,
         email: email,
-        nombre, apellido, apodo, telefono,
+        nombre: nombre + ' ' + (apellido || ''),
+        apellido, apodo, telefono,
         grupo, equipoFavorito: equipo, avatar,
         status: status,
         fechaRegistro: new Date().toISOString(),
@@ -2186,6 +2357,28 @@
       saveUser(user);
       allUsers.push({...user});
       saveAllUsers(allUsers);
+
+      // Sincronizar registro con Google Sheets
+      if (ProdeAPI.isConfigured()) {
+        const apiPayload = { nombre: user.nombre, email: user.email, familia: user.grupo };
+        if (navigator.onLine) {
+          ProdeAPI.request('registrarUsuario', apiPayload, 'POST')
+            .then(res => {
+              console.log('[API] Usuario registrado en Google Sheets:', res);
+              showToast('¡Registrado en la base de datos de Google Sheets! ☁️', 'success');
+              ProdeAPI.syncDown(user).then(() => {
+                if (currentView) renderView(currentView);
+              });
+            })
+            .catch(err => {
+              ProdeAPI.addToQueue('registrarUsuario', apiPayload);
+              showToast('Registro local guardado. Sincronizando en segundo plano... 📡', 'info');
+            });
+        } else {
+          ProdeAPI.addToQueue('registrarUsuario', apiPayload);
+          showToast('Registro guardado localmente (offline) 📡', 'info');
+        }
+      }
 
       document.getElementById('register-screen').style.display = 'none';
       showToast(`¡Bienvenido, ${apodo}! 🎉`, 'success');
@@ -2219,13 +2412,56 @@
     // ============================================
     // START MAIN APP
     // ============================================
-    function startMainApp() {
+    let squadsDb = null;
+    async function loadSquadsDatabase() {
+      if (squadsDb) return squadsDb;
+      try {
+        const cached = localStorage.getItem('prode-squads-db');
+        if (cached) {
+          squadsDb = JSON.parse(cached);
+        }
+      } catch (e) {}
+      
+      try {
+        const res = await fetch('data/squads.json');
+        if (res.ok) {
+          const data = await res.json();
+          squadsDb = data;
+          localStorage.setItem('prode-squads-db', JSON.stringify(data));
+        }
+      } catch (e) {
+        console.error('Error fetching squads from network:', e);
+      }
+      return squadsDb;
+    }
+
+    async function startMainApp() {
       const user = getUser();
       if (!user) return showRegistration();
       document.getElementById('app-header').classList.add('visible');
       document.getElementById('bottom-nav').classList.add('visible');
       document.getElementById('app-content').classList.add('visible');
       document.getElementById('header-avatar').textContent = user.avatar;
+      
+      // Load squads database asynchronously in background
+      loadSquadsDatabase().catch(e => console.error(e));
+
+      // Sincronizar datos con Google Sheets en segundo plano
+      if (ProdeAPI.isConfigured() && navigator.onLine) {
+        (async () => {
+          try {
+            await ProdeAPI.syncPendingQueue();
+            const success = await ProdeAPI.syncDown(user);
+            if (success) {
+              console.log('[API] Datos sincronizados en inicio de la app.');
+              renderView(currentView);
+            }
+          } catch(e) {
+            console.error('[API] Fallo la sincronización inicial:', e);
+          }
+        })();
+      }
+
       if (isAdmin()) {
         document.getElementById('nav-admin').style.display = '';
         const allUsers = getAllUsers();
@@ -2239,7 +2475,7 @@
     // ============================================
     // HASH ROUTER
     // ============================================
-    const validViews = ['inicio','pronosticos','ranking','stats','mas','admin','team'];
+    const validViews = ['inicio','pronosticos','ranking','stats','mas','admin','team','reglas','duelos'];
     function navigateTo(view) {
       if (!validViews.includes(view)) view = 'inicio';
       if (view === 'admin' && !isAdmin()) view = 'inicio';
@@ -2264,6 +2500,8 @@
         case 'mas': renderMas(); break;
         case 'admin': renderAdmin(); break;
         case 'team': renderTeamDetailView(); break;
+        case 'reglas': renderReglas(); break;
+        case 'duelos': renderDuelos(); break;
       }
     }
 
@@ -2855,12 +3093,34 @@
       const h = document.getElementById('score-home-'+id), a = document.getElementById('score-away-'+id);
       if (h.value===''||a.value==='') { showToast('Completá ambos marcadores','error'); if(h.value==='') h.classList.add('error'); if(a.value==='') a.classList.add('error'); return; }
       const preds = getPredictions();
-      preds[id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
+      const homeVal = parseInt(h.value);
+      const awayVal = parseInt(a.value);
+      preds[id] = { home: homeVal, away: awayVal, savedAt: new Date().toISOString() };
       savePredictions(preds);
       const btn = document.getElementById('save-btn-'+id); btn.textContent = '✅ Guardado'; btn.classList.add('saved');
       h.classList.add('has-value'); a.classList.add('has-value'); h.classList.remove('error'); a.classList.remove('error');
       const match = MATCHES.find(m => m.id === id);
       showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+
+      // Sincronizar en la nube
+      if (ProdeAPI.isConfigured()) {
+        const user = getUser();
+        const apiPayload = {
+          participante: user.nombre,
+          pronosticos: [{ partidoId: String(id), golLocal: homeVal, golVisitante: awayVal }]
+        };
+        if (navigator.onLine) {
+          ProdeAPI.request('guardarPronosticoBatch', apiPayload, 'POST')
+            .then(() => console.log(`[API] Partido ${id} sincronizado.`))
+            .catch(() => {
+              ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
+              showToast('Pronóstico encolado offline 📡', 'info');
+            });
+        } else {
+          ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
+          showToast('Pronóstico encolado offline 📡', 'info');
+        }
+      }
     };
 
     window.saveHomeMatch = function(id) {
@@ -2868,28 +3128,76 @@
       const h = document.getElementById('home-h-'+id), a = document.getElementById('home-a-'+id);
       if (!h || !a || h.value==='' || a.value==='') { showToast('Completá ambos marcadores','error'); return; }
       const preds = getPredictions();
-      preds[id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
+      const homeVal = parseInt(h.value);
+      const awayVal = parseInt(a.value);
+      preds[id] = { home: homeVal, away: awayVal, savedAt: new Date().toISOString() };
       savePredictions(preds);
       const btn = document.getElementById('home-save-'+id);
       if (btn) { btn.textContent = '✅ Guardado'; btn.style.background = 'rgba(34,197,94,0.2)'; btn.style.color = '#22c55e'; }
       h.style.borderColor = '#22c55e'; a.style.borderColor = '#22c55e';
       const match = MATCHES.find(m => m.id === id);
       showToast(`${match.home} ${h.value} - ${a.value} ${match.away} guardado ✅`,'success');
+
+      // Sincronizar en la nube
+      if (ProdeAPI.isConfigured()) {
+        const user = getUser();
+        const apiPayload = {
+          participante: user.nombre,
+          pronosticos: [{ partidoId: String(id), golLocal: homeVal, golVisitante: awayVal }]
+        };
+        if (navigator.onLine) {
+          ProdeAPI.request('guardarPronosticoBatch', apiPayload, 'POST')
+            .then(() => console.log(`[API] Partido ${id} sincronizado.`))
+            .catch(() => {
+              ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
+              showToast('Pronóstico encolado offline 📡', 'info');
+            });
+        } else {
+          ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
+          showToast('Pronóstico encolado offline 📡', 'info');
+        }
+      }
     };
 
     window.saveAllPredictions = function() {
       if (isLocked()) { showToast('Los pronósticos están bloqueados','error'); return; }
       let saved = 0;
       const preds = getPredictions();
+      const pronList = [];
       MATCHES.forEach(m => {
         const h = document.getElementById('score-home-'+m.id), a = document.getElementById('score-away-'+m.id);
         if (h && a && h.value !== '' && a.value !== '') {
-          preds[m.id] = { home: parseInt(h.value), away: parseInt(a.value), savedAt: new Date().toISOString() };
-          const btn = document.getElementById('save-btn-'+m.id); if(btn) { btn.textContent='✅ Guardado'; btn.classList.add('saved'); } saved++;
+          const homeVal = parseInt(h.value);
+          const awayVal = parseInt(a.value);
+          preds[m.id] = { home: homeVal, away: awayVal, savedAt: new Date().toISOString() };
+          const btn = document.getElementById('save-btn-'+m.id); if(btn) { btn.textContent='✅ Guardado'; btn.classList.add('saved'); }
+          pronList.push({ partidoId: String(m.id), golLocal: homeVal, golVisitante: awayVal });
+          saved++;
         }
       });
-      if (saved > 0) savePredictions(preds);
-      showToast(saved > 0 ? `${saved} pronósticos guardados 🎉` : 'No hay pronósticos nuevos para guardar', saved > 0 ? 'success' : 'warning');
+      if (saved > 0) {
+        savePredictions(preds);
+        showToast(`${saved} pronósticos guardados 🎉`,'success');
+
+        // Sincronizar en la nube
+        if (ProdeAPI.isConfigured()) {
+          const user = getUser();
+          const apiPayload = { participante: user.nombre, pronosticos: pronList };
+          if (navigator.onLine) {
+            ProdeAPI.request('guardarPronosticoBatch', apiPayload, 'POST')
+              .then(() => showToast('¡Sincronizado con Google Sheets! ☁️', 'success'))
+              .catch(() => {
+                ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
+                showToast('Guardado localmente. Se subirá al reconectar 📡', 'info');
+              });
+          } else {
+            ProdeAPI.addToQueue('guardarPronosticoBatch', apiPayload);
+            showToast('Guardado localmente (modo offline) 📡', 'info');
+          }
+        }
+      } else {
+        showToast('No hay pronósticos nuevos para guardar', 'warning');
+      }
     };
 
     // ============================================
@@ -3198,12 +3506,19 @@
     // ============================================
     // MORE (MÁS) VIEW
     // ============================================
+    function isTournamentLocked() {
+      // Copa Mundial starts on June 11, 2026
+      const deadline = new Date('2026-06-11T19:00:00-03:00').getTime();
+      return Date.now() >= deadline && !isAdmin();
+    }
+
     function renderMas() {
       const user = getUser(); if (!user) return;
       const gp = getGroupPredictions();
       const preds = getPredictions(); const savedCount = Object.keys(preds).length;
       const favTeam = ALL_TEAMS.find(t => t.name === user.equipoFavorito);
       const regDate = user.fechaRegistro ? new Date(user.fechaRegistro).toLocaleDateString('es-AR',{year:'numeric',month:'long',day:'numeric'}) : 'N/A';
+      const isLocked = isTournamentLocked();
 
       document.getElementById('mas-content').innerHTML = `
         <div class="section-title"><h3>👤 Mi Perfil</h3></div>
@@ -3224,26 +3539,143 @@
           </div>
           <button class="btn btn-outline btn-block mt-2" onclick="openEditProfile()">✏️ Editar Perfil</button>
         </div>
+
+        <button class="btn btn-outline btn-block mt-3" onclick="navigateTo('reglas')" style="background:rgba(197,165,90,0.05);border-color:rgba(197,165,90,0.25);color:var(--gold);display:flex;align-items:center;justify-content:center;gap:8px;">📜 Reglas y Puntajes</button>
+        <button class="btn btn-outline btn-block mt-2" onclick="navigateTo('duelos')" style="background:rgba(59,130,246,0.05);border-color:rgba(59,130,246,0.25);color:#60a5fa;display:flex;align-items:center;justify-content:center;gap:8px;">🤝 Desafíos P2P (Duelos)</button>
+
         <div class="section-title mt-3"><h3>🏆 Predicciones del Torneo</h3></div>
         <div class="card">
+          ${isLocked ? `
+          <div style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:10px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            <span style="font-size:18px;">🔒</span>
+            <span style="color:#ef4444; font-size:12px; font-weight:700;">Las predicciones del torneo están cerradas porque el Mundial ya comenzó.</span>
+          </div>
+          ` : ''}
           <div class="form-group"><label class="form-label">🏆 Campeón</label>
-            <select class="form-input form-select" id="gp-champion"><option value="">Elegí al campeón...</option>
+            <select class="form-input form-select" id="gp-champion" ${isLocked?'disabled':''}><option value="">Elegí al campeón...</option>
               ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).sort((a,b)=>a.name.localeCompare(b.name)).map(t=>`<option value="${t.name}" ${gp.champion===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
             </select></div>
           <div class="form-group"><label class="form-label">🥈 Subcampeón</label>
-            <select class="form-input form-select" id="gp-runner"><option value="">Elegí al subcampeón...</option>
+            <select class="form-input form-select" id="gp-runner" ${isLocked?'disabled':''}><option value="">Elegí al subcampeón...</option>
               ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).map(t=>`<option value="${t.name}" ${gp.runner===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
             </select></div>
-          <div class="form-group"><label class="form-label">👟 Goleador</label><input type="text" class="form-input" id="gp-scorer" placeholder="Ej: Mbappé" value="${gp.scorer||''}"></div>
-          <div class="form-group"><label class="form-label">⚽ Goles totales del torneo</label><input type="number" class="form-input" id="gp-goals" min="0" max="500" placeholder="Ej: 172" value="${gp.goals||''}" inputmode="numeric"></div>
+          <div class="form-group"><label class="form-label">👟 Goleador</label><input type="text" class="form-input" id="gp-scorer" placeholder="Ej: Mbappé" value="${gp.scorer||''}" ${isLocked?'disabled':''}></div>
+          <div class="form-group"><label class="form-label">⚽ Goles totales del torneo</label><input type="number" class="form-input" id="gp-goals" min="0" max="500" placeholder="Ej: 172" value="${gp.goals||''}" inputmode="numeric" ${isLocked?'disabled':''}></div>
           <div class="form-group"><label class="form-label">🎭 Equipo sorpresa</label>
-            <select class="form-input form-select" id="gp-surprise"><option value="">Elegí un equipo sorpresa...</option>
+            <select class="form-input form-select" id="gp-surprise" ${isLocked?'disabled':''}><option value="">Elegí un equipo sorpresa...</option>
               ${ALL_TEAMS.filter(t=>!t.name.startsWith('Playoff')).map(t=>`<option value="${t.name}" ${gp.surprise===t.name?'selected':''}>${t.emoji} ${t.name}</option>`).join('')}
             </select></div>
-          <button class="btn btn-gold btn-block" onclick="saveGroupPreds()">💾 Guardar Predicciones</button>
+          <button class="btn btn-gold btn-block" onclick="saveGroupPreds()" ${isLocked?'disabled':''}>${isLocked?'🔒 Predicciones Cerradas':'💾 Guardar Predicciones'}</button>
         </div>
+        <div class="section-title mt-3"><h3>⚙️ Conexión en la Nube</h3></div>
+        <div class="card" style="padding:16px; margin-bottom:12px;">
+          <div class="form-group">
+            <label class="form-label" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>URL de Apps Script Web App</span>
+              <span id="api-status-badge" class="badge" style="background:${ProdeAPI.isConfigured() ? '#22c55e' : '#4b5563'}; color:#fff;">${ProdeAPI.isConfigured() ? 'Configurado' : 'Desconectado'}</span>
+            </label>
+            <input type="url" class="form-input" id="api-url-input" placeholder="https://script.google.com/macros/s/.../exec" value="${localStorage.getItem('prode-api-url') || ''}" style="font-size:12px; font-family:monospace;">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
+            <button class="btn btn-outline" style="min-height:36px; padding:6px 12px; font-size:13px;" onclick="testApiConnection()">🧪 Probar Conexión</button>
+            <button class="btn btn-gold" style="min-height:36px; padding:6px 12px; font-size:13px;" onclick="saveApiSettings()">💾 Guardar y Sincronizar</button>
+          </div>
+        </div>
+
         <button class="btn btn-primary btn-block mt-2" onclick="shareApp()">📤 Compartir PRODE</button>
         <button class="btn btn-danger btn-block mt-2" onclick="logout()" style="margin-bottom:32px;">🚪 Cerrar Sesión</button>`;
+    }
+
+    function renderReglas() {
+      document.getElementById('reglas-content').innerHTML = `
+        <button onclick="navigateTo('mas')" class="btn btn-outline" style="margin-bottom:12px; padding:6px 12px; min-height:36px; font-size:13px; width:auto; display:inline-flex; align-items:center; gap:4px;">
+          ← Volver
+        </button>
+        <div class="section-title"><h3>📜 Reglas y Puntajes</h3></div>
+        
+        <div class="card" style="margin-bottom:16px; padding:16px;">
+          <h4 style="color:var(--gold); margin-bottom:8px; font-size:15px; display:flex; align-items:center; gap:6px;">⏰ Tiempos de Cierre</h4>
+          <p style="font-size:13px; line-height:1.4; margin-bottom:8px;">
+            <strong>⚽ Pronósticos de Partidos:</strong> Se bloquean automáticamente <strong>1 hora antes</strong> de comenzar el partido.
+          </p>
+          <p style="font-size:13px; line-height:1.4;">
+            <strong>🏆 Predicciones del Torneo:</strong> Se bloquean al inicio del primer partido del Mundial (<strong>11 de Junio de 2026, 19:00 hs</strong>).
+          </p>
+        </div>
+
+        <div class="card" style="margin-bottom:16px; padding:16px;">
+          <h4 style="color:var(--gold); margin-bottom:8px; font-size:15px;">⚽ Puntos por Partido (Prode Clásico)</h4>
+          <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1); color:var(--text-muted);">
+                <th style="padding:6px 4px;">Concepto</th>
+                <th style="padding:6px 4px; text-align:right;">Puntos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;"><strong>Resultado Exacto</strong><br><span style="font-size:10px; color:var(--text-muted);">Acertar el marcador idéntico</span></td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700; color:var(--gold);">15 pts</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;"><strong>Diferencia de Goles</strong><br><span style="font-size:10px; color:var(--text-muted);">Acertar el ganador y la diferencia exacta</span></td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700;">8 pts</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;"><strong>Ganador / Empate</strong><br><span style="font-size:10px; color:var(--text-muted);">Acertar quién gana o si empatan</span></td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700;">5 pts</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="margin-bottom:16px; padding:16px;">
+          <h4 style="color:var(--gold); margin-bottom:8px; font-size:15px;">📈 Multiplicadores por Fase</h4>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Los puntos obtenidos por partido se multiplican según la fase:</p>
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; text-align:center; font-size:12px;">
+            <div style="background:rgba(255,255,255,0.02); padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);"><strong>Grupos</strong><br><span style="color:var(--gold); font-weight:700;">1.0x</span></div>
+            <div style="background:rgba(255,255,255,0.02); padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);"><strong>Octavos</strong><br><span style="color:var(--gold); font-weight:700;">1.25x</span></div>
+            <div style="background:rgba(255,255,255,0.02); padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);"><strong>Cuartos</strong><br><span style="color:var(--gold); font-weight:700;">1.5x</span></div>
+            <div style="background:rgba(255,255,255,0.02); padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);"><strong>Semifinales</strong><br><span style="color:var(--gold); font-weight:700;">1.75x</span></div>
+            <div style="background:rgba(255,255,255,0.02); padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);"><strong>3er Puesto</strong><br><span style="color:var(--gold); font-weight:700;">1.5x</span></div>
+            <div style="background:rgba(255,255,255,0.02); padding:6px; border-radius:6px; border:1px solid rgba(255,255,255,0.04);"><strong>Final</strong><br><span style="color:var(--gold); font-weight:700;">2.0x</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:32px; padding:16px;">
+          <h4 style="color:var(--gold); margin-bottom:8px; font-size:15px;">🏆 Puntajes de Predicciones del Torneo</h4>
+          <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.1); color:var(--text-muted);">
+                <th style="padding:6px 4px;">Predicción</th>
+                <th style="padding:6px 4px; text-align:right;">Exacto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;">🥇 Campeón</td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700; color:var(--gold);">30 pts</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;">🥈 Subcampeón</td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700; color:var(--gold);">20 pts</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;">👟 Goleador del Torneo</td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700; color:var(--gold);">25 pts</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;">🎭 Equipo Sorpresa</td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700; color:var(--gold);">20 pts</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px 4px;">⚽ Goles Totales del Torneo</td>
+                <td style="padding:8px 4px; text-align:right; font-weight:700; color:var(--gold);">15 pts</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
     }
 
     // ============================================
@@ -3323,6 +3755,7 @@
         <div class="admin-shortcuts">
           <div class="admin-shortcut-card" onclick="adminExportData()"><div class="admin-shortcut-icon">📋</div><div class="admin-shortcut-label">Exportar Datos</div></div>
           <div class="admin-shortcut-card" onclick="adminApproveAll()"><div class="admin-shortcut-icon">✅</div><div class="admin-shortcut-label">Aprobar Todos</div></div>
+          <div class="admin-shortcut-card" onclick="adminResetAllData()" style="border-color:rgba(239,68,68,0.25);"><div class="admin-shortcut-icon">🧹</div><div class="admin-shortcut-label" style="color:#ef4444;">Reiniciar Todo</div></div>
         </div>`;
       document.getElementById('admin-content').innerHTML = html;
     }
@@ -3369,13 +3802,78 @@
       openModal('Exportar Datos', `<textarea class="form-input" rows="8" style="font-size:11px;" readonly>${csv.join('\n')}</textarea>
         <button class="btn btn-gold btn-block mt-2" onclick="copyToClipboard(document.querySelector('#modal-body textarea').value);closeModal();">📋 Copiar CSV</button>`);
     };
+    window.adminResetAllData = async function() {
+      if (!confirm('⚠️ ¡ADVERTENCIA CRÍTICA!\n\n¿Estás completamente seguro de que querés resetear TODO el PRODE?\n\nEsta acción borrará de forma permanente:\n1. Todos los participantes en la nube (Google Sheets) y locales.\n2. Todos los pronósticos individuales cargados.\n3. Todos los rankings, logs y dispositivos registrados.\n\nEsta acción NO se puede deshacer.\n\n¿Querés proceder?')) {
+        return;
+      }
+      
+      const user = getUser();
+      if (!user) return;
+      
+      showToast('🔄 Iniciando reseteo en el servidor...', 'info', 4000);
+      
+      try {
+        if (ProdeAPI.isConfigured()) {
+          await ProdeAPI.request('resetearDatosDePrueba', { email: user.email }, 'POST');
+          showToast('✅ Datos en Google Sheets eliminados.', 'success');
+        } else {
+          showToast('⚠️ API no configurada. Borrando datos locales únicamente.', 'warning');
+        }
+      } catch (e) {
+        console.error('[Reset] Error resetting database:', e);
+        if (!confirm('❌ Error al conectar con el servidor: ' + e.message + '\n\n¿Querés forzar el borrado de tus datos locales de todas formas? (Esto no limpiará el Google Sheet)')) {
+          return;
+        }
+      }
+      
+      // Limpiar localStorage (guardamos la URL de la API)
+      const apiUrl = localStorage.getItem('prode-api-url');
+      localStorage.clear();
+      if (apiUrl) localStorage.setItem('prode-api-url', apiUrl);
+      
+      showToast('🧹 Datos locales eliminados. Reiniciando...', 'success');
+      setTimeout(() => {
+        location.reload();
+      }, 1500);
+    };
 
     // ============================================
     // GLOBAL FUNCTIONS
     // ============================================
     window.saveGroupPreds = function() {
+      if (isTournamentLocked()) {
+        showToast('Las predicciones del torneo están cerradas 🔒', 'error');
+        return;
+      }
       const data = { champion: document.getElementById('gp-champion').value, runner: document.getElementById('gp-runner').value, scorer: document.getElementById('gp-scorer').value, goals: document.getElementById('gp-goals').value, surprise: document.getElementById('gp-surprise').value, savedAt: new Date().toISOString() };
-      saveGroupPredictions(data); showToast('Predicciones del torneo guardadas 🏆', 'success');
+      saveGroupPredictions(data);
+      showToast('Predicciones del torneo guardadas 🏆', 'success');
+
+      // Sincronizar en la nube
+      if (ProdeAPI.isConfigured()) {
+        const user = getUser();
+        const apiPayload = {
+          participante: user.nombre,
+          predicciones: {
+            "Campeón": data.champion,
+            "Subcampeón": data.runner,
+            "Goleador": data.scorer,
+            "TotalGolesTorneo": parseInt(data.goals) || 0,
+            "EquipoRevelación": data.surprise
+          }
+        };
+        if (navigator.onLine) {
+          ProdeAPI.request('guardarPrediccionesEstadisticas', apiPayload, 'POST')
+            .then(() => showToast('¡Predicciones del torneo sincronizadas! ☁️', 'success'))
+            .catch(e => {
+              ProdeAPI.addToQueue('guardarPrediccionesEstadisticas', apiPayload);
+              showToast('Guardadas localmente. Se subirán al reconectar 📡', 'info');
+            });
+        } else {
+          ProdeAPI.addToQueue('guardarPrediccionesEstadisticas', apiPayload);
+          showToast('Guardadas localmente (modo offline) 📡', 'info');
+        }
+      }
     };
     window.shareApp = function() {
       if (navigator.share) navigator.share({ title: 'PRODE Mundial 2026', text: '¡Sumate al PRODE Familiar del Mundial 2026! 🏆⚽', url: window.location.href }).catch(() => {});
@@ -3386,6 +3884,81 @@
         ['prode-user','prode-predictions','prode-group-predictions','prode-bracket','prode-onboarding-done','prode-expert-mode','prode-admin','prode-api-url','prode-notifs','prode-sounds'].forEach(k => localStorage.removeItem(k));
         location.reload();
       }
+    };
+    window.testApiConnection = async function() {
+      const urlInput = document.getElementById('api-url-input');
+      const url = urlInput.value.trim();
+      const badge = document.getElementById('api-status-badge');
+      
+      if (!url) {
+        showToast('Ingresá una URL primero', 'warning');
+        badge.textContent = 'Sin URL';
+        badge.style.background = '#ef4444';
+        return;
+      }
+      
+      showToast('Probando conexión... 📡', 'info');
+      badge.textContent = 'Probando...';
+      badge.style.background = '#f59e0b';
+      
+      const tempUrl = url.replace(/\/+$/, '');
+      const originalUrl = localStorage.getItem('prode-api-url');
+      localStorage.setItem('prode-api-url', tempUrl);
+      
+      try {
+        const res = await ProdeAPI.ping();
+        if (res && res.status === 'ok') {
+          showToast(`✅ Conexión exitosa! Versión API: ${res.version}`, 'success');
+          badge.textContent = 'Conectado';
+          badge.style.background = '#22c55e';
+        } else {
+          throw new Error('Respuesta inválida del servidor.');
+        }
+      } catch (e) {
+        console.error('[API Test] Connection failed:', e);
+        showToast('❌ Error de conexión: ' + e.message, 'error', 5000);
+        badge.textContent = 'Error';
+        badge.style.background = '#ef4444';
+      } finally {
+        if (originalUrl) {
+          localStorage.setItem('prode-api-url', originalUrl);
+        } else {
+          localStorage.removeItem('prode-api-url');
+        }
+      }
+    };
+    window.saveApiSettings = async function() {
+      const urlInput = document.getElementById('api-url-input');
+      const url = urlInput.value.trim();
+      const badge = document.getElementById('api-status-badge');
+      
+      showToast('Guardando configuración... 💾', 'info');
+      ProdeAPI.setApiUrl(url);
+      
+      if (!url) {
+        showToast('URL vaciada. Modo local activado.', 'warning');
+        badge.textContent = 'Desconectado';
+        badge.style.background = '#4b5563';
+        renderMas();
+        return;
+      }
+      
+      try {
+        showToast('Sincronizando datos por primera vez... 🔄', 'info', 4000);
+        const user = getUser();
+        const success = await ProdeAPI.syncDown(user);
+        if (success) {
+          showToast('✅ Configuración guardada y sincronizada correctamente.', 'success');
+          badge.textContent = 'Conectado';
+          badge.style.background = '#22c55e';
+        } else {
+          showToast('⚠️ Configuración guardada, pero no se pudo descargar los datos (offline).', 'warning');
+        }
+      } catch (e) {
+        console.error('[API Save] Sync error:', e);
+        showToast('⚠️ Configuración guardada localmente, pero falló la sincronización inicial: ' + e.message, 'warning', 5000);
+      }
+      renderMas();
     };
     window.copyToClipboard = function(text) { navigator.clipboard.writeText(text).then(() => showToast('📋 Copiado','success')).catch(() => showToast('No se pudo copiar','error')); };
 

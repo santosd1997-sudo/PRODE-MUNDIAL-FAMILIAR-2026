@@ -197,8 +197,20 @@ function doPost(e) {
         result = apiRegistrarDispositivo_(payload);
         break;
 
+      case 'registrarUsuario':
+        result = apiRegistrarUsuario_(payload);
+        break;
+
+      case 'resetearDatosDePrueba':
+        if (!payload.email || payload.email.toLowerCase() !== 'santos-dewey@hotmail.com') {
+          throw new Error('No autorizado. Solo el Super Admin puede realizar esta acción.');
+        }
+        resetearDatosDePrueba();
+        result = { status: 'success', message: 'PRODE reseteado con éxito.' };
+        break;
+
       default:
-        throw new Error('Acción POST desconocida: "' + action + '". Acciones válidas: guardarPronostico, guardarPronosticoBatch, guardarPrediccionesEstadisticas, registrarDispositivo');
+        throw new Error('Acción POST desconocida: "' + action + '". Acciones válidas: guardarPronostico, guardarPronosticoBatch, guardarPrediccionesEstadisticas, registrarDispositivo, registrarUsuario, resetearDatosDePrueba');
     }
 
     var elapsed = new Date().getTime() - startTime;
@@ -1159,6 +1171,41 @@ function apiRegistrarDispositivo_(payload) {
     return { message: 'Dispositivo registrado exitosamente.', updated: false };
   }
 }
+
+/**
+ * POST registrarUsuario — Registers a new user/participant.
+ * @param {Object} payload — { nombre, email, familia }
+ * @return {Object} Result.
+ * @private
+ */
+function apiRegistrarUsuario_(payload) {
+  if (!payload.nombre) throw new Error('Campo "nombre" requerido.');
+  if (!payload.email) throw new Error('Campo "email" requerido.');
+  if (!payload.familia) throw new Error('Campo "familia" requerido.');
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_PARTICIPANTES);
+  if (!sheet) {
+    throw new Error('Hoja "Participantes" no encontrada.');
+  }
+
+  var email = String(payload.email).trim().toLowerCase();
+  var nombre = String(payload.nombre).trim();
+  var familia = String(payload.familia).trim();
+
+  // Check for duplicate
+  var data = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]).trim().toLowerCase() === email) {
+      return { success: true, message: 'Usuario ya registrado en Google Sheets.', registered: false };
+    }
+  }
+
+  // Append new participant (Nombre, Email, Familia, Activo: SI)
+  sheet.appendRow([nombre, email, familia, 'SI']);
+  return { success: true, message: 'Usuario registrado exitosamente en Google Sheets.', registered: true };
+}
+
 
 // =============================================================================
 // TEST FUNCTION

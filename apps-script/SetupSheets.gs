@@ -1068,6 +1068,7 @@ function onOpen() {
   menu.addSeparator();
 
   menu.addItem('🛡️ Proteger Encabezados', 'protegerEncabezados');
+  menu.addItem('🧹 Borrar Datos de Prueba (Producción)', 'resetearDatosDePrueba');
   menu.addItem('🗑️ Borrar Todas las Hojas', 'borrarTodasLasHojas');
 
   menu.addToUi();
@@ -1225,3 +1226,124 @@ function cargarFixtureCompleto() {
   // This function should call fixture loading logic from Fixture.gs or equivalent
   // cargarFixtureDesdeJSON(); // Uncomment when implemented
 }
+
+/**
+ * Resetea completamente el PRODE para producción/compartir con la familia.
+ * Borra todos los participantes, pronósticos y reinicia los resultados reales a vacío.
+ */
+function resetearDatosDePrueba() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var isSilent = false;
+  
+  try {
+    var ui = SpreadsheetApp.getUi();
+    var response = ui.alert(
+      '⚠️ ADVERTENCIA CRÍTICA',
+      '¿Estás seguro de que querés resetear TODO el PRODE?\n\n' +
+      'Esto borrará de forma permanente:\n' +
+      '1. Todos los participantes registrados.\n' +
+      '2. Todos los pronósticos individuales cargados.\n' +
+      '3. Todos los dispositivos y registros de logs.\n' +
+      '4. Todos los rankings calculados.\n\n' +
+      '¿Querés proceder?',
+      ui.ButtonSet.YES_NO
+    );
+    
+    if (response !== ui.Button.YES) {
+      ss.toast('Reinicio cancelado.', '❌ PRODE', 3);
+      return;
+    }
+  } catch (e) {
+    // Si no hay UI, se ejecuta de forma silenciosa (ej: llamado desde API)
+    isSilent = true;
+  }
+  
+  if (!isSilent) {
+    ss.toast('Iniciando reseteo de datos...', '🔄 PRODE', 30);
+  }
+  
+  // Helper to find sheet column by name
+  function localFindColumn(sheet, possibleNames) {
+    if (!sheet || sheet.getLastRow() === 0) return -1;
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    for (var i = 0; i < headers.length; i++) {
+      var h = String(headers[i]).trim().toLowerCase();
+      for (var j = 0; j < possibleNames.length; j++) {
+        if (h === possibleNames[j].toLowerCase()) return i;
+      }
+    }
+    return -1;
+  }
+  
+  // 1. Limpiar Participantes (manteniendo solo la cabecera)
+  var sheetPart = ss.getSheetByName('Participantes');
+  if (sheetPart && sheetPart.getLastRow() >= 2) {
+    sheetPart.deleteRows(2, sheetPart.getLastRow() - 1);
+  }
+  
+  // 2. Limpiar Pronósticos (manteniendo cabecera)
+  var sheetPron = ss.getSheetByName('Carga de Pronósticos') || ss.getSheetByName('Pronósticos');
+  if (sheetPron && sheetPron.getLastRow() >= 2) {
+    sheetPron.deleteRows(2, sheetPron.getLastRow() - 1);
+  }
+  
+  // 3. Limpiar Predicciones de Grupos (manteniendo cabecera)
+  var sheetPredGrupos = ss.getSheetByName('PrediccionesGrupos');
+  if (sheetPredGrupos && sheetPredGrupos.getLastRow() >= 2) {
+    sheetPredGrupos.deleteRows(2, sheetPredGrupos.getLastRow() - 1);
+  }
+
+  // 4. Limpiar Dispositivos registrados (manteniendo cabecera)
+  var sheetDisp = ss.getSheetByName('Dispositivos');
+  if (sheetDisp && sheetDisp.getLastRow() >= 2) {
+    sheetDisp.deleteRows(2, sheetDisp.getLastRow() - 1);
+  }
+
+  // 5. Limpiar Logs (manteniendo cabecera)
+  var sheetLog = ss.getSheetByName('Log') || ss.getSheetByName('Logs');
+  if (sheetLog && sheetLog.getLastRow() >= 2) {
+    sheetLog.deleteRows(2, sheetLog.getLastRow() - 1);
+  }
+  
+  // 6. Resetear goles reales y estados en la hoja Partidos/Fixture
+  var sheetPartidos = ss.getSheetByName('Partidos') || ss.getSheetByName('Fixture');
+  if (sheetPartidos && sheetPartidos.getLastRow() >= 2) {
+    var lastRow = sheetPartidos.getLastRow();
+    
+    var colGolLocal = localFindColumn(sheetPartidos, ['GolLocal', 'Goles Local', 'GL']);
+    var colGolVisitante = localFindColumn(sheetPartidos, ['GolVisitante', 'Goles Visitante', 'GV']);
+    var colEstado = localFindColumn(sheetPartidos, ['Estado', 'Status']);
+    var colResultado = localFindColumn(sheetPartidos, ['Resultado']);
+    
+    // Recorrer filas de partidos y reiniciar
+    for (var i = 2; i <= lastRow; i++) {
+      if (colGolLocal >= 0) sheetPartidos.getRange(i, colGolLocal + 1).setValue('');
+      if (colGolVisitante >= 0) sheetPartidos.getRange(i, colGolVisitante + 1).setValue('');
+      if (colEstado >= 0) sheetPartidos.getRange(i, colEstado + 1).setValue('Pendiente');
+      if (colResultado >= 0) sheetPartidos.getRange(i, colResultado + 1).setValue('');
+    }
+  }
+
+  // 7. Limpiar Historial Ganadores (manteniendo cabecera)
+  var sheetHist = ss.getSheetByName('Historial Ganadores') || ss.getSheetByName('HistorialGanadores');
+  if (sheetHist && sheetHist.getLastRow() >= 2) {
+    sheetHist.deleteRows(2, sheetHist.getLastRow() - 1);
+  }
+
+  // 8. Limpiar Rankings y tablas auxiliares
+  var sheetsToClear = [
+    'Tabla General', 'Ranking Semanal', 'Ranking por Fase', 'Estadísticas', 
+    'Ranking Estadístico', 'Ranking Combinado', 'Estadísticas Partidos', 'Estadísticas Jugadores'
+  ];
+  sheetsToClear.forEach(function(sName) {
+    var sh = ss.getSheetByName(sName);
+    if (sh && sh.getLastRow() >= 2) {
+      sh.deleteRows(2, sh.getLastRow() - 1);
+    }
+  });
+
+  if (!isSilent) {
+    ss.toast('¡PRODE reseteado con éxito! Listo para producción. 🚀', '✅ PRODE', 10);
+  }
+}
+
